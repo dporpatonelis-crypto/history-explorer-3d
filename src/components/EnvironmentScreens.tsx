@@ -17,13 +17,21 @@ function CurvedScreenMesh({
   imageUrl,
   position,
   rotation,
-  width = 12,
+  radius = 8,
   height = 7,
-  curveSegments = 32,
-  arc = 0.6,
-  label,
-}: EnvironmentScreenProps) {
-
+  curveSegments = 16,
+  thetaStart = 0,
+  thetaLength = Math.PI,
+}: {
+  imageUrl: string;
+  position: [number, number, number];
+  rotation: [number, number, number];
+  radius?: number;
+  height?: number;
+  curveSegments?: number;
+  thetaStart?: number;
+  thetaLength?: number;
+}) {
   const texture = useTexture(imageUrl);
 
   useEffect(() => {
@@ -33,15 +41,13 @@ function CurvedScreenMesh({
     texture.needsUpdate = true;
   }, [texture]);
 
-  // Curved geometry: cylinder segment as screen
   const geometry = useMemo(() => {
-    const radius = width / arc;
     const geo = new THREE.CylinderGeometry(
       radius, radius, height,
       curveSegments, 1,
       true,
-      Math.PI / 2 - arc / 2,
-      arc
+      thetaStart,
+      thetaLength
     );
 
     // Flip UVs so image isn't mirrored on inside
@@ -50,13 +56,10 @@ function CurvedScreenMesh({
       uvs.setX(i, 1 - uvs.getX(i));
     }
     return geo;
-  }, [width, height, arc, curveSegments]);
+  }, [radius, height, thetaStart, thetaLength, curveSegments]);
 
-  // Dispose geometry on unmount to prevent memory leaks
   useEffect(() => {
-    return () => {
-      geometry.dispose();
-    };
+    return () => { geometry.dispose(); };
   }, [geometry]);
 
   return (
@@ -64,7 +67,7 @@ function CurvedScreenMesh({
       <mesh geometry={geometry}>
         <meshBasicMaterial
           map={texture}
-          side={THREE.DoubleSide}
+          side={THREE.BackSide}
           toneMapped={false}
         />
       </mesh>
@@ -94,30 +97,38 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
 
   if (!hasLeft && !hasRight) return null;
 
+  // Both screens share center, radius=10, split into left/right halves
+  // thetaStart in CylinderGeometry: 0 = +X axis, goes counter-clockwise from top view
+  // Camera is at z=12 looking at z=0, so the "back" of the cylinder (facing camera) is around theta=PI
+  const screenRadius = 10;
+  const halfArc = Math.PI * 0.48; // Almost touching, small gap at seams
+
   return (
-    <group>
+    <group position={[0, 5.5, 0]}>
+      {/* Left screen: covers from PI to PI + halfArc (left side when facing center) */}
       {hasLeft && (
         <CurvedScreenMesh
           imageUrl={config.left_image_url}
-          position={[-4, 5.5, 0]}
+          position={[0, 0, 0]}
           rotation={[0, 0, 0]}
-          width={20.5}
-          arc={2.4}
+          radius={screenRadius}
+          thetaStart={Math.PI}
+          thetaLength={halfArc}
           height={10.5}
           curveSegments={16}
-          label={config.left_label}
         />
       )}
+      {/* Right screen: covers from PI - halfArc to PI (right side) */}
       {hasRight && (
         <CurvedScreenMesh
           imageUrl={config.right_image_url}
-          position={[4, 5.5, 0]}
-          rotation={[0, Math.PI, 0]}
-          width={20.5}
-          arc={2.4}
+          position={[0, 0, 0]}
+          rotation={[0, 0, 0]}
+          radius={screenRadius}
+          thetaStart={Math.PI - halfArc}
+          thetaLength={halfArc}
           height={10.5}
           curveSegments={16}
-          label={config.right_label}
         />
       )}
     </group>
