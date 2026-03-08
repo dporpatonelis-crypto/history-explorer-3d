@@ -9,6 +9,33 @@ import { ProgressTracker } from '@/components/ProgressTracker';
 import { useProgress } from '@/hooks/useProgress';
 import { NPCData, npcData } from '@/data/npcData';
 
+function StableOrbitControls() {
+  const controlsRef = useRef<any>(null);
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    if (controlsRef.current && !initialized.current) {
+      controlsRef.current.target.set(0, 1.5, 0);
+      controlsRef.current.update();
+      initialized.current = true;
+    }
+  });
+
+  return (
+    <OrbitControls
+      ref={controlsRef}
+      makeDefault
+      enablePan={false}
+      enableDamping
+      dampingFactor={0.08}
+      minDistance={4}
+      maxDistance={20}
+      minPolarAngle={Math.PI / 6}
+      maxPolarAngle={Math.PI / 2.2}
+    />
+  );
+}
+
 const Index = () => {
   const [activeNPC, setActiveNPC] = useState<NPCData | null>(null);
   const { visited, markVisited, resetProgress } = useProgress();
