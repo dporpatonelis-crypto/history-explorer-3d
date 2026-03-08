@@ -118,7 +118,7 @@ function HillModel({ position, scale = 1 }: { position: [number, number, number]
 
     clonedScene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
-        child.castShadow = true;
+        child.castShadow = false;
         child.receiveShadow = true;
       }
     });
