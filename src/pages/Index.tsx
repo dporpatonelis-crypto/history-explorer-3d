@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { TempleScene, MarbleFloor, SceneLighting } from '@/components/TempleScene';
@@ -8,6 +8,33 @@ import { DialogPanel } from '@/components/DialogPanel';
 import { ProgressTracker } from '@/components/ProgressTracker';
 import { useProgress } from '@/hooks/useProgress';
 import { NPCData, npcData } from '@/data/npcData';
+
+function StableOrbitControls() {
+  const controlsRef = useRef<any>(null);
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    if (controlsRef.current && !initialized.current) {
+      controlsRef.current.target.set(0, 1.5, 0);
+      controlsRef.current.update();
+      initialized.current = true;
+    }
+  });
+
+  return (
+    <OrbitControls
+      ref={controlsRef}
+      makeDefault
+      enablePan={false}
+      enableDamping
+      dampingFactor={0.08}
+      minDistance={4}
+      maxDistance={20}
+      minPolarAngle={Math.PI / 6}
+      maxPolarAngle={Math.PI / 2.2}
+    />
+  );
+}
 
 const Index = () => {
   const [activeNPC, setActiveNPC] = useState<NPCData | null>(null);
@@ -49,15 +76,7 @@ const Index = () => {
           )
         )}
 
-        <OrbitControls
-          makeDefault
-          enablePan={false}
-          minDistance={4}
-          maxDistance={20}
-          minPolarAngle={Math.PI / 6}
-          maxPolarAngle={Math.PI / 2.2}
-          target={[0, 1.5, 0]}
-        />
+        <StableOrbitControls />
       </Canvas>
 
       <ProgressTracker visited={visited} onReset={resetProgress} />

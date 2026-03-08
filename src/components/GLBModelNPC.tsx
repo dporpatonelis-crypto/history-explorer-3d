@@ -1,4 +1,4 @@
-import { useRef, useState, Suspense } from 'react';
+import { useRef, useState, useEffect, Suspense } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
@@ -13,15 +13,6 @@ interface GLBModelNPCProps {
 function GLBModel({ url, rotation }: { url: string; rotation: number }) {
   const { scene } = useGLTF(url);
 
-  // Compute bounding box for auto-scaling
-  const box = new THREE.Box3().setFromObject(scene);
-  const size = box.getSize(new THREE.Vector3());
-  const center = box.getCenter(new THREE.Vector3());
-  const maxDim = Math.max(size.x, size.y, size.z);
-  const targetHeight = 1.8;
-  const s = targetHeight / maxDim;
-
-  // Ensure all materials render and cast shadows
   scene.traverse((child) => {
     if ((child as THREE.Mesh).isMesh) {
       child.castShadow = true;
@@ -29,12 +20,14 @@ function GLBModel({ url, rotation }: { url: string; rotation: number }) {
     }
   });
 
+  const box = new THREE.Box3().setFromObject(scene);
+  const center = box.getCenter(new THREE.Vector3());
+  const maxDim = Math.max(...box.getSize(new THREE.Vector3()).toArray());
+  const s = 1.8 / maxDim;
+
   return (
     <group scale={[s, s, s]} rotation={[0, rotation, 0]}>
-      <primitive
-        object={scene}
-        position={[-center.x, -box.min.y, -center.z]}
-      />
+      <primitive object={scene} position={[-center.x, -box.min.y, -center.z]} />
     </group>
   );
 }
