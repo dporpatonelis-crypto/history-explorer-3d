@@ -44,6 +44,7 @@ function CurvedScreenMesh({
       Math.PI / 2 - arc / 2,
       arc
     );
+
     // Flip UVs so image isn't mirrored on inside
     const uvs = geo.attributes.uv;
     for (let i = 0; i < uvs.count; i++) {
@@ -102,6 +103,7 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
           position={[-3, 4, 0]}
           rotation={[0, 0, 0]}
           width={32}
+          arc={2.4}
           height={7}
           label={config.left_label}
         />
@@ -112,6 +114,7 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
           position={[3, 4, 0]}
           rotation={[0, Math.PI, 0]}
           width={32}
+          arc={2.4}
           height={7}
           label={config.right_label}
         />
