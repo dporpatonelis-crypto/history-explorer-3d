@@ -5,10 +5,19 @@ import { ProgressTracker } from '@/components/ProgressTracker';
 import { useProgress } from '@/hooks/useProgress';
 import { NPCData } from '@/data/npcData';
 
+const isWeakDevice = () => {
+  const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8;
+  const cores = navigator.hardwareConcurrency ?? 8;
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  return memory <= 4 || cores <= 4 || prefersReducedMotion;
+};
+
 const Index = () => {
   const [activeNPC, setActiveNPC] = useState<NPCData | null>(null);
   const [performanceMode, setPerformanceMode] = useState(() => {
-    return localStorage.getItem('performanceMode') === 'true';
+    const saved = localStorage.getItem('performanceMode');
+    if (saved !== null) return saved === 'true';
+    return isWeakDevice();
   });
   const { visited, markVisited, resetProgress } = useProgress();
 
@@ -35,7 +44,6 @@ const Index = () => {
         onTogglePerformance={togglePerformance}
       />
 
-      {/* Title */}
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40">
         <div className="progress-badge rounded-xl px-6 py-2 backdrop-blur-md text-center">
           <h1 className="font-cinzel text-sm font-bold text-foreground tracking-wider">
@@ -47,9 +55,7 @@ const Index = () => {
         </div>
       </div>
 
-      {activeNPC && (
-        <DialogPanel npc={activeNPC} onClose={() => setActiveNPC(null)} />
-      )}
+      {activeNPC && <DialogPanel npc={activeNPC} onClose={() => setActiveNPC(null)} />}
     </div>
   );
 };
