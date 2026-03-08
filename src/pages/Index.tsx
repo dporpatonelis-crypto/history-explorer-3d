@@ -1,48 +1,58 @@
-import { useState } from 'react';
-import { AncientAgora } from '@/components/AncientAgora';
+import { useState, useCallback } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
+import { TempleScene, MarbleFloor, SceneLighting } from '@/components/TempleScene';
+import { NPCFigure } from '@/components/NPCFigure';
 import { DialogPanel } from '@/components/DialogPanel';
 import { ProgressTracker } from '@/components/ProgressTracker';
 import { useProgress } from '@/hooks/useProgress';
-import { NPCData } from '@/data/npcData';
-
-const isWeakDevice = () => {
-  const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8;
-  const cores = navigator.hardwareConcurrency ?? 8;
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  return memory <= 4 || cores <= 4 || prefersReducedMotion;
-};
+import { NPCData, npcData } from '@/data/npcData';
 
 const Index = () => {
   const [activeNPC, setActiveNPC] = useState<NPCData | null>(null);
-  const [performanceMode, setPerformanceMode] = useState(() => {
-    const saved = localStorage.getItem('performanceMode');
-    if (saved !== null) return saved === 'true';
-    return isWeakDevice();
-  });
   const { visited, markVisited, resetProgress } = useProgress();
 
-  const handleNPCInteract = (npc: NPCData) => {
+  const handleNPCInteract = useCallback((npc: NPCData) => {
     setActiveNPC(npc);
     markVisited(npc.id);
-  };
-
-  const togglePerformance = () => {
-    setPerformanceMode((prev) => {
-      const next = !prev;
-      localStorage.setItem('performanceMode', String(next));
-      return next;
-    });
-  };
+  }, [markVisited]);
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-foreground">
-      <AncientAgora visited={visited} onNPCInteract={handleNPCInteract} performanceMode={performanceMode} />
-      <ProgressTracker
-        visited={visited}
-        onReset={resetProgress}
-        performanceMode={performanceMode}
-        onTogglePerformance={togglePerformance}
-      />
+    <div className="relative w-full h-screen overflow-hidden bg-background">
+      {/* 3D Canvas */}
+      <Canvas
+        shadows
+        camera={{ position: [0, 5, 12], fov: 50, near: 0.1, far: 100 }}
+        gl={{ antialias: true, powerPreference: 'default' }}
+        dpr={[1, 1.5]}
+        style={{ width: '100%', height: '100%' }}
+      >
+        <SceneLighting />
+        <MarbleFloor />
+        <TempleScene />
+
+        {npcData.map((npc) => (
+          <NPCFigure
+            key={npc.id}
+            npc={npc}
+            isVisited={visited.has(npc.id)}
+            onInteract={() => handleNPCInteract(npc)}
+          />
+        ))}
+
+        <OrbitControls
+          makeDefault
+          enablePan={false}
+          minDistance={4}
+          maxDistance={20}
+          minPolarAngle={Math.PI / 6}
+          maxPolarAngle={Math.PI / 2.2}
+          target={[0, 1.5, 0]}
+        />
+      </Canvas>
+
+      {/* UI overlays */}
+      <ProgressTracker visited={visited} onReset={resetProgress} />
 
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40">
         <div className="progress-badge rounded-xl px-6 py-2 backdrop-blur-md text-center">
