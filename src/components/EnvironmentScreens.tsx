@@ -100,8 +100,8 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
         <CurvedScreenMesh
           imageUrl={config.left_image_url}
           position={[-5, 4, 0]}
-          rotation={[0, Math.PI / 2, 0]}
-          width={8}
+          rotation={[0, 0, 0]}
+          width={32}
           height={7}
           label={config.left_label}
         />
@@ -110,8 +110,8 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
         <CurvedScreenMesh
           imageUrl={config.right_image_url}
           position={[5, 4, 0]}
-          rotation={[0, -Math.PI / 2, 0]}
-          width={8}
+          rotation={[0, Math.PI, 0]}
+          width={32}
           height={7}
           label={config.right_label}
         />
