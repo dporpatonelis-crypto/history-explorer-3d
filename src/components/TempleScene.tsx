@@ -26,17 +26,17 @@ function Column({ position }: { position: [number, number, number] }) {
   return (
     <group position={position}>
       {/* Base */}
-      <mesh position={[0, 0.15, 0]} receiveShadow castShadow>
+      <mesh position={[0, 0.15, 0]} receiveShadow>
         <cylinderGeometry args={[0.55, 0.6, 0.3, segments]} />
         <meshStandardMaterial color="hsl(35, 12%, 78%)" roughness={0.4} />
       </mesh>
       {/* Shaft */}
-      <mesh position={[0, 2.5, 0]} receiveShadow castShadow>
+      <mesh position={[0, 2.5, 0]} receiveShadow>
         <cylinderGeometry args={[0.35, 0.45, 4.7, segments]} />
         <meshStandardMaterial color="hsl(38, 14%, 82%)" roughness={0.35} />
       </mesh>
       {/* Capital */}
-      <mesh position={[0, 4.95, 0]} receiveShadow castShadow>
+      <mesh position={[0, 4.95, 0]} receiveShadow>
         <cylinderGeometry args={[0.6, 0.35, 0.2, segments]} />
         <meshStandardMaterial color="hsl(35, 12%, 78%)" roughness={0.4} />
       </mesh>
