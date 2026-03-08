@@ -8,11 +8,11 @@ export const MarbleFloor = memo(function MarbleFloor() {
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.01, 0]}>
         <planeGeometry args={[30, 30]} />
-        <meshStandardMaterial color="hsl(35, 12%, 78%)" roughness={0.4} metalness={0.03} />
+        <meshStandardMaterial color="hsl(34, 25%, 45%)" roughness={0.55} metalness={0.03} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.02, 0]}>
         <planeGeometry args={[100, 100]} />
-        <meshStandardMaterial color="hsl(32, 30%, 38%)" roughness={0.95} metalness={0.0} />
+        <meshStandardMaterial color="hsl(34, 22%, 52%)" roughness={0.95} metalness={0.0} />
       </mesh>
     </group>
   );
@@ -61,7 +61,7 @@ const Platform = memo(function Platform() {
       {[0, 0.15, 0.3].map((y, i) => (
         <mesh key={i} position={[0, y, 0]} receiveShadow>
           <boxGeometry args={[14 - i * 0.6, 0.15, 10 - i * 0.4]} />
-          <meshStandardMaterial color="hsl(35, 12%, 78%)" roughness={0.45} />
+          <meshStandardMaterial color="hsl(35, 22%, 50%)" roughness={0.45} />
         </mesh>
       ))}
     </group>
