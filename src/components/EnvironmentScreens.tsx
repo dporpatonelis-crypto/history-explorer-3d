@@ -25,14 +25,14 @@ function CurvedScreenMesh({
 }: EnvironmentScreenProps) {
   const meshRef = useRef<THREE.Mesh>(null);
 
-  const texture = useMemo(() => {
-    const loader = new THREE.TextureLoader();
-    loader.setCrossOrigin('anonymous');
-    const tex = loader.load(imageUrl);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    tex.minFilter = THREE.LinearFilter;
-    return tex;
-  }, [imageUrl]);
+  const texture = useTexture(imageUrl);
+
+  useMemo(() => {
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+    texture.needsUpdate = true;
+  }, [texture]);
 
   // Curved geometry: cylinder segment as screen
   const geometry = useMemo(() => {
