@@ -54,7 +54,7 @@ const Index = () => {
         shadows
         camera={{ position: [0, 5, 12], fov: 50, near: 0.1, far: 100 }}
         gl={{ antialias: true, powerPreference: 'default' }}
-        dpr={[1, 2]}
+        dpr={[1, 1.5]}
         style={{ width: '100%', height: '100%' }}
       >
         <SceneLighting />
