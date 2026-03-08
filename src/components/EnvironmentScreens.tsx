@@ -1,9 +1,54 @@
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState, useRef } from 'react';
 import * as THREE from 'three';
 import { useTexture } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
+
+function isVideoUrl(url: string): boolean {
+  const lower = url.toLowerCase();
+  return lower.endsWith('.mp4') || lower.endsWith('.webm') || lower.endsWith('.ogg');
+}
+
+function useVideoTexture(url: string) {
+  const [texture, setTexture] = useState<THREE.VideoTexture | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const video = document.createElement('video');
+    video.src = url;
+    video.crossOrigin = 'anonymous';
+    video.loop = true;
+    video.muted = true;
+    video.playsInline = true;
+    video.autoplay = true;
+    videoRef.current = video;
+
+    video.play().catch(() => {
+      // Autoplay might be blocked, user interaction needed
+    });
+
+    const videoTexture = new THREE.VideoTexture(video);
+    videoTexture.colorSpace = THREE.SRGBColorSpace;
+    videoTexture.minFilter = THREE.LinearFilter;
+    videoTexture.magFilter = THREE.LinearFilter;
+    setTexture(videoTexture);
+
+    return () => {
+      video.pause();
+      video.src = '';
+      videoTexture.dispose();
+    };
+  }, [url]);
+
+  // Keep texture updated
+  useFrame(() => {
+    if (texture) texture.needsUpdate = true;
+  });
+
+  return texture;
+}
 
 function CurvedScreenMesh({
-  imageUrl,
+  mediaUrl,
   position,
   rotation,
   radius = 8,
@@ -12,7 +57,7 @@ function CurvedScreenMesh({
   thetaStart = 0,
   thetaLength = Math.PI,
 }: {
-  imageUrl: string;
+  mediaUrl: string;
   position: [number, number, number];
   rotation: [number, number, number];
   radius?: number;
@@ -21,16 +66,22 @@ function CurvedScreenMesh({
   thetaStart?: number;
   thetaLength?: number;
 }) {
-  const texture = useTexture(imageUrl);
+  const isVideo = isVideoUrl(mediaUrl);
+  const imageTexture = useTexture(isVideo ? '/placeholder.svg' : mediaUrl);
+  const videoTexture = useVideoTexture(isVideo ? mediaUrl : '');
+  
+  const texture = isVideo ? videoTexture : imageTexture;
 
   useEffect(() => {
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.minFilter = THREE.LinearFilter;
-    texture.magFilter = THREE.LinearFilter;
-    texture.generateMipmaps = false;
-    texture.anisotropy = 1;
-    texture.needsUpdate = true;
-  }, [texture]);
+    if (!isVideo && imageTexture) {
+      imageTexture.colorSpace = THREE.SRGBColorSpace;
+      imageTexture.minFilter = THREE.LinearFilter;
+      imageTexture.magFilter = THREE.LinearFilter;
+      imageTexture.generateMipmaps = false;
+      imageTexture.anisotropy = 1;
+      imageTexture.needsUpdate = true;
+    }
+  }, [imageTexture, isVideo]);
 
   const geometry = useMemo(() => {
     const geo = new THREE.CylinderGeometry(
@@ -52,6 +103,8 @@ function CurvedScreenMesh({
   useEffect(() => {
     return () => { geometry.dispose(); };
   }, [geometry]);
+
+  if (!texture) return null;
 
   return (
     <group position={position} rotation={rotation}>
@@ -99,7 +152,7 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
       {/* Left screen: covers from PI to PI + halfArc (left side when facing center) */}
       {hasLeft && (
         <CurvedScreenMesh
-          imageUrl={config.left_image_url}
+          mediaUrl={config.left_image_url}
           position={[0, 0, 0]}
           rotation={[0, 0, 0]}
           radius={screenRadius}
@@ -112,7 +165,7 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
       {/* Right screen: covers from PI - halfArc to PI (right side) */}
       {hasRight && (
         <CurvedScreenMesh
-          imageUrl={config.right_image_url}
+          mediaUrl={config.right_image_url}
           position={[0, 0, 0]}
           rotation={[0, 0, 0]}
           radius={screenRadius}
