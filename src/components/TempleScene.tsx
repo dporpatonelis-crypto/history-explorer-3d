@@ -213,24 +213,23 @@ export function SceneLighting() {
 
   return (
     <>
-      <ambientLight intensity={0.5} color="hsl(45, 60%, 95%)" />
+      <ambientLight intensity={0.6} color="hsl(45, 60%, 95%)" />
       <directionalLight
         ref={dirLight}
         position={[8, 12, 5]}
         intensity={1.2}
         castShadow
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
+        shadow-mapSize-width={512}
+        shadow-mapSize-height={512}
         shadow-camera-near={0.5}
-        shadow-camera-far={40}
-        shadow-camera-left={-15}
-        shadow-camera-right={15}
-        shadow-camera-top={15}
-        shadow-camera-bottom={-15}
+        shadow-camera-far={30}
+        shadow-camera-left={-12}
+        shadow-camera-right={12}
+        shadow-camera-top={12}
+        shadow-camera-bottom={-12}
         color="hsl(40, 80%, 95%)"
       />
-      <pointLight position={[0, 4, 0]} intensity={0.4} color="hsl(35, 70%, 80%)" distance={12} />
-      <hemisphereLight args={['hsl(210, 40%, 70%)', 'hsl(30, 30%, 60%)', 0.3]} />
+      <hemisphereLight args={['hsl(210, 40%, 70%)', 'hsl(30, 30%, 60%)', 0.4]} />
       <fog attach="fog" args={['hsl(40, 20%, 90%)', 15, 40]} />
     </>
   );
