@@ -57,7 +57,7 @@ function CurvedScreenMesh({
       <mesh ref={meshRef} geometry={geometry}>
         <meshStandardMaterial
           map={texture}
-          side={THREE.BackSide}
+          side={THREE.DoubleSide}
           emissive="#ffffff"
           emissiveMap={texture}
           emissiveIntensity={0.15}
@@ -68,9 +68,9 @@ function CurvedScreenMesh({
       <mesh geometry={geometry} scale={[1.02, 1.02, 1.02]}>
         <meshStandardMaterial
           color="#8b7355"
-          side={THREE.BackSide}
+          side={THREE.DoubleSide}
           transparent
-          opacity={0.6}
+          opacity={0.45}
         />
       </mesh>
       {label && (
