@@ -78,7 +78,7 @@ export const npcData: NPCData[] = [
     rotation: Math.PI,
     color: "#b8956a",
     robeColor: "#5a4a3a",
-    glbModel: "/models/ancient_greek_3.glb",
+    glbModel: "/models/ancient_greek_1.glb",
     description: "Μαθητής του Πλάτωνα, δάσκαλος του Μεγάλου Αλεξάνδρου.",
     dialogs: [
       {
