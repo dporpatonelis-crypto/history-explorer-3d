@@ -100,22 +100,22 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
       {hasLeft && (
         <CurvedScreenMesh
           imageUrl={config.left_image_url}
-          position={[-3, 4, 0]}
+          position={[-3, 5.5, 0]}
           rotation={[0, 0, 0]}
-          width={32}
+          width={25.6}
           arc={2.4}
-          height={7}
+          height={10.5}
           label={config.left_label}
         />
       )}
       {hasRight && (
         <CurvedScreenMesh
           imageUrl={config.right_image_url}
-          position={[3, 4, 0]}
+          position={[3, 5.5, 0]}
           rotation={[0, Math.PI, 0]}
-          width={32}
+          width={25.6}
           arc={2.4}
-          height={7}
+          height={10.5}
           label={config.right_label}
         />
       )}
