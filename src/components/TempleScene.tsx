@@ -52,7 +52,7 @@ function Beam({ from, to }: { from: [number, number, number]; to: [number, numbe
   const angle = Math.atan2(to[2] - from[2], to[0] - from[0]);
 
   return (
-    <mesh position={[midX, 5.15, midZ]} rotation={[0, -angle, 0]} castShadow receiveShadow>
+    <mesh position={[midX, 5.15, midZ]} rotation={[0, -angle, 0]} receiveShadow>
       <boxGeometry args={[length + 0.1, 0.35, 0.7]} />
       <meshStandardMaterial color="hsl(36, 13%, 76%)" roughness={0.4} />
     </mesh>
