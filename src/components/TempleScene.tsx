@@ -6,7 +6,7 @@ import * as THREE from 'three';
 export function MarbleFloor() {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.01, 0]}>
-      <planeGeometry args={[30, 30]} />
+      <planeGeometry args={[60, 60]} />
       <meshStandardMaterial color="hsl(40, 15%, 85%)" roughness={0.3} metalness={0.05} />
     </mesh>
   );
