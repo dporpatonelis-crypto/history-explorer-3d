@@ -1,6 +1,6 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import * as THREE from 'three';
-import { Html } from '@react-three/drei';
+import { Html, useTexture } from '@react-three/drei';
 
 interface EnvironmentScreenProps {
   imageUrl: string;
@@ -25,14 +25,14 @@ function CurvedScreenMesh({
 }: EnvironmentScreenProps) {
   const meshRef = useRef<THREE.Mesh>(null);
 
-  const texture = useMemo(() => {
-    const loader = new THREE.TextureLoader();
-    loader.setCrossOrigin('anonymous');
-    const tex = loader.load(imageUrl);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    tex.minFilter = THREE.LinearFilter;
-    return tex;
-  }, [imageUrl]);
+  const texture = useTexture(imageUrl);
+
+  useEffect(() => {
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+    texture.needsUpdate = true;
+  }, [texture]);
 
   // Curved geometry: cylinder segment as screen
   const geometry = useMemo(() => {
@@ -55,22 +55,10 @@ function CurvedScreenMesh({
   return (
     <group position={position} rotation={rotation}>
       <mesh ref={meshRef} geometry={geometry}>
-        <meshStandardMaterial
+        <meshBasicMaterial
           map={texture}
           side={THREE.DoubleSide}
-          emissive="#ffffff"
-          emissiveMap={texture}
-          emissiveIntensity={0.15}
           toneMapped={false}
-        />
-      </mesh>
-      {/* Subtle frame */}
-      <mesh geometry={geometry} scale={[1.02, 1.02, 1.02]}>
-        <meshStandardMaterial
-          color="#8b7355"
-          side={THREE.DoubleSide}
-          transparent
-          opacity={0.45}
         />
       </mesh>
       {label && (
