@@ -14,6 +14,7 @@ export interface NPCData {
   description: string;
   dialogs: NPCDialog[];
   historicalFacts: string[];
+  sketchfabUrl?: string;
 }
 
 export const npcData: NPCData[] = [
@@ -125,6 +126,7 @@ export const npcData: NPCData[] = [
     rotation: -0.7,
     color: "#c4a882",
     robeColor: "#e8ddd0",
+    sketchfabUrl: "https://sketchfab.com/models/964733049723434a903332b2a03efb2c/embed?autostart=1&ui_hint=0&ui_theme=dark&dnt=1",
     description: "Ο ιδρυτής της πυθαγόρειας σχολής και πατέρας των μαθηματικών.",
     dialogs: [
       {
