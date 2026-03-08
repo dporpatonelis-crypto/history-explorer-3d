@@ -1,4 +1,4 @@
-import { useRef, useMemo, useEffect } from 'react';
+import { useMemo, useEffect } from 'react';
 import * as THREE from 'three';
 import { Html, useTexture } from '@react-three/drei';
 
