@@ -6,7 +6,7 @@ import * as THREE from 'three';
 export function MarbleFloor() {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.01, 0]}>
-      <planeGeometry args={[60, 60]} />
+      <planeGeometry args={[100, 100]} />
       <meshStandardMaterial color="hsl(40, 15%, 85%)" roughness={0.3} metalness={0.05} />
     </mesh>
   );
@@ -185,7 +185,7 @@ export function TempleScene() {
 
       {/* Hill background — left side */}
       <Suspense fallback={null}>
-        <HillModel position={[-20, 0, -4]} scale={1.5} />
+        <HillModel position={[0, 0, -10.5]} scale={3} />
       </Suspense>
 
       {/* Circular colonnade */}
