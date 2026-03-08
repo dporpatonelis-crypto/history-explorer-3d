@@ -6,15 +6,15 @@ import * as THREE from 'three';
 export function MarbleFloor() {
   return (
     <group>
-      {/* Main marble platform area */}
+      {/* Main marble platform area — matched with temple stone palette */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.01, 0]}>
         <planeGeometry args={[30, 30]} />
-        <meshStandardMaterial color="hsl(40, 15%, 85%)" roughness={0.3} metalness={0.05} />
+        <meshStandardMaterial color="hsl(36, 13%, 76%)" roughness={0.35} metalness={0.04} />
       </mesh>
       {/* Dirt/earth ground extending outward */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.02, 0]}>
         <planeGeometry args={[100, 100]} />
-        <meshStandardMaterial color="hsl(30, 35%, 45%)" roughness={0.95} metalness={0.0} />
+        <meshStandardMaterial color="hsl(32, 30%, 38%)" roughness={0.95} metalness={0.0} />
       </mesh>
     </group>
   );
@@ -73,41 +73,6 @@ function Platform() {
   );
 }
 
-/* ─── GLB Pedestal ─── */
-function GLBPedestal({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
-  const { scene } = useGLTF('/models/pedestal.glb');
-
-  const { cloned, normalizedScale, offset } = useMemo(() => {
-    const clonedScene = scene.clone(true);
-
-    clonedScene.traverse((child) => {
-      if ((child as THREE.Mesh).isMesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-      }
-    });
-
-    const box = new THREE.Box3().setFromObject(clonedScene);
-    const size = box.getSize(new THREE.Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z);
-    const s = (1.5 * scale) / maxDim;
-    const center = box.getCenter(new THREE.Vector3());
-
-    return {
-      cloned: clonedScene,
-      normalizedScale: s,
-      offset: [-center.x, -box.min.y, -center.z] as [number, number, number],
-    };
-  }, [scene, scale]);
-
-  return (
-    <group position={position}>
-      <group scale={[normalizedScale, normalizedScale, normalizedScale]}>
-        <primitive object={cloned} position={offset} />
-      </group>
-    </group>
-  );
-}
 
 
 /* ─── Greek Kiosk ─── */
@@ -172,11 +137,6 @@ export function TempleScene() {
   return (
     <group>
       <Platform />
-
-      {/* GLB Pedestal */}
-      <Suspense fallback={null}>
-        <GLBPedestal position={[-4, 0.3, -3.5]} scale={1.2} />
-      </Suspense>
 
       {/* Greek Kiosk — main environment piece */}
       <Suspense fallback={null}>

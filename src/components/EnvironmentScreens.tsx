@@ -1,17 +1,6 @@
 import { useMemo, useEffect } from 'react';
 import * as THREE from 'three';
-import { Html, useTexture } from '@react-three/drei';
-
-interface EnvironmentScreenProps {
-  imageUrl: string;
-  position: [number, number, number];
-  rotation: [number, number, number];
-  width?: number;
-  height?: number;
-  curveSegments?: number;
-  arc?: number;
-  label?: string;
-}
+import { useTexture } from '@react-three/drei';
 
 function CurvedScreenMesh({
   imageUrl,
@@ -19,7 +8,7 @@ function CurvedScreenMesh({
   rotation,
   radius = 8,
   height = 7,
-  curveSegments = 16,
+  curveSegments = 12,
   thetaStart = 0,
   thetaLength = Math.PI,
 }: {
@@ -38,6 +27,8 @@ function CurvedScreenMesh({
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.minFilter = THREE.LinearFilter;
     texture.magFilter = THREE.LinearFilter;
+    texture.generateMipmaps = false;
+    texture.anisotropy = 1;
     texture.needsUpdate = true;
   }, [texture]);
 
