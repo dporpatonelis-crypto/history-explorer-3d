@@ -61,7 +61,7 @@ const Platform = memo(function Platform() {
       {[0, 0.15, 0.3].map((y, i) => (
         <mesh key={i} position={[0, y, 0]} receiveShadow>
           <boxGeometry args={[14 - i * 0.6, 0.15, 10 - i * 0.4]} />
-          <meshStandardMaterial color="hsl(35, 12%, 78%)" roughness={0.45} />
+          <meshStandardMaterial color="hsl(35, 20%, 62%)" roughness={0.45} />
         </mesh>
       ))}
     </group>
