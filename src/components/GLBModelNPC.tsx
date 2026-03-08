@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, Suspense } from 'react';
-import { useFrame, useLoader } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { useFrame } from '@react-three/fiber';
+import { Html, useGLTF } from '@react-three/drei';
+import * as THREE from 'three';
 import * as THREE from 'three';
 import { NPCData } from '@/data/npcData';
 
@@ -12,12 +12,12 @@ interface GLBModelNPCProps {
 }
 
 function GLBModel({ url, rotation }: { url: string; rotation: number }) {
-  const gltf = useLoader(GLTFLoader, url);
+  const { scene } = useGLTF(url);
   const groupRef = useRef<THREE.Group>(null);
 
   useEffect(() => {
     if (!groupRef.current) return;
-    const model = gltf.scene.clone(true);
+    const model = scene.clone(true);
     
     model.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
@@ -41,7 +41,7 @@ function GLBModel({ url, rotation }: { url: string; rotation: number }) {
       groupRef.current.remove(groupRef.current.children[0]);
     }
     groupRef.current.add(model);
-  }, [gltf, rotation]);
+  }, [scene, rotation]);
 
   return <group ref={groupRef} />;
 }
