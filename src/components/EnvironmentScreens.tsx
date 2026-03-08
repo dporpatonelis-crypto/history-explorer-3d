@@ -112,8 +112,8 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
       {hasLeft && (
         <CurvedScreenMesh
           imageUrl={config.left_image_url}
-          position={[-16, 4, -5]}
-          rotation={[0, 0.5, 0]}
+          position={[-14, 4, 2]}
+          rotation={[0, 0.8, 0]}
           width={12}
           height={7}
           label={config.left_label}
@@ -122,8 +122,8 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
       {hasRight && (
         <CurvedScreenMesh
           imageUrl={config.right_image_url}
-          position={[16, 4, -5]}
-          rotation={[0, -0.5, 0]}
+          position={[14, 4, 2]}
+          rotation={[0, -0.8, 0]}
           width={12}
           height={7}
           label={config.right_label}
