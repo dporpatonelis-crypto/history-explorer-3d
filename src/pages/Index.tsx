@@ -6,6 +6,7 @@ import { NPCFigure } from '@/components/NPCFigure';
 import { GLBModelNPC } from '@/components/GLBModelNPC';
 import { DialogPanel } from '@/components/DialogPanel';
 import { ProgressTracker } from '@/components/ProgressTracker';
+import { EnvironmentScreens } from '@/components/EnvironmentScreens';
 import { useProgress } from '@/hooks/useProgress';
 import { NPCData } from '@/data/npcData';
 import { useScenario } from '@/hooks/useScenario';
