@@ -94,9 +94,10 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
           imageUrl={config.left_image_url}
           position={[-3, 5.5, 0]}
           rotation={[0, 0, 0]}
-          width={25.6}
+          width={20.5}
           arc={2.4}
           height={10.5}
+          curveSegments={16}
           label={config.left_label}
         />
       )}
@@ -105,9 +106,10 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
           imageUrl={config.right_image_url}
           position={[3, 5.5, 0]}
           rotation={[0, Math.PI, 0]}
-          width={25.6}
+          width={20.5}
           arc={2.4}
           height={10.5}
+          curveSegments={16}
           label={config.right_label}
         />
       )}
