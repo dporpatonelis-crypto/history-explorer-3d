@@ -12,6 +12,7 @@
  *   Tab "characters": id | name | title | position_x | position_y | position_z | rotation | color | robeColor | description | glbModel
  *   Tab "dialogs":    character_id | question | answer
  *   Tab "facts":      character_id | fact
+ *   Tab "screens":    left_image_url | right_image_url | left_label | right_label  (single row)
  */
 
 const CONFIG = {
@@ -25,6 +26,7 @@ const CONFIG = {
   CHARACTERS_TAB: 'characters',
   DIALOGS_TAB: 'dialogs',
   FACTS_TAB: 'facts',
+  SCREENS_TAB: 'screens',
 };
 
 // ─── Main ────────────────────────────────────────────
@@ -44,6 +46,7 @@ function buildScenarioJSON() {
   const characters = sheetToObjects(ss.getSheetByName(CONFIG.CHARACTERS_TAB));
   const dialogs = sheetToObjects(ss.getSheetByName(CONFIG.DIALOGS_TAB));
   const facts = sheetToObjects(ss.getSheetByName(CONFIG.FACTS_TAB));
+  const screensRows = sheetToObjects(ss.getSheetByName(CONFIG.SCREENS_TAB));
 
   // Cast numeric fields
   characters.forEach(c => {
@@ -53,7 +56,9 @@ function buildScenarioJSON() {
     c.rotation = Number(c.rotation) || 0;
   });
 
-  return { characters, dialogs, facts };
+  const screens = screensRows.length > 0 ? screensRows[0] : undefined;
+
+  return { characters, dialogs, facts, screens };
 }
 
 function sheetToObjects(sheet) {

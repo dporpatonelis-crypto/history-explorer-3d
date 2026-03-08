@@ -6,6 +6,7 @@ import { NPCFigure } from '@/components/NPCFigure';
 import { GLBModelNPC } from '@/components/GLBModelNPC';
 import { DialogPanel } from '@/components/DialogPanel';
 import { ProgressTracker } from '@/components/ProgressTracker';
+import { EnvironmentScreens } from '@/components/EnvironmentScreens';
 import { useProgress } from '@/hooks/useProgress';
 import { NPCData } from '@/data/npcData';
 import { useScenario } from '@/hooks/useScenario';
@@ -40,7 +41,7 @@ function StableOrbitControls() {
 const Index = () => {
   const [activeNPC, setActiveNPC] = useState<NPCData | null>(null);
   const { visited, markVisited, resetProgress } = useProgress();
-  const { npcs } = useScenario();
+  const { npcs, screens } = useScenario();
 
   const handleNPCInteract = useCallback((npc: NPCData) => {
     setActiveNPC(npc);
@@ -59,6 +60,7 @@ const Index = () => {
         <SceneLighting />
         <MarbleFloor />
         <TempleScene />
+        <EnvironmentScreens config={screens} />
 
         {npcs.map((npc) =>
           npc.glbModel ? (
