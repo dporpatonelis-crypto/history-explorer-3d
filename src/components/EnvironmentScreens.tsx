@@ -57,7 +57,7 @@ function CurvedScreenMesh({
       <mesh ref={meshRef} geometry={geometry}>
         <meshStandardMaterial
           map={texture}
-          side={THREE.BackSide}
+          side={THREE.DoubleSide}
           emissive="#ffffff"
           emissiveMap={texture}
           emissiveIntensity={0.15}
@@ -68,9 +68,9 @@ function CurvedScreenMesh({
       <mesh geometry={geometry} scale={[1.02, 1.02, 1.02]}>
         <meshStandardMaterial
           color="#8b7355"
-          side={THREE.BackSide}
+          side={THREE.DoubleSide}
           transparent
-          opacity={0.6}
+          opacity={0.45}
         />
       </mesh>
       {label && (
@@ -113,7 +113,7 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
           imageUrl={config.left_image_url}
           position={[-5, 4, 0]}
           rotation={[0, Math.PI / 2, 0]}
-          width={12}
+          width={8}
           height={7}
           label={config.left_label}
         />
@@ -123,7 +123,7 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
           imageUrl={config.right_image_url}
           position={[5, 4, 0]}
           rotation={[0, -Math.PI / 2, 0]}
-          width={12}
+          width={8}
           height={7}
           label={config.right_label}
         />
