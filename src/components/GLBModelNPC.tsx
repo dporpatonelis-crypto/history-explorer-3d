@@ -112,4 +112,4 @@ export const GLBModelNPC = memo(function GLBModelNPC({ npc, isVisited, onInterac
       )}
     </group>
   );
-}
+});
