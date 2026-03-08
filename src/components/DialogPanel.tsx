@@ -36,7 +36,7 @@ export function DialogPanel({ npc, onClose }: DialogPanelProps) {
         <p className="font-cormorant text-base text-foreground/80 mb-4">{npc.description}</p>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-2 mb-4 flex-wrap">
           <button
             onClick={() => { setActiveTab('dialog'); setSelectedDialog(null); }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-cinzel text-sm transition-colors ${
@@ -56,6 +56,16 @@ export function DialogPanel({ npc, onClose }: DialogPanelProps) {
             }`}
           >
             <ScrollText size={14} /> Ιστορικά
+          </button>
+          <button
+            onClick={() => setActiveTab('interactive')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-cinzel text-sm transition-colors ${
+              activeTab === 'interactive'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+            }`}
+          >
+            <Sparkles size={14} /> Interactive
           </button>
         </div>
 
