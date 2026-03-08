@@ -1,6 +1,7 @@
-import { useRef, useState, useMemo, Suspense } from 'react';
-import { useFrame } from '@react-three/fiber';
-import { Html, useGLTF } from '@react-three/drei';
+import { useRef, useState, useEffect, Suspense } from 'react';
+import { useFrame, useLoader } from '@react-three/fiber';
+import { Html } from '@react-three/drei';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
 import { NPCData } from '@/data/npcData';
 
@@ -11,29 +12,38 @@ interface GLBModelNPCProps {
 }
 
 function GLBModel({ url, rotation }: { url: string; rotation: number }) {
-  const { scene } = useGLTF(url);
+  const gltf = useLoader(GLTFLoader, url);
+  const groupRef = useRef<THREE.Group>(null);
 
-  const { cloned, s, offsetY, cx, cz } = useMemo(() => {
-    const c = scene.clone(true);
-    c.traverse((child) => {
+  useEffect(() => {
+    if (!groupRef.current) return;
+    const model = gltf.scene.clone(true);
+    
+    model.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         child.castShadow = true;
         child.receiveShadow = true;
       }
     });
-    const box = new THREE.Box3().setFromObject(c);
+
+    const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
     const maxDim = Math.max(size.x, size.y, size.z);
-    const scale = 1.8 / maxDim;
-    return { cloned: c, s: scale, offsetY: -box.min.y, cx: -center.x, cz: -center.z };
-  }, [scene]);
+    const s = 1.8 / maxDim;
 
-  return (
-    <group scale={[s, s, s]} rotation={[0, rotation, 0]}>
-      <primitive object={cloned} position={[cx, offsetY, cz]} />
-    </group>
-  );
+    model.scale.setScalar(s);
+    model.position.set(-center.x * s, -box.min.y * s, -center.z * s);
+    model.rotation.y = rotation;
+
+    // Clear previous children
+    while (groupRef.current.children.length) {
+      groupRef.current.remove(groupRef.current.children[0]);
+    }
+    groupRef.current.add(model);
+  }, [gltf, rotation]);
+
+  return <group ref={groupRef} />;
 }
 
 export function GLBModelNPC({ npc, isVisited, onInteract }: GLBModelNPCProps) {
