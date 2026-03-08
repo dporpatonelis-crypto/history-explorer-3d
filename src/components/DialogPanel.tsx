@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NPCData } from '@/data/npcData';
-import { X, ChevronRight, BookOpen, ScrollText } from 'lucide-react';
+import { X, ChevronRight, BookOpen, ScrollText, Sparkles, ExternalLink } from 'lucide-react';
 
 interface DialogPanelProps {
   npc: NPCData;
