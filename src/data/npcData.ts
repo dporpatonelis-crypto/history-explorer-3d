@@ -26,7 +26,7 @@ export const npcData: NPCData[] = [
     rotation: 0.3,
     color: "#d4a574",
     robeColor: "#f5f0e8",
-    glbModel: "/models/ancient_greek_2.glb",
+    glbModel: "/models/ancient_greek_1.glb",
     description: "Ο πατέρας της δυτικής φιλοσοφίας, γνωστός για τη σωκρατική μέθοδο.",
     dialogs: [
       {
@@ -78,7 +78,7 @@ export const npcData: NPCData[] = [
     rotation: Math.PI,
     color: "#b8956a",
     robeColor: "#5a4a3a",
-    glbModel: "/models/ancient_greek_3.glb",
+    glbModel: "/models/ancient_greek_1.glb",
     description: "Μαθητής του Πλάτωνα, δάσκαλος του Μεγάλου Αλεξάνδρου.",
     dialogs: [
       {
@@ -130,7 +130,7 @@ export const npcData: NPCData[] = [
     rotation: -0.6,
     color: "#c4a882",
     robeColor: "#e8ddd0",
-    glbModel: "/models/ancient_character_3.glb",
+    glbModel: "/models/ancient_greek_1.glb",
     description: "Ο ιδρυτής της πυθαγόρειας σχολής και πατέρας των μαθηματικών.",
     dialogs: [
       {
