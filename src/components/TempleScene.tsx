@@ -55,18 +55,7 @@ const Beam = memo(function Beam({ from, to }: { from: [number, number, number]; 
 });
 
 /* ─── Steps / platform ─── */
-const Platform = memo(function Platform() {
-  return (
-    <group>
-      {[0, 0.15, 0.3].map((y, i) => (
-        <mesh key={i} position={[0, y, 0]} receiveShadow>
-          <boxGeometry args={[14 - i * 0.6, 0.15, 10 - i * 0.4]} />
-          <meshStandardMaterial color="hsl(35, 22%, 50%)" roughness={0.45} />
-        </mesh>
-      ))}
-    </group>
-  );
-});
+/* Platform removed — all objects grounded at y=0 */
 
 /* ─── Greek Kiosk ─── */
 const KioskModel = memo(function KioskModel({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
@@ -112,7 +101,7 @@ for (let i = 0; i < NUM_COLS; i++) {
   const angle = (i / NUM_COLS) * Math.PI * 2;
   CIRCLE_COLS.push([
     CENTER_X + Math.sin(angle) * RADIUS,
-    0.3,
+    0,
     CENTER_Z + Math.cos(angle) * RADIUS,
   ]);
 }
@@ -125,9 +114,8 @@ const CIRCLE_PAIRS = CIRCLE_COLS.map((col, i) => ({
 export const TempleScene = memo(function TempleScene() {
   return (
     <group>
-      <Platform />
       <Suspense fallback={null}>
-        <KioskModel position={[0, 0.3, -4]} scale={5} />
+        <KioskModel position={[0, 0, -4]} scale={5} />
       </Suspense>
       {CIRCLE_COLS.map((pos, i) => <Column key={i} position={pos} />)}
       {CIRCLE_PAIRS.map((p, i) => (
