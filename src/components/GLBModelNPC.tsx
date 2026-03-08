@@ -12,28 +12,30 @@ interface GLBModelNPCProps {
 
 function GLBModel({ url, rotation }: { url: string; rotation: number }) {
   const { scene } = useGLTF(url);
-  const cloned = scene.clone();
 
-  // Auto-center and scale model to fit ~1.8m tall
-  const box = new THREE.Box3().setFromObject(cloned);
+  // Compute bounding box for auto-scaling
+  const box = new THREE.Box3().setFromObject(scene);
   const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
   const maxDim = Math.max(size.x, size.y, size.z);
   const targetHeight = 1.8;
   const s = targetHeight / maxDim;
-  
-  // Center the model
-  const center = box.getCenter(new THREE.Vector3());
-  cloned.position.sub(center);
-  cloned.position.y += size.y * s / 2;
+
+  // Ensure all materials render and cast shadows
+  scene.traverse((child) => {
+    if ((child as THREE.Mesh).isMesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
+    }
+  });
 
   return (
-    <primitive
-      object={cloned}
-      scale={[s, s, s]}
-      rotation={[0, rotation, 0]}
-      castShadow
-      receiveShadow
-    />
+    <group scale={[s, s, s]} rotation={[0, rotation, 0]}>
+      <primitive
+        object={scene}
+        position={[-center.x, -box.min.y, -center.z]}
+      />
+    </group>
   );
 }
 
