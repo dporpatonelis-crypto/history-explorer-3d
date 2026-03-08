@@ -129,6 +129,7 @@ export const npcData: NPCData[] = [
     rotation: -0.6,
     color: "#c4a882",
     robeColor: "#e8ddd0",
+    glbModel: "/models/ancient_character_3.glb",
     description: "Ο ιδρυτής της πυθαγόρειας σχολής και πατέρας των μαθηματικών.",
     dialogs: [
       {
