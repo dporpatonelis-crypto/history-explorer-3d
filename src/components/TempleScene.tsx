@@ -185,7 +185,7 @@ export function TempleScene() {
 
       {/* Hill background — left side */}
       <Suspense fallback={null}>
-        <group position={[0, 0, -17.5]} rotation={[0, -Math.PI / 2, 0]}>
+        <group position={[0, 0, -17.5]} rotation={[0, Math.PI / 2, 0]}>
           <HillModel position={[0, 0, 0]} scale={6} />
         </group>
       </Suspense>
