@@ -60,6 +60,7 @@ const Index = () => {
         <SceneLighting />
         <MarbleFloor />
         <TempleScene />
+        <EnvironmentScreens config={screens} />
 
         {npcs.map((npc) =>
           npc.glbModel ? (
