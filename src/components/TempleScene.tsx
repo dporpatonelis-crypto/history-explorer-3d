@@ -101,7 +101,7 @@ for (let i = 0; i < NUM_COLS; i++) {
   const angle = (i / NUM_COLS) * Math.PI * 2;
   CIRCLE_COLS.push([
     CENTER_X + Math.sin(angle) * RADIUS,
-    0.3,
+    0,
     CENTER_Z + Math.cos(angle) * RADIUS,
   ]);
 }
