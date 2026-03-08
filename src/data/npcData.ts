@@ -26,7 +26,7 @@ export const npcData: NPCData[] = [
     rotation: 0.3,
     color: "#d4a574",
     robeColor: "#f5f0e8",
-    // glbModel removed - caused scaling issues
+    glbModel: "/models/ancient_greek_2.glb",
     description: "Ο πατέρας της δυτικής φιλοσοφίας, γνωστός για τη σωκρατική μέθοδο.",
     dialogs: [
       {
