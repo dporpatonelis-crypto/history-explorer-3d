@@ -26,7 +26,7 @@ export const npcData: NPCData[] = [
     rotation: 0.3,
     color: "#d4a574",
     robeColor: "#f5f0e8",
-    // glbModel removed - caused scaling issues
+    glbModel: "/models/ancient_greek_2.glb",
     description: "Ο πατέρας της δυτικής φιλοσοφίας, γνωστός για τη σωκρατική μέθοδο.",
     dialogs: [
       {
@@ -78,6 +78,7 @@ export const npcData: NPCData[] = [
     rotation: Math.PI,
     color: "#b8956a",
     robeColor: "#5a4a3a",
+    glbModel: "/models/ancient_greek_3.glb",
     description: "Μαθητής του Πλάτωνα, δάσκαλος του Μεγάλου Αλεξάνδρου.",
     dialogs: [
       {
@@ -103,7 +104,7 @@ export const npcData: NPCData[] = [
     rotation: 0.6,
     color: "#d4b08c",
     robeColor: "#8b5e3c",
-    glbModel: "/models/hypatia.glb",
+    glbModel: "/models/ancient_greek_1.glb",
     description: "Μία από τις πρώτες γυναίκες μαθηματικούς και φιλοσόφους.",
     dialogs: [
       {
