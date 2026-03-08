@@ -113,6 +113,8 @@ export function DialogPanel({ npc, onClose }: DialogPanelProps) {
               </li>
             ))}
           </ul>
+        )}
+
         {activeTab === 'interactive' && (
           <div className="space-y-3 p-4 rounded-lg bg-secondary/40 border border-border">
             <p className="font-cormorant text-base text-foreground">
