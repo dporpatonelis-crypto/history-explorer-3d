@@ -1,6 +1,6 @@
 import { useRef, useMemo } from 'react';
 import * as THREE from 'three';
-import { Html } from '@react-three/drei';
+import { Html, useTexture } from '@react-three/drei';
 
 interface EnvironmentScreenProps {
   imageUrl: string;
