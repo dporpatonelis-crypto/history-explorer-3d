@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, memo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
@@ -10,15 +10,15 @@ interface NPCFigureProps {
   onInteract: () => void;
 }
 
-export function NPCFigure({ npc, isVisited, onInteract }: NPCFigureProps) {
+export const NPCFigure = memo(function NPCFigure({ npc, isVisited, onInteract }: NPCFigureProps) {
   const groupRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
 
-  // Gentle hover animation
-  useFrame((_, delta) => {
+  // Gentle hover animation — throttled with modulo to reduce work
+  useFrame(({ clock }) => {
     if (!groupRef.current) return;
     groupRef.current.position.y =
-      npc.position[1] + Math.sin(Date.now() * 0.002) * 0.04;
+      npc.position[1] + Math.sin(clock.elapsedTime * 2) * 0.04;
   });
 
   const skinColor = npc.color;
@@ -51,33 +51,33 @@ export function NPCFigure({ npc, isVisited, onInteract }: NPCFigureProps) {
 
       {/* Arms */}
       <mesh position={[-0.35, 0.75, 0]} rotation={[0, 0, 0.15]} castShadow>
-        <capsuleGeometry args={[0.06, 0.45, 4, 8]} />
+        <capsuleGeometry args={[0.06, 0.45, 4, 6]} />
         <meshStandardMaterial color={skinColor} roughness={0.6} />
       </mesh>
       <mesh position={[0.35, 0.75, 0]} rotation={[0, 0, -0.15]} castShadow>
-        <capsuleGeometry args={[0.06, 0.45, 4, 8]} />
+        <capsuleGeometry args={[0.06, 0.45, 4, 6]} />
         <meshStandardMaterial color={skinColor} roughness={0.6} />
       </mesh>
 
       {/* Neck */}
       <mesh position={[0, 1.3, 0]} castShadow>
-        <cylinderGeometry args={[0.08, 0.1, 0.12, 8]} />
+        <cylinderGeometry args={[0.08, 0.1, 0.12, 6]} />
         <meshStandardMaterial color={skinColor} roughness={0.6} />
       </mesh>
 
       {/* Head */}
       <mesh position={[0, 1.55, 0]} castShadow>
-        <sphereGeometry args={[0.2, 12, 10]} />
+        <sphereGeometry args={[0.2, 10, 8]} />
         <meshStandardMaterial color={skinColor} roughness={0.6} />
       </mesh>
 
       {/* Hair / beard accent */}
       <mesh position={[0, 1.68, -0.02]}>
-        <sphereGeometry args={[0.17, 10, 8, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <sphereGeometry args={[0.17, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2]} />
         <meshStandardMaterial color="hsl(30, 15%, 35%)" roughness={0.8} />
       </mesh>
 
-      {/* ── HTML label floating above ── */}
+      {/* HTML label */}
       <Html position={[0, 2.1, 0]} center distanceFactor={8} style={{ pointerEvents: 'none' }}>
         <div
           style={{
@@ -89,7 +89,6 @@ export function NPCFigure({ npc, isVisited, onInteract }: NPCFigureProps) {
           }}
           onClick={(e) => { e.stopPropagation(); onInteract(); }}
         >
-          {/* Name plate */}
           <div
             style={{
               background: isVisited
@@ -110,7 +109,6 @@ export function NPCFigure({ npc, isVisited, onInteract }: NPCFigureProps) {
             {isVisited && ' ✓'}
           </div>
 
-          {/* Interact hint on hover */}
           {hovered && !isVisited && (
             <div
               style={{
@@ -120,7 +118,6 @@ export function NPCFigure({ npc, isVisited, onInteract }: NPCFigureProps) {
                 borderRadius: 4,
                 fontSize: 10,
                 fontFamily: 'Cinzel, serif',
-                animation: 'pulse 1.5s infinite',
               }}
             >
               Πάτησε για συνομιλία
@@ -129,13 +126,12 @@ export function NPCFigure({ npc, isVisited, onInteract }: NPCFigureProps) {
         </div>
       </Html>
 
-      {/* Glow ring under NPC when hovered */}
       {hovered && (
         <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[0.4, 0.55, 24]} />
+          <ringGeometry args={[0.4, 0.55, 16]} />
           <meshBasicMaterial color="hsl(45, 90%, 55%)" transparent opacity={0.5} side={THREE.DoubleSide} />
         </mesh>
       )}
     </group>
   );
-}
+});

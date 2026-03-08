@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo, Suspense } from 'react';
+import { useRef, useState, useMemo, Suspense, memo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
@@ -41,13 +41,13 @@ function GLBModel({ url, rotation }: { url: string; rotation: number }) {
   );
 }
 
-export function GLBModelNPC({ npc, isVisited, onInteract }: GLBModelNPCProps) {
+export const GLBModelNPC = memo(function GLBModelNPC({ npc, isVisited, onInteract }: GLBModelNPCProps) {
   const groupRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
 
-  useFrame(() => {
+  useFrame(({ clock }) => {
     if (!groupRef.current) return;
-    groupRef.current.position.y = npc.position[1] + Math.sin(Date.now() * 0.0015) * 0.03;
+    groupRef.current.position.y = npc.position[1] + Math.sin(clock.elapsedTime * 1.5) * 0.03;
   });
 
   return (
@@ -112,4 +112,4 @@ export function GLBModelNPC({ npc, isVisited, onInteract }: GLBModelNPCProps) {
       )}
     </group>
   );
-}
+});
