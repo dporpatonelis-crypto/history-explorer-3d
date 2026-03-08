@@ -183,6 +183,11 @@ export function TempleScene() {
         <KioskModel position={[0, 0.3, -4]} scale={5} />
       </Suspense>
 
+      {/* Hill background — left side */}
+      <Suspense fallback={null}>
+        <HillModel position={[-20, 0, -4]} scale={1.5} />
+      </Suspense>
+
       {/* Circular colonnade */}
       {circleCols.map((pos, i) => <Column key={i} position={pos} />)}
       {circlePairs.map((p, i) => (
