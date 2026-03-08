@@ -74,7 +74,7 @@ export const npcData: NPCData[] = [
     id: "aristotle",
     name: "Αριστοτέλης",
     title: "Ο Στηγειρίτης Φιλόσοφος",
-    position: [0, 1.0, -7.5],
+    position: [0, 1.0, -8.5],
     rotation: Math.PI,
     color: "#b8956a",
     robeColor: "#5a4a3a",
