@@ -45,9 +45,6 @@ function CurvedScreenMesh({
       arc
     );
 
-    // Center the visible curved surface at local origin so `position` is true screen center
-    geo.translate(0, 0, -radius);
-
     // Flip UVs so image isn't mirrored on inside
     const uvs = geo.attributes.uv;
     for (let i = 0; i < uvs.count; i++) {
