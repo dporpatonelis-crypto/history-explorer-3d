@@ -37,7 +37,7 @@ function Column({ position }: { position: [number, number, number] }) {
   );
 }
 
-function Architrave({ from, to }: { from: [number, number, number]; to: [number, number, number] }) {
+function ArchitraveMesh({ from, to }: { from: [number, number, number]; to: [number, number, number] }) {
   const midX = (from[0] + to[0]) / 2;
   const midZ = (from[2] + to[2]) / 2;
   const length = Math.sqrt((to[0] - from[0]) ** 2 + (to[2] - from[2]) ** 2);
@@ -51,6 +51,14 @@ function Architrave({ from, to }: { from: [number, number, number]; to: [number,
   );
 }
 
+function buildArchitravePairs(columns: [number, number, number][]) {
+  const pairs: { from: [number, number, number]; to: [number, number, number] }[] = [];
+  for (let i = 0; i < columns.length - 1; i++) {
+    pairs.push({ from: columns[i], to: columns[i + 1] });
+  }
+  return pairs;
+}
+
 export function Columns() {
   const leftColumns: [number, number, number][] = [
     [-6, 0, -1], [-6, 0, -4], [-6, 0, -7], [-6, 0, -10]
@@ -59,24 +67,26 @@ export function Columns() {
     [6, 0, -1], [6, 0, -4], [6, 0, -7], [6, 0, -10]
   ];
   const backColumns: [number, number, number][] = [
-    [-4, 0, -10], [-2, 0, -10], [0, 0, -10], [2, 0, -10], [4, 0, -10]
+    [-6, 0, -10], [-4, 0, -10], [-2, 0, -10], [0, 0, -10], [2, 0, -10], [4, 0, -10], [6, 0, -10]
   ];
+
+  const leftPairs = buildArchitravePairs(leftColumns);
+  const rightPairs = buildArchitravePairs(rightColumns);
+  const backPairs = buildArchitravePairs(backColumns);
 
   return (
     <group>
-      {[...leftColumns, ...rightColumns, ...backColumns].map((pos, i) => (
+      {[...leftColumns, ...rightColumns, ...backColumns.slice(1, -1)].map((pos, i) => (
         <Column key={i} position={pos} />
       ))}
-      {/* Architraves on sides */}
-      {leftColumns.slice(0, -1).map((pos, i) => (
-        <Architrave key={`l${i}`} from={pos} to={leftColumns[i + 1]} />
+      {leftPairs.map((p, i) => (
+        <ArchitraveMesh key={`l${i}`} from={p.from} to={p.to} />
       ))}
-      {rightColumns.slice(0, -1).map((pos, i) => (
-        <Architrave key={`r${i}`} from={pos} to={rightColumns[i + 1]} />
+      {rightPairs.map((p, i) => (
+        <ArchitraveMesh key={`r${i}`} from={p.from} to={p.to} />
       ))}
-      {/* Back architrave segments */}
-      {[leftColumns[3], ...backColumns, rightColumns[3]].slice(0, -1).map((pos, i, arr) => (
-        <Architrave key={`b${i}`} from={pos} to={arr[i + 1]} />
+      {backPairs.map((p, i) => (
+        <ArchitraveMesh key={`b${i}`} from={p.from} to={p.to} />
       ))}
     </group>
   );
