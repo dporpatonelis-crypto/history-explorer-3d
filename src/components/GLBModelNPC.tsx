@@ -16,7 +16,7 @@ function GLBModel({ url, rotation }: { url: string; rotation: number }) {
   return (
     <primitive
       object={cloned}
-      scale={1.2}
+      scale={0.015}
       rotation={[0, rotation, 0]}
       castShadow
       receiveShadow
