@@ -6,7 +6,7 @@ import * as THREE from 'three';
 export function MarbleFloor() {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.01, 0]}>
-      <planeGeometry args={[30, 30]} />
+      <planeGeometry args={[60, 60]} />
       <meshStandardMaterial color="hsl(40, 15%, 85%)" roughness={0.3} metalness={0.05} />
     </mesh>
   );
@@ -121,18 +121,26 @@ function KioskModel({ position, scale = 1 }: { position: [number, number, number
 
 /* ─── Temple scene ─── */
 export function TempleScene() {
-  // 4 columns on each side
-  const leftCols: [number, number, number][] = [
-    [-5, 0.3, -3], [-5, 0.3, -1], [-5, 0.3, 1], [-5, 0.3, 3],
-  ];
-  const rightCols: [number, number, number][] = [
-    [5, 0.3, -3], [5, 0.3, -1], [5, 0.3, 1], [5, 0.3, 3],
-  ];
-  const frontCols: [number, number, number][] = [
-    [-3, 0.3, -3], [0, 0.3, -3], [3, 0.3, -3],
-  ];
+  // 16 columns in a circle, radius ~20 from kiosk center (0, 0, -4)
+  const numCols = 16;
+  const radius = 20;
+  const centerX = 0;
+  const centerZ = -4;
+  const circleCols: [number, number, number][] = [];
+  for (let i = 0; i < numCols; i++) {
+    const angle = (i / numCols) * Math.PI * 2;
+    circleCols.push([
+      centerX + Math.sin(angle) * radius,
+      0.3,
+      centerZ + Math.cos(angle) * radius,
+    ]);
+  }
 
-  const allCols = [...leftCols, ...rightCols, ...frontCols];
+  // Architrave pairs around the circle
+  const circlePairs = circleCols.map((col, i) => ({
+    from: col,
+    to: circleCols[(i + 1) % numCols],
+  }));
 
   return (
     <group>
@@ -148,22 +156,11 @@ export function TempleScene() {
         <KioskModel position={[0, 0.3, -4]} scale={5} />
       </Suspense>
 
-      {allCols.map((pos, i) => <Column key={i} position={pos} />)}
-
-      {/* Architraves — left side */}
-      {leftCols.slice(0, -1).map((c, i) => (
-        <Beam key={`l${i}`} from={c} to={leftCols[i + 1]} />
+      {/* Circular colonnade */}
+      {circleCols.map((pos, i) => <Column key={i} position={pos} />)}
+      {circlePairs.map((p, i) => (
+        <Beam key={`c${i}`} from={p.from} to={p.to} />
       ))}
-      {/* Right side */}
-      {rightCols.slice(0, -1).map((c, i) => (
-        <Beam key={`r${i}`} from={c} to={rightCols[i + 1]} />
-      ))}
-      {/* Front */}
-      <Beam from={leftCols[0]} to={frontCols[0]} />
-      {frontCols.slice(0, -1).map((c, i) => (
-        <Beam key={`f${i}`} from={c} to={frontCols[i + 1]} />
-      ))}
-      <Beam from={frontCols[frontCols.length - 1]} to={rightCols[0]} />
     </group>
   );
 }
