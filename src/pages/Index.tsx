@@ -41,7 +41,7 @@ function StableOrbitControls() {
 const Index = () => {
   const [activeNPC, setActiveNPC] = useState<NPCData | null>(null);
   const { visited, markVisited, resetProgress } = useProgress();
-  const { npcs } = useScenario();
+  const { npcs, screens } = useScenario();
 
   const handleNPCInteract = useCallback((npc: NPCData) => {
     setActiveNPC(npc);
