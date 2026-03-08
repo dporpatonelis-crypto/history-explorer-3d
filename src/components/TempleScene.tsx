@@ -92,6 +92,33 @@ function GLBPedestal({ position, scale = 1 }: { position: [number, number, numbe
   );
 }
 
+/* ─── Greek Kiosk ─── */
+function KioskModel({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
+  const { scene } = useGLTF('/models/greek_kiosk.glb');
+  const cloned = scene.clone(true);
+
+  cloned.traverse((child) => {
+    if ((child as THREE.Mesh).isMesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
+    }
+  });
+
+  const box = new THREE.Box3().setFromObject(cloned);
+  const size = box.getSize(new THREE.Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const s = (2 * scale) / maxDim;
+  const center = box.getCenter(new THREE.Vector3());
+
+  return (
+    <group position={position}>
+      <group scale={[s, s, s]}>
+        <primitive object={cloned} position={[-center.x, -box.min.y, -center.z]} />
+      </group>
+    </group>
+  );
+}
+
 /* ─── Temple scene ─── */
 export function TempleScene() {
   // 4 columns on each side
@@ -114,6 +141,12 @@ export function TempleScene() {
       {/* GLB Pedestal */}
       <Suspense fallback={null}>
         <GLBPedestal position={[-4, 0.3, -3.5]} scale={1.2} />
+      </Suspense>
+
+      {/* Greek Kiosk environment */}
+      <Suspense fallback={null}>
+        <GLBPedestal position={[0, 0.3, -6]} scale={3} />
+        <KioskModel position={[0, 0, -6]} scale={2} />
       </Suspense>
 
       {allCols.map((pos, i) => <Column key={i} position={pos} />)}
