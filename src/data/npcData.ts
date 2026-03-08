@@ -48,7 +48,7 @@ export const npcData: NPCData[] = [
     id: "plato",
     name: "Πλάτων",
     title: "Ιδρυτής της Ακαδημίας",
-    position: [3.5, 0.45, -1.5],
+    position: [3.5, 0.7, -1.5],
     rotation: -0.3,
     color: "#c9a06c",
     robeColor: "#4a6fa5",
