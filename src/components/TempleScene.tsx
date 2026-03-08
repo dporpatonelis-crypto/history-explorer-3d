@@ -107,7 +107,7 @@ function HillModel({ position, scale = 1 }: { position: [number, number, number]
   const box = new THREE.Box3().setFromObject(cloned);
   const size = box.getSize(new THREE.Vector3());
   const maxDim = Math.max(size.x, size.y, size.z);
-  const s = (12 * scale) / maxDim;
+  const s = (5 * scale) / maxDim;
   const center = box.getCenter(new THREE.Vector3());
 
   return (
