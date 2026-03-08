@@ -9,7 +9,7 @@ export function MarbleFloor() {
       {/* Main marble platform area — matched with temple stone palette */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.01, 0]}>
         <planeGeometry args={[30, 30]} />
-        <meshStandardMaterial color="hsl(36, 13%, 76%)" roughness={0.35} metalness={0.04} />
+        <meshStandardMaterial color="hsl(35, 12%, 78%)" roughness={0.4} metalness={0.03} />
       </mesh>
       {/* Dirt/earth ground extending outward */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.02, 0]}>
@@ -66,7 +66,7 @@ function Platform() {
       {[0, 0.15, 0.3].map((y, i) => (
         <mesh key={i} position={[0, y, 0]} receiveShadow>
           <boxGeometry args={[14 - i * 0.6, 0.15, 10 - i * 0.4]} />
-          <meshStandardMaterial color="hsl(35, 10%, 80%)" roughness={0.45} />
+          <meshStandardMaterial color="hsl(35, 12%, 78%)" roughness={0.45} />
         </mesh>
       ))}
     </group>
