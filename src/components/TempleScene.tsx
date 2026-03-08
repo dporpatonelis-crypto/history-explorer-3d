@@ -8,7 +8,7 @@ export const MarbleFloor = memo(function MarbleFloor() {
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.01, 0]}>
         <planeGeometry args={[30, 30]} />
-        <meshStandardMaterial color="hsl(36, 18%, 68%)" roughness={0.4} metalness={0.03} />
+        <meshStandardMaterial color="hsl(35, 20%, 58%)" roughness={0.5} metalness={0.03} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.02, 0]}>
         <planeGeometry args={[100, 100]} />
