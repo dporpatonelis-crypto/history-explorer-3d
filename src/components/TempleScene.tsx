@@ -55,18 +55,7 @@ const Beam = memo(function Beam({ from, to }: { from: [number, number, number]; 
 });
 
 /* ─── Steps / platform ─── */
-const Platform = memo(function Platform() {
-  return (
-    <group>
-      {[0, 0.15, 0.3].map((y, i) => (
-        <mesh key={i} position={[0, y, 0]} receiveShadow>
-          <boxGeometry args={[14 - i * 0.6, 0.15, 10 - i * 0.4]} />
-          <meshStandardMaterial color="hsl(35, 22%, 50%)" roughness={0.45} />
-        </mesh>
-      ))}
-    </group>
-  );
-});
+/* Platform removed — all objects grounded at y=0 */
 
 /* ─── Greek Kiosk ─── */
 const KioskModel = memo(function KioskModel({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
