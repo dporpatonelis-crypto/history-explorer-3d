@@ -17,13 +17,21 @@ function CurvedScreenMesh({
   imageUrl,
   position,
   rotation,
-  width = 12,
+  radius = 8,
   height = 7,
-  curveSegments = 32,
-  arc = 0.6,
-  label,
-}: EnvironmentScreenProps) {
-
+  curveSegments = 16,
+  thetaStart = 0,
+  thetaLength = Math.PI,
+}: {
+  imageUrl: string;
+  position: [number, number, number];
+  rotation: [number, number, number];
+  radius?: number;
+  height?: number;
+  curveSegments?: number;
+  thetaStart?: number;
+  thetaLength?: number;
+}) {
   const texture = useTexture(imageUrl);
 
   useEffect(() => {
@@ -33,15 +41,13 @@ function CurvedScreenMesh({
     texture.needsUpdate = true;
   }, [texture]);
 
-  // Curved geometry: cylinder segment as screen
   const geometry = useMemo(() => {
-    const radius = width / arc;
     const geo = new THREE.CylinderGeometry(
       radius, radius, height,
       curveSegments, 1,
       true,
-      Math.PI / 2 - arc / 2,
-      arc
+      thetaStart,
+      thetaLength
     );
 
     // Flip UVs so image isn't mirrored on inside
@@ -50,13 +56,10 @@ function CurvedScreenMesh({
       uvs.setX(i, 1 - uvs.getX(i));
     }
     return geo;
-  }, [width, height, arc, curveSegments]);
+  }, [radius, height, thetaStart, thetaLength, curveSegments]);
 
-  // Dispose geometry on unmount to prevent memory leaks
   useEffect(() => {
-    return () => {
-      geometry.dispose();
-    };
+    return () => { geometry.dispose(); };
   }, [geometry]);
 
   return (
@@ -64,7 +67,7 @@ function CurvedScreenMesh({
       <mesh geometry={geometry}>
         <meshBasicMaterial
           map={texture}
-          side={THREE.DoubleSide}
+          side={THREE.BackSide}
           toneMapped={false}
         />
       </mesh>
