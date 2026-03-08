@@ -54,20 +54,13 @@ function CurvedScreenMesh({
 
   return (
     <group position={position} rotation={rotation}>
-      <mesh ref={meshRef} geometry={geometry}>
+      <mesh geometry={geometry}>
         <meshBasicMaterial
           map={texture}
           side={THREE.DoubleSide}
           toneMapped={false}
         />
       </mesh>
-      {label && (
-        <Html position={[0, -height / 2 - 0.5, 0]} center>
-          <div className="font-cinzel text-xs text-muted-foreground bg-background/70 px-2 py-1 rounded backdrop-blur-sm whitespace-nowrap">
-            {label}
-          </div>
-        </Html>
-      )}
     </group>
   );
 }
