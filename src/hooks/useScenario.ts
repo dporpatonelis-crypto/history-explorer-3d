@@ -34,6 +34,25 @@ interface ScenarioJSON {
   screens?: ScreenConfig;
 }
 
+function sanitizeScreens(screens?: ScreenConfig): ScreenConfig | undefined {
+  if (!screens) return undefined;
+  const clean: ScreenConfig = { left_image_url: '', right_image_url: '' };
+  // Validate URLs: must start with http or /
+  if (screens.left_image_url && /^(https?:\/\/|\/)/.test(screens.left_image_url.trim())) {
+    clean.left_image_url = screens.left_image_url.trim();
+  } else if (screens.left_image_url) {
+    console.warn('[useScenario] Invalid left_image_url, skipping:', screens.left_image_url);
+  }
+  if (screens.right_image_url && /^(https?:\/\/|\/)/.test(screens.right_image_url.trim())) {
+    clean.right_image_url = screens.right_image_url.trim();
+  } else if (screens.right_image_url) {
+    console.warn('[useScenario] Invalid right_image_url, skipping:', screens.right_image_url);
+  }
+  if (screens.left_label) clean.left_label = screens.left_label;
+  if (screens.right_label) clean.right_label = screens.right_label;
+  return clean;
+}
+
 function parseScenario(data: ScenarioJSON): { npcs: NPCData[]; screens?: ScreenConfig } {
   const npcs = data.characters.map((char) => ({
     id: char.id,
@@ -44,7 +63,7 @@ function parseScenario(data: ScenarioJSON): { npcs: NPCData[]; screens?: ScreenC
     color: char.color,
     robeColor: char.robeColor,
     description: char.description,
-    glbModel: char.glbModel || undefined,
+    glbModel: char.glbModel?.trim() || undefined,
     dialogs: data.dialogs
       .filter((d) => d.character_id === char.id)
       .map((d) => ({ question: d.question, answer: d.answer })),
@@ -52,7 +71,7 @@ function parseScenario(data: ScenarioJSON): { npcs: NPCData[]; screens?: ScreenC
       .filter((f) => f.character_id === char.id)
       .map((f) => f.fact),
   }));
-  return { npcs, screens: data.screens };
+  return { npcs, screens: sanitizeScreens(data.screens) };
 }
 
 export function useScenario(scenarioName = 'default') {
