@@ -48,5 +48,11 @@
       "character_id": "socrates",
       "fact": "Αρνήθηκε να δραπετεύσει, επιλέγοντας να πιει το κώνειο παραμένοντας πιστός στους νόμους."
     }
-  ]
+  ],
+  "screens": {
+    "left_image_url": "https://i.ibb.co/bjzd33t4/Screenshot-2026-03-08-21-34-56-785-com-miui-gallery.jpg",
+    "right_image_url": "right_image_url scenarios/bg-caseclosed.jpg",
+    "left_label": "Αρχαία αγορά Αθήνας Δίκη",
+    "right_label": "left_label Αρχαία Αθήνα"
+  }
 }
