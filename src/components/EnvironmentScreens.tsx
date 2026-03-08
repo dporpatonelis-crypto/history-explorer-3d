@@ -113,7 +113,7 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
           imageUrl={config.left_image_url}
           position={[-5, 4, 0]}
           rotation={[0, Math.PI / 2, 0]}
-          width={12}
+          width={8}
           height={7}
           label={config.left_label}
         />
@@ -123,7 +123,7 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
           imageUrl={config.right_image_url}
           position={[5, 4, 0]}
           rotation={[0, -Math.PI / 2, 0]}
-          width={12}
+          width={8}
           height={7}
           label={config.right_label}
         />
