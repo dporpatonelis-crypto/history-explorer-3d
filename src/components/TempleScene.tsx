@@ -1,4 +1,5 @@
-import { useRef } from 'react';
+import { useRef, Suspense } from 'react';
+import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
 /* ─── Marble floor ─── */
@@ -64,6 +65,33 @@ function Platform() {
   );
 }
 
+/* ─── GLB Pedestal ─── */
+function GLBPedestal({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
+  const { scene } = useGLTF('/models/pedestal.glb');
+  const cloned = scene.clone(true);
+
+  cloned.traverse((child) => {
+    if ((child as THREE.Mesh).isMesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
+    }
+  });
+
+  const box = new THREE.Box3().setFromObject(cloned);
+  const size = box.getSize(new THREE.Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const s = (1.5 * scale) / maxDim;
+  const center = box.getCenter(new THREE.Vector3());
+
+  return (
+    <group position={position}>
+      <group scale={[s, s, s]}>
+        <primitive object={cloned} position={[-center.x, -box.min.y, -center.z]} />
+      </group>
+    </group>
+  );
+}
+
 /* ─── Temple scene ─── */
 export function TempleScene() {
   // 4 columns on each side
@@ -82,6 +110,12 @@ export function TempleScene() {
   return (
     <group>
       <Platform />
+
+      {/* GLB Pedestal */}
+      <Suspense fallback={null}>
+        <GLBPedestal position={[0, 0.3, 1]} scale={1.2} />
+      </Suspense>
+
       {allCols.map((pos, i) => <Column key={i} position={pos} />)}
 
       {/* Architraves — left side */}
