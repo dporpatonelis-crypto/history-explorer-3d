@@ -143,10 +143,9 @@ export function TempleScene() {
         <GLBPedestal position={[-4, 0.3, -3.5]} scale={1.2} />
       </Suspense>
 
-      {/* Greek Kiosk environment */}
+      {/* Greek Kiosk — main environment piece */}
       <Suspense fallback={null}>
-        <GLBPedestal position={[0, 0.3, -6]} scale={3} />
-        <KioskModel position={[0, 0, -6]} scale={2} />
+        <KioskModel position={[0, 0.3, -4]} scale={5} />
       </Suspense>
 
       {allCols.map((pos, i) => <Column key={i} position={pos} />)}
