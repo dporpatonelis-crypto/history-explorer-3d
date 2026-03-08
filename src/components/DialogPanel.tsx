@@ -108,7 +108,7 @@ export function DialogPanel({ npc, onClose }: DialogPanelProps) {
           <ul className="space-y-2">
             {npc.historicalFacts.map((fact, i) => (
               <li key={i} className="flex items-start gap-2 p-2 rounded-lg bg-secondary/40">
-                <span className="text-gold mt-0.5">◆</span>
+                <span className="text-accent mt-0.5">◆</span>
                 <span className="font-cormorant text-base text-foreground">{fact}</span>
               </li>
             ))}
