@@ -138,11 +138,6 @@ export function TempleScene() {
     <group>
       <Platform />
 
-      {/* GLB Pedestal */}
-      <Suspense fallback={null}>
-        <GLBPedestal position={[-4, 0.3, -3.5]} scale={1.2} />
-      </Suspense>
-
       {/* Greek Kiosk — main environment piece */}
       <Suspense fallback={null}>
         <KioskModel position={[0, 0.3, -4]} scale={5} />

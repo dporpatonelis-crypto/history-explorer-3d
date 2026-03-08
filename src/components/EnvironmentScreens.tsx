@@ -27,6 +27,8 @@ function CurvedScreenMesh({
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.minFilter = THREE.LinearFilter;
     texture.magFilter = THREE.LinearFilter;
+    texture.generateMipmaps = false;
+    texture.anisotropy = 1;
     texture.needsUpdate = true;
   }, [texture]);
 
