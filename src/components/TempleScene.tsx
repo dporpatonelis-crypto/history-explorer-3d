@@ -112,25 +112,34 @@ function GLBPedestal({ position, scale = 1 }: { position: [number, number, numbe
 /* ─── Hill background ─── */
 function HillModel({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
   const { scene } = useGLTF('/models/hill.glb');
-  const cloned = scene.clone(true);
 
-  cloned.traverse((child) => {
-    if ((child as THREE.Mesh).isMesh) {
-      child.castShadow = true;
-      child.receiveShadow = true;
-    }
-  });
+  const { cloned, normalizedScale, offset } = useMemo(() => {
+    const clonedScene = scene.clone(true);
 
-  const box = new THREE.Box3().setFromObject(cloned);
-  const size = box.getSize(new THREE.Vector3());
-  const maxDim = Math.max(size.x, size.y, size.z);
-  const s = (5 * scale) / maxDim;
-  const center = box.getCenter(new THREE.Vector3());
+    clonedScene.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+
+    const box = new THREE.Box3().setFromObject(clonedScene);
+    const size = box.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const s = (5 * scale) / maxDim;
+    const center = box.getCenter(new THREE.Vector3());
+
+    return {
+      cloned: clonedScene,
+      normalizedScale: s,
+      offset: [-center.x, -box.min.y, -center.z] as [number, number, number],
+    };
+  }, [scene, scale]);
 
   return (
     <group position={position}>
-      <group scale={[s, s, s]}>
-        <primitive object={cloned} position={[-center.x, -box.min.y, -center.z]} />
+      <group scale={[normalizedScale, normalizedScale, normalizedScale]}>
+        <primitive object={cloned} position={offset} />
       </group>
     </group>
   );
