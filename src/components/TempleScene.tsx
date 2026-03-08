@@ -185,7 +185,7 @@ export function TempleScene() {
 
       {/* Hill background — left side */}
       <Suspense fallback={null}>
-        <HillModel position={[-20, 0, -4]} scale={1.5} />
+        <HillModel position={[0, 0, -10.5]} scale={3} />
       </Suspense>
 
       {/* Circular colonnade */}
