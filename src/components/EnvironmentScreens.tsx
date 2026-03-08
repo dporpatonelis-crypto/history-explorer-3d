@@ -1,4 +1,4 @@
-import { useRef, useMemo, useEffect } from 'react';
+import { useMemo, useEffect } from 'react';
 import * as THREE from 'three';
 import { Html, useTexture } from '@react-three/drei';
 
@@ -23,7 +23,6 @@ function CurvedScreenMesh({
   arc = 0.6,
   label,
 }: EnvironmentScreenProps) {
-  const meshRef = useRef<THREE.Mesh>(null);
 
   const texture = useTexture(imageUrl);
 
@@ -55,20 +54,13 @@ function CurvedScreenMesh({
 
   return (
     <group position={position} rotation={rotation}>
-      <mesh ref={meshRef} geometry={geometry}>
+      <mesh geometry={geometry}>
         <meshBasicMaterial
           map={texture}
           side={THREE.DoubleSide}
           toneMapped={false}
         />
       </mesh>
-      {label && (
-        <Html position={[0, -height / 2 - 0.5, 0]} center>
-          <div className="font-cinzel text-xs text-muted-foreground bg-background/70 px-2 py-1 rounded backdrop-blur-sm whitespace-nowrap">
-            {label}
-          </div>
-        </Html>
-      )}
     </group>
   );
 }
@@ -100,22 +92,22 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
       {hasLeft && (
         <CurvedScreenMesh
           imageUrl={config.left_image_url}
-          position={[-3, 4, 0]}
+          position={[-3, 5.5, 0]}
           rotation={[0, 0, 0]}
-          width={32}
+          width={25.6}
           arc={2.4}
-          height={7}
+          height={10.5}
           label={config.left_label}
         />
       )}
       {hasRight && (
         <CurvedScreenMesh
           imageUrl={config.right_image_url}
-          position={[3, 4, 0]}
+          position={[3, 5.5, 0]}
           rotation={[0, Math.PI, 0]}
-          width={32}
+          width={25.6}
           arc={2.4}
-          height={7}
+          height={10.5}
           label={config.right_label}
         />
       )}
