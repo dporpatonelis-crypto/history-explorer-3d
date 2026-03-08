@@ -114,9 +114,9 @@ const CIRCLE_PAIRS = CIRCLE_COLS.map((col, i) => ({
 export const TempleScene = memo(function TempleScene() {
   return (
     <group>
-      <Platform />
       <Suspense fallback={null}>
-        <KioskModel position={[0, 0.3, -4]} scale={5} />
+        <KioskModel position={[0, 0, -4]} scale={5} />
+      </Suspense>
       </Suspense>
       {CIRCLE_COLS.map((pos, i) => <Column key={i} position={pos} />)}
       {CIRCLE_PAIRS.map((p, i) => (
