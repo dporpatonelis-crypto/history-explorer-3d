@@ -8,8 +8,9 @@ interface DialogPanelProps {
 }
 
 export function DialogPanel({ npc, onClose }: DialogPanelProps) {
-  const [activeTab, setActiveTab] = useState<'dialog' | 'facts'>('dialog');
+  const [activeTab, setActiveTab] = useState<'dialog' | 'facts' | 'interactive'>('dialog');
   const [selectedDialog, setSelectedDialog] = useState<number | null>(null);
+  const interactiveBoardUrl = import.meta.env.VITE_MIND_WEAVER_URL ?? '/projects/dc70f638-3c2d-4ffe-a28d-1ef03fa06b32';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
