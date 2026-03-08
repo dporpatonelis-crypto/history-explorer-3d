@@ -23,7 +23,6 @@ function CurvedScreenMesh({
   arc = 0.6,
   label,
 }: EnvironmentScreenProps) {
-  const meshRef = useRef<THREE.Mesh>(null);
 
   const texture = useTexture(imageUrl);
 
