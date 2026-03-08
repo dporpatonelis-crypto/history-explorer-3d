@@ -246,8 +246,8 @@ export function SceneLighting() {
         position={[8, 12, 5]}
         intensity={1.2}
         castShadow
-        shadow-mapSize-width={512}
-        shadow-mapSize-height={512}
+        shadow-mapSize-width={256}
+        shadow-mapSize-height={256}
         shadow-camera-near={0.5}
         shadow-camera-far={30}
         shadow-camera-left={-12}
