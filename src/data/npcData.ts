@@ -103,6 +103,7 @@ export const npcData: NPCData[] = [
     rotation: 0.6,
     color: "#d4b08c",
     robeColor: "#8b5e3c",
+    glbModel: "/models/hypatia.glb",
     description: "Μία από τις πρώτες γυναίκες μαθηματικούς και φιλοσόφους.",
     dialogs: [
       {
