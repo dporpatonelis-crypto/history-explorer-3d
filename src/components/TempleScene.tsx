@@ -117,7 +117,6 @@ export const TempleScene = memo(function TempleScene() {
       <Suspense fallback={null}>
         <KioskModel position={[0, 0, -4]} scale={5} />
       </Suspense>
-      </Suspense>
       {CIRCLE_COLS.map((pos, i) => <Column key={i} position={pos} />)}
       {CIRCLE_PAIRS.map((p, i) => (
         <Beam key={`c${i}`} from={p.from} to={p.to} />
