@@ -97,30 +97,38 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
 
   if (!hasLeft && !hasRight) return null;
 
+  // Both screens share center, radius=10, split into left/right halves
+  // thetaStart in CylinderGeometry: 0 = +X axis, goes counter-clockwise from top view
+  // Camera is at z=12 looking at z=0, so the "back" of the cylinder (facing camera) is around theta=PI
+  const screenRadius = 10;
+  const halfArc = Math.PI * 0.48; // Almost touching, small gap at seams
+
   return (
-    <group>
+    <group position={[0, 5.5, 0]}>
+      {/* Left screen: covers from PI to PI + halfArc (left side when facing center) */}
       {hasLeft && (
         <CurvedScreenMesh
           imageUrl={config.left_image_url}
-          position={[-4, 5.5, 0]}
+          position={[0, 0, 0]}
           rotation={[0, 0, 0]}
-          width={20.5}
-          arc={2.4}
+          radius={screenRadius}
+          thetaStart={Math.PI}
+          thetaLength={halfArc}
           height={10.5}
           curveSegments={16}
-          label={config.left_label}
         />
       )}
+      {/* Right screen: covers from PI - halfArc to PI (right side) */}
       {hasRight && (
         <CurvedScreenMesh
           imageUrl={config.right_image_url}
-          position={[4, 5.5, 0]}
-          rotation={[0, Math.PI, 0]}
-          width={20.5}
-          arc={2.4}
+          position={[0, 0, 0]}
+          rotation={[0, 0, 0]}
+          radius={screenRadius}
+          thetaStart={Math.PI - halfArc}
+          thetaLength={halfArc}
           height={10.5}
           curveSegments={16}
-          label={config.right_label}
         />
       )}
     </group>
