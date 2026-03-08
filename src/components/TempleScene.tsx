@@ -12,7 +12,7 @@ export const MarbleFloor = memo(function MarbleFloor() {
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.02, 0]}>
         <planeGeometry args={[100, 100]} />
-        <meshStandardMaterial color="hsl(32, 30%, 38%)" roughness={0.95} metalness={0.0} />
+        <meshStandardMaterial color="hsl(34, 22%, 52%)" roughness={0.95} metalness={0.0} />
       </mesh>
     </group>
   );
