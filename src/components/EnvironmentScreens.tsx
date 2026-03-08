@@ -165,7 +165,7 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
       {/* Right screen: covers from PI - halfArc to PI (right side) */}
       {hasRight && (
         <CurvedScreenMesh
-          imageUrl={config.right_image_url}
+          mediaUrl={config.right_image_url}
           position={[0, 0, 0]}
           rotation={[0, 0, 0]}
           radius={screenRadius}
