@@ -52,6 +52,7 @@ export const npcData: NPCData[] = [
     rotation: -0.3,
     color: "#c9a06c",
     robeColor: "#4a6fa5",
+    glbModel: "/models/ancient_greek_1.glb",
     description: "Μαθητής του Σωκράτη και ιδρυτής της Ακαδημίας της Αθήνας.",
     dialogs: [
       {
