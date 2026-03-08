@@ -113,6 +113,20 @@ export function DialogPanel({ npc, onClose }: DialogPanelProps) {
               </li>
             ))}
           </ul>
+        {activeTab === 'interactive' && (
+          <div className="space-y-3 p-4 rounded-lg bg-secondary/40 border border-border">
+            <p className="font-cormorant text-base text-foreground">
+              Άνοιξε το διαδραστικό board για δραστηριότητες μαθητή στο Idea Weaver Board.
+            </p>
+            <a
+              href={interactiveBoardUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-primary text-primary-foreground font-cinzel text-sm hover:opacity-90 transition-opacity"
+            >
+              Άνοιγμα Interactive Board <ExternalLink size={14} />
+            </a>
+          </div>
         )}
       </div>
     </div>
