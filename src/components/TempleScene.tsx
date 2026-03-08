@@ -5,10 +5,18 @@ import * as THREE from 'three';
 /* ─── Marble floor ─── */
 export function MarbleFloor() {
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.01, 0]}>
-      <planeGeometry args={[100, 100]} />
-      <meshStandardMaterial color="hsl(40, 15%, 85%)" roughness={0.3} metalness={0.05} />
-    </mesh>
+    <group>
+      {/* Main marble platform area */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.01, 0]}>
+        <planeGeometry args={[30, 30]} />
+        <meshStandardMaterial color="hsl(40, 15%, 85%)" roughness={0.3} metalness={0.05} />
+      </mesh>
+      {/* Dirt/earth ground extending outward */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -0.02, 0]}>
+        <planeGeometry args={[100, 100]} />
+        <meshStandardMaterial color="hsl(30, 35%, 45%)" roughness={0.95} metalness={0.0} />
+      </mesh>
+    </group>
   );
 }
 
