@@ -26,6 +26,7 @@ export const npcData: NPCData[] = [
     rotation: 0.5,
     color: "#d4a574",
     robeColor: "#f5f0e8",
+    sketchfabUrl: "https://sketchfab.com/models/6f47b59c57d5470ca55454d9699663fb/embed?autostart=1&ui_hint=0&ui_theme=dark&dnt=1",
     description: "Ο πατέρας της δυτικής φιλοσοφίας, γνωστός για τη σωκρατική μέθοδο.",
     dialogs: [
       {
