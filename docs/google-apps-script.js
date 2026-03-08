@@ -26,6 +26,7 @@ const CONFIG = {
   CHARACTERS_TAB: 'characters',
   DIALOGS_TAB: 'dialogs',
   FACTS_TAB: 'facts',
+  SCREENS_TAB: 'screens',
 };
 
 // ─── Main ────────────────────────────────────────────
