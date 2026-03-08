@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { TempleScene, MarbleFloor, SceneLighting } from '@/components/TempleScene';
 import { NPCFigure } from '@/components/NPCFigure';
+import { SketchfabNPC } from '@/components/SketchfabNPC';
 import { DialogPanel } from '@/components/DialogPanel';
 import { ProgressTracker } from '@/components/ProgressTracker';
 import { useProgress } from '@/hooks/useProgress';
@@ -31,14 +32,23 @@ const Index = () => {
         <MarbleFloor />
         <TempleScene />
 
-        {npcData.map((npc) => (
-          <NPCFigure
-            key={npc.id}
-            npc={npc}
-            isVisited={visited.has(npc.id)}
-            onInteract={() => handleNPCInteract(npc)}
-          />
-        ))}
+        {npcData.map((npc) =>
+          npc.sketchfabUrl ? (
+            <SketchfabNPC
+              key={npc.id}
+              npc={npc}
+              isVisited={visited.has(npc.id)}
+              onInteract={() => handleNPCInteract(npc)}
+            />
+          ) : (
+            <NPCFigure
+              key={npc.id}
+              npc={npc}
+              isVisited={visited.has(npc.id)}
+              onInteract={() => handleNPCInteract(npc)}
+            />
+          )
+        )}
 
         <OrbitControls
           makeDefault
