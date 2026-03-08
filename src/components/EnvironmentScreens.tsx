@@ -1,6 +1,5 @@
 import { useRef, useMemo } from 'react';
 import * as THREE from 'three';
-import * as THREE from 'three';
 import { Html } from '@react-three/drei';
 
 interface EnvironmentScreenProps {
