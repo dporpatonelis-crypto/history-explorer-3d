@@ -67,7 +67,19 @@ function CurvedScreenMesh({
   thetaLength?: number;
 }) {
   const isVideo = isVideoUrl(mediaUrl);
-  const imageTexture = useTexture(isVideo ? '/placeholder.svg' : mediaUrl);
+  const [loadError, setLoadError] = useState(false);
+  const imageTexture = useTexture(isVideo ? '/placeholder.svg' : mediaUrl, (tex) => {
+    // loaded ok
+  });
+  
+  // Listen for load errors via onError on the texture loader
+  useEffect(() => {
+    if (!isVideo && mediaUrl) {
+      const img = new Image();
+      img.onerror = () => setLoadError(true);
+      img.src = mediaUrl;
+    }
+  }, [mediaUrl, isVideo]);
   const videoTexture = useVideoTexture(isVideo ? mediaUrl : '');
   
   const texture = isVideo ? videoTexture : imageTexture;
@@ -92,7 +104,6 @@ function CurvedScreenMesh({
       thetaLength
     );
 
-    // Flip UVs so image isn't mirrored on inside
     const uvs = geo.attributes.uv;
     for (let i = 0; i < uvs.count; i++) {
       uvs.setX(i, 1 - uvs.getX(i));
@@ -104,7 +115,7 @@ function CurvedScreenMesh({
     return () => { geometry.dispose(); };
   }, [geometry]);
 
-  if (!texture) return null;
+  if (loadError || !texture) return null;
 
   return (
     <group position={position} rotation={rotation}>
