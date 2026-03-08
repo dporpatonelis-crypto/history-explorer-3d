@@ -109,41 +109,6 @@ function GLBPedestal({ position, scale = 1 }: { position: [number, number, numbe
   );
 }
 
-/* ─── Hill background ─── */
-function HillModel({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
-  const { scene } = useGLTF('/models/hill.glb');
-
-  const { cloned, normalizedScale, offset } = useMemo(() => {
-    const clonedScene = scene.clone(true);
-
-    clonedScene.traverse((child) => {
-      if ((child as THREE.Mesh).isMesh) {
-        child.castShadow = false;
-        child.receiveShadow = true;
-      }
-    });
-
-    const box = new THREE.Box3().setFromObject(clonedScene);
-    const size = box.getSize(new THREE.Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z);
-    const s = (5 * scale) / maxDim;
-    const center = box.getCenter(new THREE.Vector3());
-
-    return {
-      cloned: clonedScene,
-      normalizedScale: s,
-      offset: [-center.x, -box.min.y, -center.z] as [number, number, number],
-    };
-  }, [scene, scale]);
-
-  return (
-    <group position={position}>
-      <group scale={[normalizedScale, normalizedScale, normalizedScale]}>
-        <primitive object={cloned} position={offset} />
-      </group>
-    </group>
-  );
-}
 
 /* ─── Greek Kiosk ─── */
 function KioskModel({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
@@ -218,12 +183,6 @@ export function TempleScene() {
         <KioskModel position={[0, 0.3, -4]} scale={5} />
       </Suspense>
 
-      {/* Hill background — left side */}
-      <Suspense fallback={null}>
-        <group position={[0, 0, -17.5]} rotation={[0, Math.PI / 2, 0]}>
-          <HillModel position={[0, 0, 0]} scale={6} />
-        </group>
-      </Suspense>
 
       {/* Circular colonnade */}
       {circleCols.map((pos, i) => <Column key={i} position={pos} />)}
