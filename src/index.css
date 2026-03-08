@@ -8,35 +8,41 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 35 30% 95%;
+    --foreground: 30 20% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 38 40% 92%;
+    --card-foreground: 30 20% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 35 35% 97%;
+    --popover-foreground: 30 20% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 36 60% 45%;
+    --primary-foreground: 40 30% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 30 25% 85%;
+    --secondary-foreground: 30 20% 20%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 33 20% 88%;
+    --muted-foreground: 30 10% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 25 70% 50%;
+    --accent-foreground: 40 30% 98%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 33 25% 80%;
+    --input: 33 25% 80%;
+    --ring: 36 60% 45%;
 
     --radius: 0.5rem;
+
+    --gold: 43 80% 55%;
+    --stone: 30 15% 60%;
+    --marble: 35 20% 90%;
+    --parchment: 38 45% 93%;
+    --bronze: 25 60% 40%;
 
     --sidebar-background: 0 0% 98%;
 
@@ -94,6 +100,8 @@ All colors MUST be HSL.
   }
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+
 @layer base {
   * {
     @apply border-border;
@@ -101,5 +109,27 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Cormorant Garamond', serif;
   }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cinzel', serif;
+  }
+}
+
+.dialog-panel {
+  background: linear-gradient(135deg, hsl(38 45% 93% / 0.97), hsl(35 35% 97% / 0.95));
+  border: 2px solid hsl(var(--gold) / 0.4);
+  box-shadow: 0 20px 60px hsl(30 20% 15% / 0.3), inset 0 1px 0 hsl(var(--gold) / 0.2);
+}
+
+.npc-label {
+  background: hsl(30 20% 15% / 0.85);
+  border: 1px solid hsl(var(--gold) / 0.5);
+  backdrop-filter: blur(8px);
+}
+
+.progress-badge {
+  background: linear-gradient(135deg, hsl(var(--gold) / 0.2), hsl(var(--bronze) / 0.15));
+  border: 1px solid hsl(var(--gold) / 0.3);
 }
