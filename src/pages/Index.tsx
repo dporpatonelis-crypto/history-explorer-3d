@@ -60,7 +60,7 @@ const Index = () => {
         <MarbleFloor />
         <TempleScene />
 
-        {npcData.map((npc) =>
+        {npcs.map((npc) =>
           npc.glbModel ? (
             <GLBModelNPC
               key={npc.id}
