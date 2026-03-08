@@ -12,6 +12,7 @@
  *   Tab "characters": id | name | title | position_x | position_y | position_z | rotation | color | robeColor | description | glbModel
  *   Tab "dialogs":    character_id | question | answer
  *   Tab "facts":      character_id | fact
+ *   Tab "screens":    left_image_url | right_image_url | left_label | right_label  (single row)
  */
 
 const CONFIG = {
