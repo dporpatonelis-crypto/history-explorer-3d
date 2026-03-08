@@ -22,7 +22,7 @@ export const npcData: NPCData[] = [
     id: "socrates",
     name: "Σωκράτης",
     title: "Ο Φιλόσοφος της Αθήνας",
-    position: [-3.5, 1.0, -1.5],
+    position: [-3.5, 1.5, -1.5],
     rotation: 0.3,
     color: "#d4a574",
     robeColor: "#f5f0e8",
