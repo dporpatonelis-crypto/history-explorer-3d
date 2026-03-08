@@ -52,6 +52,7 @@ export const npcData: NPCData[] = [
     rotation: -0.3,
     color: "#c9a06c",
     robeColor: "#4a6fa5",
+    glbModel: "/models/ancient_greek_1.glb",
     description: "Μαθητής του Σωκράτη και ιδρυτής της Ακαδημίας της Αθήνας.",
     dialogs: [
       {
@@ -102,6 +103,7 @@ export const npcData: NPCData[] = [
     rotation: 0.6,
     color: "#d4b08c",
     robeColor: "#8b5e3c",
+    glbModel: "/models/hypatia.glb",
     description: "Μία από τις πρώτες γυναίκες μαθηματικούς και φιλοσόφους.",
     dialogs: [
       {
@@ -127,6 +129,7 @@ export const npcData: NPCData[] = [
     rotation: -0.6,
     color: "#c4a882",
     robeColor: "#e8ddd0",
+    glbModel: "/models/ancient_character_3.glb",
     description: "Ο ιδρυτής της πυθαγόρειας σχολής και πατέρας των μαθηματικών.",
     dialogs: [
       {
