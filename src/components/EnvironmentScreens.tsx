@@ -52,6 +52,13 @@ function CurvedScreenMesh({
     return geo;
   }, [width, height, arc, curveSegments]);
 
+  // Dispose geometry on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      geometry.dispose();
+    };
+  }, [geometry]);
+
   return (
     <group position={position} rotation={rotation}>
       <mesh geometry={geometry}>
