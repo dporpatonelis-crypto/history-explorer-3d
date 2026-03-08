@@ -103,6 +103,7 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
           position={[-3, 4, 0]}
           rotation={[0, 0, 0]}
           width={32}
+          arc={2.4}
           height={7}
           label={config.left_label}
         />
@@ -113,6 +114,7 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
           position={[3, 4, 0]}
           rotation={[0, Math.PI, 0]}
           width={32}
+          arc={2.4}
           height={7}
           label={config.right_label}
         />
