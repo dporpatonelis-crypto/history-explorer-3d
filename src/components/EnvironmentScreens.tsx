@@ -8,7 +8,7 @@ function CurvedScreenMesh({
   rotation,
   radius = 8,
   height = 7,
-  curveSegments = 16,
+  curveSegments = 12,
   thetaStart = 0,
   thetaLength = Math.PI,
 }: {
