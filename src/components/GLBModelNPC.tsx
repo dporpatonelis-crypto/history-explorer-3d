@@ -2,7 +2,6 @@ import { useRef, useState, useEffect, Suspense } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
-import * as THREE from 'three';
 import { NPCData } from '@/data/npcData';
 
 interface GLBModelNPCProps {
