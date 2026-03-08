@@ -14,7 +14,7 @@ export interface NPCData {
   description: string;
   dialogs: NPCDialog[];
   historicalFacts: string[];
-  sketchfabUrl?: string;
+  glbModel?: string;
 }
 
 export const npcData: NPCData[] = [
@@ -26,7 +26,7 @@ export const npcData: NPCData[] = [
     rotation: 0.5,
     color: "#d4a574",
     robeColor: "#f5f0e8",
-    sketchfabUrl: "https://sketchfab.com/models/6f47b59c57d5470ca55454d9699663fb/embed?autostart=1&ui_hint=0&ui_theme=dark&dnt=1",
+    glbModel: "/models/socrates.glb",
     description: "Ο πατέρας της δυτικής φιλοσοφίας, γνωστός για τη σωκρατική μέθοδο.",
     dialogs: [
       {
@@ -127,7 +127,6 @@ export const npcData: NPCData[] = [
     rotation: -0.7,
     color: "#c4a882",
     robeColor: "#e8ddd0",
-    sketchfabUrl: "https://sketchfab.com/models/964733049723434a903332b2a03efb2c/embed?autostart=1&ui_hint=0&ui_theme=dark&dnt=1",
     description: "Ο ιδρυτής της πυθαγόρειας σχολής και πατέρας των μαθηματικών.",
     dialogs: [
       {
