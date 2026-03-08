@@ -1,17 +1,6 @@
 import { useMemo, useEffect } from 'react';
 import * as THREE from 'three';
-import { Html, useTexture } from '@react-three/drei';
-
-interface EnvironmentScreenProps {
-  imageUrl: string;
-  position: [number, number, number];
-  rotation: [number, number, number];
-  width?: number;
-  height?: number;
-  curveSegments?: number;
-  arc?: number;
-  label?: string;
-}
+import { useTexture } from '@react-three/drei';
 
 function CurvedScreenMesh({
   imageUrl,
