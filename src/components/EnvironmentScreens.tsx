@@ -27,7 +27,9 @@ function CurvedScreenMesh({
   const meshRef = useRef<THREE.Mesh>(null);
 
   const texture = useMemo(() => {
-    const tex = new THREE.TextureLoader().load(imageUrl);
+    const loader = new THREE.TextureLoader();
+    loader.setCrossOrigin('anonymous');
+    const tex = loader.load(imageUrl);
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.minFilter = THREE.LinearFilter;
     return tex;
