@@ -92,6 +92,33 @@ function GLBPedestal({ position, scale = 1 }: { position: [number, number, numbe
   );
 }
 
+/* ─── Hill background ─── */
+function HillModel({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
+  const { scene } = useGLTF('/models/hill.glb');
+  const cloned = scene.clone(true);
+
+  cloned.traverse((child) => {
+    if ((child as THREE.Mesh).isMesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
+    }
+  });
+
+  const box = new THREE.Box3().setFromObject(cloned);
+  const size = box.getSize(new THREE.Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const s = (12 * scale) / maxDim;
+  const center = box.getCenter(new THREE.Vector3());
+
+  return (
+    <group position={position}>
+      <group scale={[s, s, s]}>
+        <primitive object={cloned} position={[-center.x, -box.min.y, -center.z]} />
+      </group>
+    </group>
+  );
+}
+
 /* ─── Greek Kiosk ─── */
 function KioskModel({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
   const { scene } = useGLTF('/models/greek_kiosk.glb');
@@ -154,6 +181,11 @@ export function TempleScene() {
       {/* Greek Kiosk — main environment piece */}
       <Suspense fallback={null}>
         <KioskModel position={[0, 0.3, -4]} scale={5} />
+      </Suspense>
+
+      {/* Hill background — left side */}
+      <Suspense fallback={null}>
+        <HillModel position={[-20, 0, -4]} scale={1.5} />
       </Suspense>
 
       {/* Circular colonnade */}
