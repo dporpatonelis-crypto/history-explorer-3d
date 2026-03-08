@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NPCData } from '@/data/npcData';
-import { X, ChevronRight, BookOpen, ScrollText } from 'lucide-react';
+import { X, ChevronRight, BookOpen, ScrollText, Sparkles, ExternalLink } from 'lucide-react';
 
 interface DialogPanelProps {
   npc: NPCData;
@@ -8,8 +8,9 @@ interface DialogPanelProps {
 }
 
 export function DialogPanel({ npc, onClose }: DialogPanelProps) {
-  const [activeTab, setActiveTab] = useState<'dialog' | 'facts'>('dialog');
+  const [activeTab, setActiveTab] = useState<'dialog' | 'facts' | 'interactive'>('dialog');
   const [selectedDialog, setSelectedDialog] = useState<number | null>(null);
+  const interactiveBoardUrl = import.meta.env.VITE_MIND_WEAVER_URL ?? '/projects/dc70f638-3c2d-4ffe-a28d-1ef03fa06b32';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
@@ -35,7 +36,7 @@ export function DialogPanel({ npc, onClose }: DialogPanelProps) {
         <p className="font-cormorant text-base text-foreground/80 mb-4">{npc.description}</p>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-2 mb-4 flex-wrap">
           <button
             onClick={() => { setActiveTab('dialog'); setSelectedDialog(null); }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-cinzel text-sm transition-colors ${
@@ -55,6 +56,16 @@ export function DialogPanel({ npc, onClose }: DialogPanelProps) {
             }`}
           >
             <ScrollText size={14} /> Ιστορικά
+          </button>
+          <button
+            onClick={() => setActiveTab('interactive')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-cinzel text-sm transition-colors ${
+              activeTab === 'interactive'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+            }`}
+          >
+            <Sparkles size={14} /> Interactive
           </button>
         </div>
 
@@ -97,11 +108,27 @@ export function DialogPanel({ npc, onClose }: DialogPanelProps) {
           <ul className="space-y-2">
             {npc.historicalFacts.map((fact, i) => (
               <li key={i} className="flex items-start gap-2 p-2 rounded-lg bg-secondary/40">
-                <span className="text-gold mt-0.5">◆</span>
+                <span className="text-accent mt-0.5">◆</span>
                 <span className="font-cormorant text-base text-foreground">{fact}</span>
               </li>
             ))}
           </ul>
+        )}
+
+        {activeTab === 'interactive' && (
+          <div className="space-y-3 p-4 rounded-lg bg-secondary/40 border border-border">
+            <p className="font-cormorant text-base text-foreground">
+              Άνοιξε το διαδραστικό board για δραστηριότητες μαθητή στο Idea Weaver Board.
+            </p>
+            <a
+              href={interactiveBoardUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-primary text-primary-foreground font-cinzel text-sm hover:opacity-90 transition-opacity"
+            >
+              Άνοιγμα Interactive Board <ExternalLink size={14} />
+            </a>
+          </div>
         )}
       </div>
     </div>

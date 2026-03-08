@@ -1,4 +1,4 @@
-import { useRef, Suspense } from 'react';
+import { useRef, Suspense, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -26,17 +26,17 @@ function Column({ position }: { position: [number, number, number] }) {
   return (
     <group position={position}>
       {/* Base */}
-      <mesh position={[0, 0.15, 0]} receiveShadow castShadow>
+      <mesh position={[0, 0.15, 0]} receiveShadow>
         <cylinderGeometry args={[0.55, 0.6, 0.3, segments]} />
         <meshStandardMaterial color="hsl(35, 12%, 78%)" roughness={0.4} />
       </mesh>
       {/* Shaft */}
-      <mesh position={[0, 2.5, 0]} receiveShadow castShadow>
+      <mesh position={[0, 2.5, 0]} receiveShadow>
         <cylinderGeometry args={[0.35, 0.45, 4.7, segments]} />
         <meshStandardMaterial color="hsl(38, 14%, 82%)" roughness={0.35} />
       </mesh>
       {/* Capital */}
-      <mesh position={[0, 4.95, 0]} receiveShadow castShadow>
+      <mesh position={[0, 4.95, 0]} receiveShadow>
         <cylinderGeometry args={[0.6, 0.35, 0.2, segments]} />
         <meshStandardMaterial color="hsl(35, 12%, 78%)" roughness={0.4} />
       </mesh>
@@ -52,7 +52,7 @@ function Beam({ from, to }: { from: [number, number, number]; to: [number, numbe
   const angle = Math.atan2(to[2] - from[2], to[0] - from[0]);
 
   return (
-    <mesh position={[midX, 5.15, midZ]} rotation={[0, -angle, 0]} castShadow receiveShadow>
+    <mesh position={[midX, 5.15, midZ]} rotation={[0, -angle, 0]} receiveShadow>
       <boxGeometry args={[length + 0.1, 0.35, 0.7]} />
       <meshStandardMaterial color="hsl(36, 13%, 76%)" roughness={0.4} />
     </mesh>
@@ -76,25 +76,34 @@ function Platform() {
 /* ─── GLB Pedestal ─── */
 function GLBPedestal({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
   const { scene } = useGLTF('/models/pedestal.glb');
-  const cloned = scene.clone(true);
 
-  cloned.traverse((child) => {
-    if ((child as THREE.Mesh).isMesh) {
-      child.castShadow = true;
-      child.receiveShadow = true;
-    }
-  });
+  const { cloned, normalizedScale, offset } = useMemo(() => {
+    const clonedScene = scene.clone(true);
 
-  const box = new THREE.Box3().setFromObject(cloned);
-  const size = box.getSize(new THREE.Vector3());
-  const maxDim = Math.max(size.x, size.y, size.z);
-  const s = (1.5 * scale) / maxDim;
-  const center = box.getCenter(new THREE.Vector3());
+    clonedScene.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+
+    const box = new THREE.Box3().setFromObject(clonedScene);
+    const size = box.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const s = (1.5 * scale) / maxDim;
+    const center = box.getCenter(new THREE.Vector3());
+
+    return {
+      cloned: clonedScene,
+      normalizedScale: s,
+      offset: [-center.x, -box.min.y, -center.z] as [number, number, number],
+    };
+  }, [scene, scale]);
 
   return (
     <group position={position}>
-      <group scale={[s, s, s]}>
-        <primitive object={cloned} position={[-center.x, -box.min.y, -center.z]} />
+      <group scale={[normalizedScale, normalizedScale, normalizedScale]}>
+        <primitive object={cloned} position={offset} />
       </group>
     </group>
   );
@@ -103,25 +112,34 @@ function GLBPedestal({ position, scale = 1 }: { position: [number, number, numbe
 /* ─── Hill background ─── */
 function HillModel({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
   const { scene } = useGLTF('/models/hill.glb');
-  const cloned = scene.clone(true);
 
-  cloned.traverse((child) => {
-    if ((child as THREE.Mesh).isMesh) {
-      child.castShadow = true;
-      child.receiveShadow = true;
-    }
-  });
+  const { cloned, normalizedScale, offset } = useMemo(() => {
+    const clonedScene = scene.clone(true);
 
-  const box = new THREE.Box3().setFromObject(cloned);
-  const size = box.getSize(new THREE.Vector3());
-  const maxDim = Math.max(size.x, size.y, size.z);
-  const s = (5 * scale) / maxDim;
-  const center = box.getCenter(new THREE.Vector3());
+    clonedScene.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        child.castShadow = false;
+        child.receiveShadow = true;
+      }
+    });
+
+    const box = new THREE.Box3().setFromObject(clonedScene);
+    const size = box.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const s = (5 * scale) / maxDim;
+    const center = box.getCenter(new THREE.Vector3());
+
+    return {
+      cloned: clonedScene,
+      normalizedScale: s,
+      offset: [-center.x, -box.min.y, -center.z] as [number, number, number],
+    };
+  }, [scene, scale]);
 
   return (
     <group position={position}>
-      <group scale={[s, s, s]}>
-        <primitive object={cloned} position={[-center.x, -box.min.y, -center.z]} />
+      <group scale={[normalizedScale, normalizedScale, normalizedScale]}>
+        <primitive object={cloned} position={offset} />
       </group>
     </group>
   );
@@ -130,25 +148,34 @@ function HillModel({ position, scale = 1 }: { position: [number, number, number]
 /* ─── Greek Kiosk ─── */
 function KioskModel({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
   const { scene } = useGLTF('/models/greek_kiosk.glb');
-  const cloned = scene.clone(true);
 
-  cloned.traverse((child) => {
-    if ((child as THREE.Mesh).isMesh) {
-      child.castShadow = true;
-      child.receiveShadow = true;
-    }
-  });
+  const { cloned, normalizedScale, offset } = useMemo(() => {
+    const clonedScene = scene.clone(true);
 
-  const box = new THREE.Box3().setFromObject(cloned);
-  const size = box.getSize(new THREE.Vector3());
-  const maxDim = Math.max(size.x, size.y, size.z);
-  const s = (2 * scale) / maxDim;
-  const center = box.getCenter(new THREE.Vector3());
+    clonedScene.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+
+    const box = new THREE.Box3().setFromObject(clonedScene);
+    const size = box.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const s = (2 * scale) / maxDim;
+    const center = box.getCenter(new THREE.Vector3());
+
+    return {
+      cloned: clonedScene,
+      normalizedScale: s,
+      offset: [-center.x, -box.min.y, -center.z] as [number, number, number],
+    };
+  }, [scene, scale]);
 
   return (
     <group position={position}>
-      <group scale={[s, s, s]}>
-        <primitive object={cloned} position={[-center.x, -box.min.y, -center.z]} />
+      <group scale={[normalizedScale, normalizedScale, normalizedScale]}>
+        <primitive object={cloned} position={offset} />
       </group>
     </group>
   );
@@ -219,8 +246,8 @@ export function SceneLighting() {
         position={[8, 12, 5]}
         intensity={1.2}
         castShadow
-        shadow-mapSize-width={512}
-        shadow-mapSize-height={512}
+        shadow-mapSize-width={256}
+        shadow-mapSize-height={256}
         shadow-camera-near={0.5}
         shadow-camera-far={30}
         shadow-camera-left={-12}
