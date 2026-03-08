@@ -1,12 +1,14 @@
 import { npcData } from '@/data/npcData';
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw, Zap, ZapOff } from 'lucide-react';
 
 interface ProgressTrackerProps {
   visited: Set<string>;
   onReset: () => void;
+  performanceMode: boolean;
+  onTogglePerformance: () => void;
 }
 
-export function ProgressTracker({ visited, onReset }: ProgressTrackerProps) {
+export function ProgressTracker({ visited, onReset, performanceMode, onTogglePerformance }: ProgressTrackerProps) {
   const total = npcData.length;
   const count = visited.size;
   const pct = Math.round((count / total) * 100);
@@ -27,6 +29,17 @@ export function ProgressTracker({ visited, onReset }: ProgressTrackerProps) {
               style={{ width: `${pct}%` }}
             />
           </div>
+          <button
+            onClick={onTogglePerformance}
+            className={`p-1.5 rounded-lg transition-colors ${
+              performanceMode
+                ? 'bg-accent/20 text-accent'
+                : 'hover:bg-secondary/60 text-muted-foreground hover:text-foreground'
+            }`}
+            title={performanceMode ? 'Performance Mode: ON' : 'Performance Mode: OFF'}
+          >
+            {performanceMode ? <ZapOff size={14} /> : <Zap size={14} />}
+          </button>
           {count > 0 && (
             <button
               onClick={onReset}
@@ -37,6 +50,9 @@ export function ProgressTracker({ visited, onReset }: ProgressTrackerProps) {
             </button>
           )}
         </div>
+        {performanceMode && (
+          <p className="font-cormorant text-[10px] text-accent mt-1">⚡ Λειτουργία χαμηλής κατανάλωσης</p>
+        )}
       </div>
     </div>
   );

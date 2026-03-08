@@ -7,6 +7,9 @@ import { NPCData } from '@/data/npcData';
 
 const Index = () => {
   const [activeNPC, setActiveNPC] = useState<NPCData | null>(null);
+  const [performanceMode, setPerformanceMode] = useState(() => {
+    return localStorage.getItem('performanceMode') === 'true';
+  });
   const { visited, markVisited, resetProgress } = useProgress();
 
   const handleNPCInteract = (npc: NPCData) => {
@@ -14,10 +17,23 @@ const Index = () => {
     markVisited(npc.id);
   };
 
+  const togglePerformance = () => {
+    setPerformanceMode((prev) => {
+      const next = !prev;
+      localStorage.setItem('performanceMode', String(next));
+      return next;
+    });
+  };
+
   return (
     <div className="relative w-full h-screen overflow-hidden bg-foreground">
-      <AncientAgora visited={visited} onNPCInteract={handleNPCInteract} />
-      <ProgressTracker visited={visited} onReset={resetProgress} />
+      <AncientAgora visited={visited} onNPCInteract={handleNPCInteract} performanceMode={performanceMode} />
+      <ProgressTracker
+        visited={visited}
+        onReset={resetProgress}
+        performanceMode={performanceMode}
+        onTogglePerformance={togglePerformance}
+      />
 
       {/* Title */}
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40">
