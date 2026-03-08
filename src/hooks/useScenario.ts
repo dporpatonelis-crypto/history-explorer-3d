@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NPCData, npcData as fallbackData } from '@/data/npcData';
+import { ScreenConfig } from '@/components/EnvironmentScreens';
 
 interface ScenarioCharacter {
   id: string;
@@ -30,10 +31,11 @@ interface ScenarioJSON {
   characters: ScenarioCharacter[];
   dialogs: ScenarioDialog[];
   facts: ScenarioFact[];
+  screens?: ScreenConfig;
 }
 
-function parseScenario(data: ScenarioJSON): NPCData[] {
-  return data.characters.map((char) => ({
+function parseScenario(data: ScenarioJSON): { npcs: NPCData[]; screens?: ScreenConfig } {
+  const npcs = data.characters.map((char) => ({
     id: char.id,
     name: char.name,
     title: char.title,
@@ -50,10 +52,12 @@ function parseScenario(data: ScenarioJSON): NPCData[] {
       .filter((f) => f.character_id === char.id)
       .map((f) => f.fact),
   }));
+  return { npcs, screens: data.screens };
 }
 
 export function useScenario(scenarioName = 'default') {
   const [npcs, setNpcs] = useState<NPCData[]>(fallbackData);
+  const [screens, setScreens] = useState<ScreenConfig | undefined>();
   const [source, setSource] = useState<'fallback' | 'json'>('fallback');
   const [loading, setLoading] = useState(true);
 
@@ -68,9 +72,12 @@ export function useScenario(scenarioName = 'default') {
       .then((data: ScenarioJSON) => {
         if (cancelled) return;
         const parsed = parseScenario(data);
-        if (parsed.length > 0) {
-          setNpcs(parsed);
+        if (parsed.npcs.length > 0) {
+          setNpcs(parsed.npcs);
           setSource('json');
+        }
+        if (parsed.screens) {
+          setScreens(parsed.screens);
         }
       })
       .catch(() => {
@@ -83,5 +90,5 @@ export function useScenario(scenarioName = 'default') {
     return () => { cancelled = true; };
   }, [scenarioName]);
 
-  return { npcs, source, loading };
+  return { npcs, screens, source, loading };
 }
