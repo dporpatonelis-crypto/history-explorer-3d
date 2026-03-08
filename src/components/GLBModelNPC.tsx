@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, Suspense } from 'react';
+import { useRef, useState, useMemo, Suspense } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
@@ -13,21 +13,30 @@ interface GLBModelNPCProps {
 function GLBModel({ url, rotation }: { url: string; rotation: number }) {
   const { scene } = useGLTF(url);
 
-  scene.traverse((child) => {
-    if ((child as THREE.Mesh).isMesh) {
-      child.castShadow = true;
-      child.receiveShadow = true;
-    }
-  });
+  const { cloned, normalizedScale, offset } = useMemo(() => {
+    const clonedScene = scene.clone(true);
+    clonedScene.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
 
-  const box = new THREE.Box3().setFromObject(scene);
-  const center = box.getCenter(new THREE.Vector3());
-  const maxDim = Math.max(...box.getSize(new THREE.Vector3()).toArray());
-  const s = 1.8 / maxDim;
+    const box = new THREE.Box3().setFromObject(clonedScene);
+    const center = box.getCenter(new THREE.Vector3());
+    const maxDim = Math.max(...box.getSize(new THREE.Vector3()).toArray());
+    const s = 1.8 / maxDim;
+
+    return {
+      cloned: clonedScene,
+      normalizedScale: s,
+      offset: [-center.x, -box.min.y, -center.z] as [number, number, number],
+    };
+  }, [scene]);
 
   return (
-    <group scale={[s, s, s]} rotation={[0, rotation, 0]}>
-      <primitive object={scene} position={[-center.x, -box.min.y, -center.z]} />
+    <group scale={[normalizedScale, normalizedScale, normalizedScale]} rotation={[0, rotation, 0]}>
+      <primitive object={cloned} position={offset} />
     </group>
   );
 }
