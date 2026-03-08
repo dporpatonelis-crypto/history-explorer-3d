@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { TempleScene, MarbleFloor, SceneLighting } from '@/components/TempleScene';
 import { NPCFigure } from '@/components/NPCFigure';
-import { SketchfabNPC } from '@/components/SketchfabNPC';
+import { GLBModelNPC } from '@/components/GLBModelNPC';
 import { DialogPanel } from '@/components/DialogPanel';
 import { ProgressTracker } from '@/components/ProgressTracker';
 import { useProgress } from '@/hooks/useProgress';
@@ -20,7 +20,6 @@ const Index = () => {
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
-      {/* 3D Canvas */}
       <Canvas
         shadows
         camera={{ position: [0, 5, 12], fov: 50, near: 0.1, far: 100 }}
@@ -33,8 +32,8 @@ const Index = () => {
         <TempleScene />
 
         {npcData.map((npc) =>
-          npc.sketchfabUrl ? (
-            <SketchfabNPC
+          npc.glbModel ? (
+            <GLBModelNPC
               key={npc.id}
               npc={npc}
               isVisited={visited.has(npc.id)}
@@ -61,7 +60,6 @@ const Index = () => {
         />
       </Canvas>
 
-      {/* UI overlays */}
       <ProgressTracker visited={visited} onReset={resetProgress} />
 
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40">
