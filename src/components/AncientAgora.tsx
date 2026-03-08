@@ -26,7 +26,8 @@ export function AncientAgora({ visited, onNPCInteract }: AncientAgoraProps) {
         src="https://sketchfab.com/models/4552d90409924583b1fadfc9953134cb/embed?autostart=1&ui_hint=0&ui_theme=dark"
       />
 
-      {/* NPC Overlay Buttons */}
+      {/* NPC Overlay — pointer-events-none so iframe stays interactive */}
+      <div className="absolute inset-0 z-20 pointer-events-none">
       {npcData.map((npc) => {
         const pos = npcScreenPositions[npc.id];
         if (!pos) return null;
@@ -36,7 +37,7 @@ export function AncientAgora({ visited, onNPCInteract }: AncientAgoraProps) {
           <button
             key={npc.id}
             onClick={() => onNPCInteract(npc)}
-            className="absolute z-20 group flex flex-col items-center gap-1 transform -translate-x-1/2 -translate-y-1/2 transition-transform hover:scale-110"
+            className="absolute z-20 group flex flex-col items-center gap-1 transform -translate-x-1/2 -translate-y-1/2 transition-transform hover:scale-110 pointer-events-auto"
             style={{ top: pos.top, left: pos.left }}
           >
             {/* Pulse ring */}
@@ -63,6 +64,7 @@ export function AncientAgora({ visited, onNPCInteract }: AncientAgoraProps) {
           </button>
         );
       })}
+      </div>
     </div>
   );
 }
