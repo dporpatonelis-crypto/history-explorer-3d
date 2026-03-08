@@ -99,7 +99,7 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
       {hasLeft && (
         <CurvedScreenMesh
           imageUrl={config.left_image_url}
-          position={[-3, 5.5, 0]}
+          position={[-4, 5.5, 0]}
           rotation={[0, 0, 0]}
           width={20.5}
           arc={2.4}
