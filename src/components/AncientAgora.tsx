@@ -8,11 +8,11 @@ interface AncientAgoraProps {
 
 // Map NPC positions to screen overlay positions (percentage-based)
 const npcScreenPositions: Record<string, { top: string; left: string }> = {
-  socrates: { top: '55%', left: '20%' },
-  plato: { top: '50%', left: '75%' },
-  aristotle: { top: '45%', left: '50%' },
-  hypatia: { top: '60%', left: '35%' },
-  pythagoras: { top: '55%', left: '65%' },
+  socrates: { top: '58%', left: '38%' },
+  plato: { top: '54%', left: '62%' },
+  aristotle: { top: '50%', left: '50%' },
+  hypatia: { top: '62%', left: '45%' },
+  pythagoras: { top: '60%', left: '56%' },
 };
 
 function buildEmbedUrl(performanceMode: boolean) {
