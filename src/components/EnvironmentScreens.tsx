@@ -68,11 +68,18 @@ function CurvedScreenMesh({
 }) {
   const isVideo = isVideoUrl(mediaUrl);
   const [loadError, setLoadError] = useState(false);
-  const imageTexture = useTexture(
-    isVideo ? '/placeholder.svg' : mediaUrl,
-    undefined,
-    () => setLoadError(true)
-  );
+  const imageTexture = useTexture(isVideo ? '/placeholder.svg' : mediaUrl, (tex) => {
+    // loaded ok
+  });
+  
+  // Listen for load errors via onError on the texture loader
+  useEffect(() => {
+    if (!isVideo && mediaUrl) {
+      const img = new Image();
+      img.onerror = () => setLoadError(true);
+      img.src = mediaUrl;
+    }
+  }, [mediaUrl, isVideo]);
   const videoTexture = useVideoTexture(isVideo ? mediaUrl : '');
   
   const texture = isVideo ? videoTexture : imageTexture;
