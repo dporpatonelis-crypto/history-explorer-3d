@@ -25,7 +25,7 @@ function StableOrbitControls() {
     <OrbitControls
       ref={controlsRef}
       makeDefault
-      enablePan={false}
+      enablePan={true}
       enableDamping
       dampingFactor={0.08}
       minDistance={4}
