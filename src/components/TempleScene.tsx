@@ -110,6 +110,12 @@ export function TempleScene() {
   return (
     <group>
       <Platform />
+
+      {/* GLB Pedestal */}
+      <Suspense fallback={null}>
+        <GLBPedestal position={[0, 0.3, 1]} scale={1.2} />
+      </Suspense>
+
       {allCols.map((pos, i) => <Column key={i} position={pos} />)}
 
       {/* Architraves — left side */}
