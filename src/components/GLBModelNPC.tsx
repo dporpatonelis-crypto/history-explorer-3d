@@ -12,37 +12,24 @@ interface GLBModelNPCProps {
 
 function GLBModel({ url, rotation }: { url: string; rotation: number }) {
   const { scene } = useGLTF(url);
-  const groupRef = useRef<THREE.Group>(null);
 
-  useEffect(() => {
-    if (!groupRef.current) return;
-    const model = scene.clone(true);
-    
-    model.traverse((child) => {
-      if ((child as THREE.Mesh).isMesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-      }
-    });
-
-    const box = new THREE.Box3().setFromObject(model);
-    const size = box.getSize(new THREE.Vector3());
-    const center = box.getCenter(new THREE.Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z);
-    const s = 1.8 / maxDim;
-
-    model.scale.setScalar(s);
-    model.position.set(-center.x * s, -box.min.y * s, -center.z * s);
-    model.rotation.y = rotation;
-
-    // Clear previous children
-    while (groupRef.current.children.length) {
-      groupRef.current.remove(groupRef.current.children[0]);
+  scene.traverse((child) => {
+    if ((child as THREE.Mesh).isMesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
     }
-    groupRef.current.add(model);
-  }, [scene, rotation]);
+  });
 
-  return <group ref={groupRef} />;
+  const box = new THREE.Box3().setFromObject(scene);
+  const center = box.getCenter(new THREE.Vector3());
+  const maxDim = Math.max(...box.getSize(new THREE.Vector3()).toArray());
+  const s = 1.8 / maxDim;
+
+  return (
+    <group scale={[s, s, s]} rotation={[0, rotation, 0]}>
+      <primitive object={scene} position={[-center.x, -box.min.y, -center.z]} />
+    </group>
+  );
 }
 
 export function GLBModelNPC({ npc, isVisited, onInteract }: GLBModelNPCProps) {
