@@ -41,13 +41,13 @@ function GLBModel({ url, rotation }: { url: string; rotation: number }) {
   );
 }
 
-export function GLBModelNPC({ npc, isVisited, onInteract }: GLBModelNPCProps) {
+export const GLBModelNPC = memo(function GLBModelNPC({ npc, isVisited, onInteract }: GLBModelNPCProps) {
   const groupRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
 
-  useFrame(() => {
+  useFrame(({ clock }) => {
     if (!groupRef.current) return;
-    groupRef.current.position.y = npc.position[1] + Math.sin(Date.now() * 0.0015) * 0.03;
+    groupRef.current.position.y = npc.position[1] + Math.sin(clock.elapsedTime * 1.5) * 0.03;
   });
 
   return (
