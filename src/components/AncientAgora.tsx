@@ -64,6 +64,7 @@ export function AncientAgora({ visited, onNPCInteract }: AncientAgoraProps) {
           </button>
         );
       })}
+      </div>
     </div>
   );
 }
