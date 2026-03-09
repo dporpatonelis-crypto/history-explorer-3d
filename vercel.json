@@ -1,5 +1,13 @@
 {
   "rewrites": [
     { "source": "/((?!assets|models|scenarios|favicon.ico|robots.txt).*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/scenarios/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" }
+      ]
+    }
   ]
 }

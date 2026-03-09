@@ -83,7 +83,13 @@ export function useScenario(scenarioName = 'default') {
   useEffect(() => {
     let cancelled = false;
 
-    fetch(`/scenarios/${scenarioName}.json`)
+    fetch(`/scenarios/${scenarioName}.json`, {
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+      },
+    })
       .then((res) => {
         if (!res.ok) throw new Error('Not found');
         return res.json();
