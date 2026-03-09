@@ -83,7 +83,7 @@ export function useScenario(scenarioName = 'default') {
   useEffect(() => {
     let cancelled = false;
 
-    fetch(`/scenarios/${scenarioName}.json`, {
+    fetch(`/scenarios/${scenarioName}.json?v=${Date.now()}`, {
       cache: 'no-store',
       headers: {
         'Cache-Control': 'no-cache',
