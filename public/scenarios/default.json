@@ -7,10 +7,10 @@
       "position_y": 0,
       "position_z": 0.3,
       "rotation": 0,
-      "color": "#d4a574",
-      "robeColor": "#f5f0e8",
+      "color": "",
+      "robeColor": "",
       "description": "Ο πατέρας της φιλοσοφίας",
-      "glbModel": " /models/ancient_greek_1.glb"
+      "glbModel": " /models/Socrates.glb"
     }
   ],
   "dialogs": [
@@ -51,7 +51,7 @@
   ],
   "screens": {
     "left_image_url": "https://i.ibb.co/bjzd33t4/Screenshot-2026-03-08-21-34-56-785-com-miui-gallery.jpg",
-    "right_image_url": "https://i.ibb.co/gM2KghNQ/Screen-Shot-2026-03-03-at-11-54-35.png",
+    "right_image_url": "https://i.ibb.co/GQ7P88jD/bg-caseclosed.jpg",
     "left_label": "Αρχαία αγορά Αθήνας Δίκη",
     "right_label": "Αρχαία Αθήνα"
   }
