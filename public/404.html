@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Redirecting…</title>
+  <script>
+    // GitHub Pages SPA redirect — stores URL and redirects to index.html
+    sessionStorage.redirect = location.href;
+    var base = location.pathname.split('/').slice(0, 2).join('/');
+    location.replace(base + '/');
+  </script>
+</head>
+<body>
+</body>
+</html>
