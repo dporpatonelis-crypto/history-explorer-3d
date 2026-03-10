@@ -14,6 +14,7 @@ interface ScenarioCharacter {
   robeColor: string;
   description: string;
   glbModel?: string;
+  scale?: number;
 }
 
 interface ScenarioDialog {
@@ -64,6 +65,7 @@ function parseScenario(data: ScenarioJSON): { npcs: NPCData[]; screens?: ScreenC
     robeColor: char.robeColor,
     description: char.description,
     glbModel: char.glbModel?.trim() || undefined,
+    scale: char.scale || undefined,
     dialogs: data.dialogs
       .filter((d) => d.character_id === char.id)
       .map((d) => ({ question: d.question, answer: d.answer })),

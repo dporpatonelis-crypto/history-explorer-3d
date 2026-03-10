@@ -37,7 +37,7 @@
       "glbModel": "/models/Aristotle compressed (2).glb"
     },
     {
-      "id": "tree",
+      "id": "tree1",
       "name": "tree",
       "position_x": -10,
       "position_y": 0,
@@ -46,10 +46,11 @@
       "color": "",
       "robeColor": "",
       "description": "",
-      "glbModel": "/models/tree compressed (2).glb"
+      "glbModel": "/models/tree compressed (2).glb",
+      "scale": 3
     },
     {
-      "id": "tree",
+      "id": "tree2",
       "name": "tree",
       "position_x": 10,
       "position_y": 0,
@@ -58,7 +59,86 @@
       "color": "",
       "robeColor": "",
       "description": "",
-      "glbModel": "/models/tree compressed (2).glb"
+      "glbModel": "/models/tree compressed (2).glb",
+      "scale": 3
+    },
+    {
+      "id": "tree3",
+      "name": "tree",
+      "position_x": -11,
+      "position_y": 0,
+      "position_z": 4,
+      "rotation": 0.5,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/tree compressed (2).glb",
+      "scale": 3
+    },
+    {
+      "id": "tree4",
+      "name": "tree",
+      "position_x": 11,
+      "position_y": 0,
+      "position_z": 4,
+      "rotation": -0.5,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/tree compressed (2).glb",
+      "scale": 3
+    },
+    {
+      "id": "tree5",
+      "name": "tree",
+      "position_x": -10.5,
+      "position_y": 0,
+      "position_z": 7.5,
+      "rotation": 1,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/tree compressed (2).glb",
+      "scale": 3
+    },
+    {
+      "id": "tree6",
+      "name": "tree",
+      "position_x": 10.5,
+      "position_y": 0,
+      "position_z": 7.5,
+      "rotation": -1,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/tree compressed (2).glb",
+      "scale": 3
+    },
+    {
+      "id": "tree7",
+      "name": "tree",
+      "position_x": -9,
+      "position_y": 0,
+      "position_z": 10.5,
+      "rotation": 0.3,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/tree compressed (2).glb",
+      "scale": 3
+    },
+    {
+      "id": "tree8",
+      "name": "tree",
+      "position_x": 9,
+      "position_y": 0,
+      "position_z": 10.5,
+      "rotation": -0.3,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/tree compressed (2).glb",
+      "scale": 3
     }
   ],
   "dialogs": [

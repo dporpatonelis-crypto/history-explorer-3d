@@ -15,6 +15,7 @@ export interface NPCData {
   dialogs: NPCDialog[];
   historicalFacts: string[];
   glbModel?: string;
+  scale?: number;
 }
 
 export const npcData: NPCData[] = [

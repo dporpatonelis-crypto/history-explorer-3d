@@ -10,7 +10,7 @@ interface GLBModelNPCProps {
   onInteract: () => void;
 }
 
-function GLBModel({ url, rotation }: { url: string; rotation: number }) {
+function GLBModel({ url, rotation, scale }: { url: string; rotation: number; scale?: number }) {
   const { scene } = useGLTF(url);
 
   const { cloned, normalizedScale, offset } = useMemo(() => {
@@ -29,7 +29,7 @@ function GLBModel({ url, rotation }: { url: string; rotation: number }) {
 
     return {
       cloned: clonedScene,
-      normalizedScale: s,
+      normalizedScale: s * (scale || 1),
       offset: [-center.x, -box.min.y, -center.z] as [number, number, number],
     };
   }, [scene]);
@@ -44,9 +44,10 @@ function GLBModel({ url, rotation }: { url: string; rotation: number }) {
 export const GLBModelNPC = memo(function GLBModelNPC({ npc, isVisited, onInteract }: GLBModelNPCProps) {
   const groupRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
+  const isDecoration = !npc.description && npc.name === 'tree';
 
   useFrame(({ clock }) => {
-    if (!groupRef.current) return;
+    if (!groupRef.current || isDecoration) return;
     groupRef.current.position.y = npc.position[1] + Math.sin(clock.elapsedTime * 1.5) * 0.03;
   });
 
@@ -54,57 +55,58 @@ export const GLBModelNPC = memo(function GLBModelNPC({ npc, isVisited, onInterac
     <group
       ref={groupRef}
       position={npc.position}
-      onClick={(e) => { e.stopPropagation(); onInteract(); }}
-      onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; }}
-      onPointerOut={() => { setHovered(false); document.body.style.cursor = 'default'; }}
+      onClick={isDecoration ? undefined : (e) => { e.stopPropagation(); onInteract(); }}
+      onPointerOver={isDecoration ? undefined : (e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; }}
+      onPointerOut={isDecoration ? undefined : () => { setHovered(false); document.body.style.cursor = 'default'; }}
     >
       <Suspense fallback={
         <mesh position={[0, 0.8, 0]}>
           <boxGeometry args={[0.5, 1.6, 0.5]} />
-          <meshStandardMaterial color={npc.color} wireframe />
+          <meshStandardMaterial color={npc.color || '#888'} wireframe />
         </mesh>
       }>
-        <GLBModel url={npc.glbModel!} rotation={npc.rotation} />
+        <GLBModel url={npc.glbModel!} rotation={npc.rotation} scale={npc.scale} />
       </Suspense>
 
-      {/* Name label */}
-      <Html position={[0, 2.3, 0]} center distanceFactor={8} style={{ pointerEvents: 'none' }}>
-        <div
-          style={{ pointerEvents: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}
-          onClick={(e) => { e.stopPropagation(); onInteract(); }}
-        >
+      {!isDecoration && (
+        <Html position={[0, 2.3, 0]} center distanceFactor={8} style={{ pointerEvents: 'none' }}>
           <div
-            style={{
-              background: isVisited ? 'hsla(var(--primary), 0.9)' : 'hsla(0, 0%, 0%, 0.75)',
-              color: isVisited ? 'hsl(var(--primary-foreground))' : 'white',
-              padding: '4px 12px',
-              borderRadius: 6,
-              fontFamily: 'Cinzel, serif',
-              fontSize: 12,
-              fontWeight: 700,
-              whiteSpace: 'nowrap',
-              border: isVisited ? '1px solid hsl(var(--primary))' : '1px solid hsla(0,0%,100%,0.3)',
-              backdropFilter: 'blur(4px)',
-            }}
+            style={{ pointerEvents: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}
+            onClick={(e) => { e.stopPropagation(); onInteract(); }}
           >
-            {npc.name}{isVisited && ' ✓'}
-          </div>
-          {hovered && !isVisited && (
-            <div style={{
-              background: 'hsl(var(--primary))',
-              color: 'hsl(var(--primary-foreground))',
-              padding: '2px 8px',
-              borderRadius: 4,
-              fontSize: 10,
-              fontFamily: 'Cinzel, serif',
-            }}>
-              Πάτησε για συνομιλία
+            <div
+              style={{
+                background: isVisited ? 'hsla(var(--primary), 0.9)' : 'hsla(0, 0%, 0%, 0.75)',
+                color: isVisited ? 'hsl(var(--primary-foreground))' : 'white',
+                padding: '4px 12px',
+                borderRadius: 6,
+                fontFamily: 'Cinzel, serif',
+                fontSize: 12,
+                fontWeight: 700,
+                whiteSpace: 'nowrap',
+                border: isVisited ? '1px solid hsl(var(--primary))' : '1px solid hsla(0,0%,100%,0.3)',
+                backdropFilter: 'blur(4px)',
+              }}
+            >
+              {npc.name}{isVisited && ' ✓'}
             </div>
-          )}
-        </div>
-      </Html>
+            {hovered && !isVisited && (
+              <div style={{
+                background: 'hsl(var(--primary))',
+                color: 'hsl(var(--primary-foreground))',
+                padding: '2px 8px',
+                borderRadius: 4,
+                fontSize: 10,
+                fontFamily: 'Cinzel, serif',
+              }}>
+                Πάτησε για συνομιλία
+              </div>
+            )}
+          </div>
+        </Html>
+      )}
 
-      {hovered && (
+      {hovered && !isDecoration && (
         <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <ringGeometry args={[0.5, 0.7, 24]} />
           <meshBasicMaterial color="hsl(45, 90%, 55%)" transparent opacity={0.45} side={THREE.DoubleSide} />
