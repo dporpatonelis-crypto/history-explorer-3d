@@ -11,6 +11,30 @@
       "robeColor": "",
       "description": "Ο πατέρας της φιλοσοφίας",
       "glbModel": " /models/Socrates.glb"
+    },
+    {
+      "id": "hypatia",
+      "name": "Υπατία",
+      "position_x": 3.5,
+      "position_y": 0,
+      "position_z": 0.3,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "Η φιλόσοφος της Αλεξάνδρειας",
+      "glbModel": "/models/hypatia compress).glb"
+    },
+    {
+      "id": "aristotle",
+      "name": "Αριστοτέλης",
+      "position_x": -8,
+      "position_y": 0,
+      "position_z": 0.8,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "Πατέρας της επιστήμης",
+      "glbModel": "/models/Aristotle compressed (2).glb"
     }
   ],
   "dialogs": [
@@ -47,10 +71,18 @@
     {
       "character_id": "socrates",
       "fact": "Αρνήθηκε να δραπετεύσει, επιλέγοντας να πιει το κώνειο παραμένοντας πιστός στους νόμους."
+    },
+    {
+      "character_id": "aristotle",
+      "fact": "Διδάσκαλος του Μ. Αλεξάνδρου"
+    },
+    {
+      "character_id": "aristotle",
+      "fact": "Ανέπτυξε την επιστήμη"
     }
   ],
   "screens": {
-    "left_image_url": "https://i.ibb.co/bjzd33t4/Screenshot-2026-03-08-21-34-56-785-com-miui-gallery.jpg",
+    "left_image_url": " /models/Judging_Socrates.mp4",
     "right_image_url": "https://i.ibb.co/GQ7P88jD/bg-caseclosed.jpg",
     "left_label": "Αρχαία αγορά Αθήνας Δίκη",
     "right_label": "Αρχαία Αθήνα"
