@@ -38,8 +38,8 @@
     },
     {
       "id": "ancient_tiles.glb",
-      "name": "tiles",
-      "position_x": -5,
+      "name": "tree",
+      "position_x": -3.5,
       "position_y": 0,
       "position_z": 0.3,
       "rotation": 0,
@@ -51,7 +51,7 @@
     {
       "id": "Constantine compressed (2).glb",
       "name": "Μ. Κωνσταντίνος",
-      "position_x": -5,
+      "position_x": -6,
       "position_y": 0.05,
       "position_z": 0.3,
       "rotation": 0,
