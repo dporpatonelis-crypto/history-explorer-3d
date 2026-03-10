@@ -29,7 +29,7 @@ function GLBModel({ url, rotation }: { url: string; rotation: number }) {
 
     return {
       cloned: clonedScene,
-      normalizedScale: s,
+      normalizedScale: s * (scale || 1),
       offset: [-center.x, -box.min.y, -center.z] as [number, number, number],
     };
   }, [scene]);
