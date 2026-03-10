@@ -35,6 +35,30 @@
       "robeColor": "",
       "description": "Πατέρας της επιστήμης",
       "glbModel": "/models/Aristotle compressed (2).glb"
+    },
+    {
+      "id": "ancient_tiles.glb",
+      "name": "tiles",
+      "position_x": -5,
+      "position_y": 0,
+      "position_z": 0.8,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "βάση",
+      "glbModel": "/models/ancient_tiles.glb"
+    },
+    {
+      "id": "castle stone floor.glb",
+      "name": "floor",
+      "position_x": 5,
+      "position_y": 0,
+      "position_z": 0.3,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "floor",
+      "glbModel": "/models/castle stone floor.glb"
     }
   ],
   "dialogs": [
