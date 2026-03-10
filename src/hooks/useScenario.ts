@@ -14,6 +14,7 @@ interface ScenarioCharacter {
   robeColor: string;
   description: string;
   glbModel?: string;
+  scale?: number;
 }
 
 interface ScenarioDialog {
