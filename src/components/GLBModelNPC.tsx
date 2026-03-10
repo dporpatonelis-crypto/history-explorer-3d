@@ -10,7 +10,7 @@ interface GLBModelNPCProps {
   onInteract: () => void;
 }
 
-function GLBModel({ url, rotation }: { url: string; rotation: number }) {
+function GLBModel({ url, rotation, scale }: { url: string; rotation: number; scale?: number }) {
   const { scene } = useGLTF(url);
 
   const { cloned, normalizedScale, offset } = useMemo(() => {
