@@ -64,7 +64,7 @@ export const GLBModelNPC = memo(function GLBModelNPC({ npc, isVisited, onInterac
           <meshStandardMaterial color={npc.color} wireframe />
         </mesh>
       }>
-        <GLBModel url={npc.glbModel!} rotation={npc.rotation} />
+        <GLBModel url={npc.glbModel!} rotation={npc.rotation} scale={npc.scale} />
       </Suspense>
 
       {/* Name label */}
