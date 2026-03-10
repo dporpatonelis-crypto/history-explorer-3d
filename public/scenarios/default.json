@@ -39,7 +39,7 @@
     {
       "id": "ancient_tiles.glb",
       "name": "tiles",
-      "position_x": -8,
+      "position_x": -5,
       "position_y": 0,
       "position_z": 0.8,
       "rotation": 0,
@@ -51,14 +51,14 @@
     {
       "id": "castle stone floor.glb",
       "name": "floor",
-      "position_x": 3.5,
+      "position_x": 5,
       "position_y": 0,
       "position_z": 0.3,
       "rotation": 0,
       "color": "",
       "robeColor": "",
       "description": "floor",
-      "glbModel": "castle stone floor.glb"
+      "glbModel": "/models/castle stone floor.glb"
     }
   ],
   "dialogs": [
