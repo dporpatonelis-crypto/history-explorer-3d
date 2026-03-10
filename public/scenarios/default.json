@@ -47,6 +47,42 @@
       "robeColor": "",
       "description": "βάση",
       "glbModel": "/models/ancient_tiles.glb"
+    },
+    {
+      "id": "Constantine compressed (2).glb",
+      "name": "Μ. Κωνσταντίνος",
+      "position_x": -5,
+      "position_y": 0.3,
+      "position_z": 0.8,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "Πρώτος Βυζαντινός Αυτοκράτορας",
+      "glbModel": "/models/Constantine compressed (2).glb"
+    },
+    {
+      "id": "monk compressed.glb",
+      "name": "",
+      "position_x": 6,
+      "position_y": 0,
+      "position_z": 0.3,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "Άγιος",
+      "glbModel": "/models/monk compressed.glb"
+    },
+    {
+      "id": "tree compressed (2).glb",
+      "name": "",
+      "position_x": -10,
+      "position_y": 0,
+      "position_z": 0.3,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/tree compressed (2).glb"
     }
   ],
   "dialogs": [
