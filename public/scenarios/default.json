@@ -37,18 +37,6 @@
       "glbModel": "/models/Aristotle compressed (2).glb"
     },
     {
-      "id": "ancient_tiles.glb",
-      "name": "tree",
-      "position_x": -3.5,
-      "position_y": 0,
-      "position_z": 0.3,
-      "rotation": 0,
-      "color": "",
-      "robeColor": "",
-      "description": "",
-      "glbModel": "/models/ancient_tiles.glb"
-    },
-    {
       "id": "Constantine compressed (2).glb",
       "name": "Μ. Κωνσταντίνος",
       "position_x": 5.75,
@@ -71,54 +59,6 @@
       "robeColor": "",
       "description": "Άγιος",
       "glbModel": "/models/monk compressed.glb"
-    },
-    {
-      "id": "ancient_tiles.glb",
-      "name": "tree",
-      "position_x": 3.5,
-      "position_y": 0,
-      "position_z": 0.3,
-      "rotation": 0,
-      "color": "",
-      "robeColor": "",
-      "description": "",
-      "glbModel": "/models/ancient_tiles.glb"
-    },
-    {
-      "id": "ancient_tiles.glb",
-      "name": "tree",
-      "position_x": 8,
-      "position_y": 0,
-      "position_z": 0.3,
-      "rotation": 0,
-      "color": "",
-      "robeColor": "",
-      "description": "",
-      "glbModel": "/models/ancient_tiles.glb"
-    },
-    {
-      "id": "ancient_tiles.glb",
-      "name": "tree",
-      "position_x": 5.75,
-      "position_y": 0,
-      "position_z": 0.3,
-      "rotation": 0,
-      "color": "",
-      "robeColor": "",
-      "description": "",
-      "glbModel": "/models/ancient_tiles.glb"
-    },
-    {
-      "id": "ancient_tiles.glb",
-      "name": "tree",
-      "position_x": -8,
-      "position_y": 0,
-      "position_z": 0.3,
-      "rotation": 0,
-      "color": "",
-      "robeColor": "",
-      "description": "",
-      "glbModel": "/models/ancient_tiles.glb"
     }
   ],
   "dialogs": [
