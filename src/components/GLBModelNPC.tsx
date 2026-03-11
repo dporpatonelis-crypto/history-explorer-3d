@@ -48,7 +48,7 @@ export const GLBModelNPC = memo(function GLBModelNPC({ npc, isVisited, onInterac
 
   useFrame(({ clock }) => {
     if (!groupRef.current || isDecoration) return;
-    groupRef.current.position.y = npc.position[1] + Math.sin(clock.elapsedTime * 1.5) * 0.03;
+    groupRef.current.position.y = npc.position[1] + Math.sin(clock.elapsedTime * 1.5) * 0.015;
   });
 
   return (
