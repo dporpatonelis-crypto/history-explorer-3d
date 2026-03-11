@@ -57,9 +57,9 @@ const Beam = memo(function Beam({ from, to }: { from: [number, number, number]; 
 /* ─── Steps / platform ─── */
 /* Platform removed — all objects grounded at y=0 */
 
-/* ─── Greek Kiosk ─── */
-const KioskModel = memo(function KioskModel({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
-  const { scene } = useGLTF('/models/greek_kiosk.glb');
+/* ─── Reusable GLB model ─── */
+const StaticGLBModel = memo(function StaticGLBModel({ url, position, scale = 1 }: { url: string; position: [number, number, number]; scale?: number }) {
+  const { scene } = useGLTF(url);
 
   const { cloned, normalizedScale, offset } = useMemo(() => {
     const clonedScene = scene.clone(true);
@@ -90,6 +90,20 @@ const KioskModel = memo(function KioskModel({ position, scale = 1 }: { position:
   );
 });
 
+/* ─── Permanent decorative trees ─── */
+const TREE_MODEL = '/models/tree compressed (2).glb';
+const TREE_SCALE = 6;
+const TREES: [number, number, number][] = [
+  [-10, 0, 0.8],
+  [-9, 0, 5],
+  [-10, 0, 9],
+  [-11, 0, 10.5],
+  [10, 0, 0.8],
+  [9, 0, 5],
+  [10, 0, 9],
+  [11, 0, 10.5],
+];
+
 /* ─── Precomputed colonnade data (module-level, zero per-render cost) ─── */
 const NUM_COLS = 16;
 const RADIUS = 20;
@@ -115,7 +129,10 @@ export const TempleScene = memo(function TempleScene() {
   return (
     <group>
       <Suspense fallback={null}>
-        <KioskModel position={[0, 0, -4]} scale={5} />
+        <StaticGLBModel url="/models/greek_kiosk.glb" position={[0, 0, -4]} scale={5} />
+        {TREES.map((pos, i) => (
+          <StaticGLBModel key={`tree-${i}`} url={TREE_MODEL} position={pos} scale={TREE_SCALE} />
+        ))}
       </Suspense>
       {CIRCLE_COLS.map((pos, i) => <Column key={i} position={pos} />)}
       {CIRCLE_PAIRS.map((p, i) => (
