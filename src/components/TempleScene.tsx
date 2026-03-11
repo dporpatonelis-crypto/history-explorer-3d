@@ -129,7 +129,10 @@ export const TempleScene = memo(function TempleScene() {
   return (
     <group>
       <Suspense fallback={null}>
-        <KioskModel position={[0, 0, -4]} scale={5} />
+        <StaticGLBModel url="/models/greek_kiosk.glb" position={[0, 0, -4]} scale={5} />
+        {TREES.map((pos, i) => (
+          <StaticGLBModel key={`tree-${i}`} url={TREE_MODEL} position={pos} scale={TREE_SCALE} />
+        ))}
       </Suspense>
       {CIRCLE_COLS.map((pos, i) => <Column key={i} position={pos} />)}
       {CIRCLE_PAIRS.map((p, i) => (
