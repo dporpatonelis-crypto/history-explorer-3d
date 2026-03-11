@@ -45,7 +45,7 @@
       "rotation": 0,
       "color": "",
       "robeColor": "",
-      "description": "βάση",
+      "description": "",
       "glbModel": "/models/ancient_tiles.glb"
     },
     {
@@ -63,7 +63,7 @@
     {
       "id": "monk compressed.glb",
       "name": "",
-      "position_x": 6,
+      "position_x": 8,
       "position_y": 0,
       "position_z": 0.3,
       "rotation": 0,
@@ -73,16 +73,52 @@
       "glbModel": "/models/monk compressed.glb"
     },
     {
-      "id": "tree compressed (2).glb",
+      "id": "ancient_tiles.glb",
       "name": "tree",
-      "position_x": -10,
+      "position_x": 3.5,
       "position_y": 0,
       "position_z": 0.3,
       "rotation": 0,
       "color": "",
       "robeColor": "",
       "description": "",
-      "glbModel": "/models/tree compressed (2).glb"
+      "glbModel": "/models/ancient_tiles.glb"
+    },
+    {
+      "id": "ancient_tiles.glb",
+      "name": "tree",
+      "position_x": 8,
+      "position_y": 0,
+      "position_z": 0.3,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/ancient_tiles.glb"
+    },
+    {
+      "id": "ancient_tiles.glb",
+      "name": "tree",
+      "position_x": 6,
+      "position_y": 0,
+      "position_z": 0.3,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/ancient_tiles.glb"
+    },
+    {
+      "id": "ancient_tiles.glb",
+      "name": "tree",
+      "position_x": -8,
+      "position_y": 0,
+      "position_z": 0.3,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/ancient_tiles.glb"
     }
   ],
   "dialogs": [
