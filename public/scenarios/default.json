@@ -119,17 +119,65 @@
       "robeColor": "",
       "description": "",
       "glbModel": "/models/ancient_tiles.glb"
+    },
+    {
+      "id": "Alexandria compressed (2).glb",
+      "name": "Μ. Αλέξανδρος",
+      "position_x": -5.75,
+      "position_y": 0.05,
+      "position_z": 0.3,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "Βασιλιάς Μακεδονίας",
+      "glbModel": "/models/Alexandria compressed (2).glb"
+    },
+    {
+      "id": "ancient_tiles.glb",
+      "name": "tree",
+      "position_x": -5.75,
+      "position_y": 0,
+      "position_z": 0.3,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/ancient_tiles.glb"
+    },
+    {
+      "id": "ψηφιδωτό Πέλλας compressed (2).glb",
+      "name": "tree",
+      "position_x": -5.75,
+      "position_y": 0,
+      "position_z": 0.7,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/ψηφιδωτό Πέλλας compressed (2).glb"
+    },
+    {
+      "id": "Λιβελο compressed (2).glb",
+      "name": "tree",
+      "position_x": 0,
+      "position_y": 1,
+      "position_z": 0.3,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/Λιβελο compressed (2).glb"
     }
   ],
   "dialogs": [
     {
       "character_id": "socrates",
-      "question": "Δάσκαλε, οι κατήγοροι λένε ότι διαφθείρετε τους νέους. Τι απαντάτε;$ | $Πες μου εσύ, η αναζήτηση της αλήθειας και η εξέταση του βίου είναι διαφθορά ή η μεγαλύτερη αρετή για έναν άνθρωπο;$",
-      "answer": "$Πες μου εσύ, η αναζήτηση της αλήθειας και η εξέταση του βίου είναι διαφθορά ή η μεγαλύτερη αρετή για έναν άνθρωπο;$"
+      "question": "Δάσκαλε, οι κατήγοροι λένε ότι διαφθείρετε τους νέους. Τι απαντάτε; | Πες μου εσύ, η αναζήτηση της αλήθειας και η εξέταση του βίου είναι διαφθορά ή η μεγαλύτερη αρετή για έναν άνθρωπο;",
+      "answer": "Πες μου εσύ, η αναζήτηση της αλήθειας και η εξέταση του βίου είναι διαφθορά ή η μεγαλύτερη αρετή για έναν άνθρωπο;"
     },
     {
       "character_id": "socrates",
-      "question": "$Πώς μπορώ να αποφασίσω αν είστε ένοχος ή αθώος;$",
+      "question": "Πώς μπορώ να αποφασίσω αν είστε ένοχος ή αθώος;",
       "answer": "Χρησιμοποίησε τη λογική σου: είναι προτιμότερο να σωθεί το σώμα μέσω ενός ψεύδους ή η ψυχή μέσω της αλήθειας;"
     },
     {
