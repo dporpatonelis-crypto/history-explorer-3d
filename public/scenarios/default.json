@@ -121,18 +121,6 @@
       "glbModel": "/models/ancient_tiles.glb"
     },
     {
-      "id": "Alexandros compressed (2).glb",
-      "name": "Μ. Αλέξανδρος",
-      "position_x": -5.75,
-      "position_y": 0.05,
-      "position_z": 0.3,
-      "rotation": 0,
-      "color": "",
-      "robeColor": "",
-      "description": "Βασιλιάς Μακεδονίας",
-      "glbModel": "/models/Alexandria compressed (2).glb"
-    },
-    {
       "id": "ancient_tiles.glb",
       "name": "tree",
       "position_x": -5.75,
