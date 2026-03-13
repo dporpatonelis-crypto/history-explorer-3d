@@ -190,7 +190,19 @@
       "color": "",
       "robeColor": "",
       "description": "",
-      "glbModel": "/models/Αλεξάνδρεια compressed (1).glb"
+      "glbModel": "/models/Valhalla grok compress.glb"
+    },
+    {
+      "id": "Alexander.glb",
+      "name": "Μ. Αλέξανδρος",
+      "position_x": -5.75,
+      "position_y": 0.05,
+      "position_z": 0.3,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "Βασιλιάς Μακεδονίας",
+      "glbModel": "/models/Alexander.glb"
     }
   ],
   "dialogs": [
