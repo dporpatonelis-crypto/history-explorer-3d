@@ -121,7 +121,7 @@
       "glbModel": "/models/ancient_tiles.glb"
     },
     {
-      "id": "Alexandria compressed (2).glb",
+      "id": "Alexandros compressed (2).glb",
       "name": "Μ. Αλέξανδρος",
       "position_x": -5.75,
       "position_y": 0.05,
@@ -155,6 +155,54 @@
       "robeColor": "",
       "description": "",
       "glbModel": "/models/ψηφιδωτό Πέλλας compressed (2).glb"
+    },
+    {
+      "id": "Valhalla grok compress.glb",
+      "name": "tree",
+      "position_x": 8,
+      "position_y": 0,
+      "position_z": 3,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/Αλεξάνδρεια compressed (1).glb"
+    },
+    {
+      "id": "Αλεξάνδρεια compressed (1).glb",
+      "name": "tree",
+      "position_x": 3.5,
+      "position_y": 0,
+      "position_z": 0.3,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/Valhalla grok compress.glb"
+    },
+    {
+      "id": "Λιβελο compressed (2).glb",
+      "name": "tree",
+      "position_x": 0,
+      "position_y": 1,
+      "position_z": 0.3,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/Λιβελο compressed (2).glb"
+    },
+    {
+      "id": "Αθήνα.glb",
+      "name": "tree",
+      "position_x": -3.5,
+      "position_y": 0,
+      "position_z": 0.3,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/Αθήνα.glb"
     }
   ],
   "dialogs": [
