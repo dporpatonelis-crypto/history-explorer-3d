@@ -149,7 +149,7 @@
       "name": "tree",
       "position_x": -5.75,
       "position_y": 0,
-      "position_z": 0.7,
+      "position_z": 3,
       "rotation": 0,
       "color": "",
       "robeColor": "",
@@ -161,12 +161,48 @@
       "name": "tree",
       "position_x": 0,
       "position_y": 1,
-      "position_z": 0.3,
+      "position_z": -2,
       "rotation": 0,
       "color": "",
       "robeColor": "",
       "description": "",
       "glbModel": "/models/Λιβελο compressed (2).glb"
+    },
+    {
+      "id": "Αθήνα.glb",
+      "name": "tree",
+      "position_x": -3.5,
+      "position_y": 0,
+      "position_z": 0.3,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/Αθήνα.glb"
+    },
+    {
+      "id": "Αλεξάνδρεια compressed (1).glb",
+      "name": "tree",
+      "position_x": 3.5,
+      "position_y": 0,
+      "position_z": 0.3,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/Valhalla grok compress.glb"
+    },
+    {
+      "id": "Valhalla grok compress.glb",
+      "name": "tree",
+      "position_x": 8,
+      "position_y": 0,
+      "position_z": 3,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/Αλεξάνδρεια compressed (1).glb"
     }
   ],
   "dialogs": [
