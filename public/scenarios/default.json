@@ -149,36 +149,12 @@
       "name": "tree",
       "position_x": -5.75,
       "position_y": 0,
-      "position_z": 3,
+      "position_z": 1,
       "rotation": 0,
       "color": "",
       "robeColor": "",
       "description": "",
       "glbModel": "/models/ψηφιδωτό Πέλλας compressed (2).glb"
-    },
-    {
-      "id": "Λιβελο compressed (2).glb",
-      "name": "tree",
-      "position_x": 0,
-      "position_y": 1,
-      "position_z": 0.3,
-      "rotation": 0,
-      "color": "",
-      "robeColor": "",
-      "description": "",
-      "glbModel": "/models/Λιβελο compressed (2).glb"
-    },
-    {
-      "id": "Αθήνα.glb",
-      "name": "tree",
-      "position_x": -3.5,
-      "position_y": 0,
-      "position_z": 0.3,
-      "rotation": 0,
-      "color": "",
-      "robeColor": "",
-      "description": "",
-      "glbModel": "/models/Αθήνα.glb"
     }
   ],
   "dialogs": [
