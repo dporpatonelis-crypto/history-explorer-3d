@@ -81,6 +81,17 @@ export function useScenario(scenarioName = 'default') {
   const [screens, setScreens] = useState<ScreenConfig | undefined>();
   const [source, setSource] = useState<'fallback' | 'json'>('fallback');
   const [loading, setLoading] = useState(true);
+  const [rawScenario, setRawScenario] = useState<ScenarioJSON | null>(null);
+
+  const applyScenario = (data: ScenarioJSON) => {
+    setRawScenario(data);
+    const parsed = parseScenario(data);
+    if (parsed.npcs.length > 0) {
+      setNpcs(parsed.npcs);
+      setSource('json');
+    }
+    setScreens(parsed.screens);
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -98,14 +109,7 @@ export function useScenario(scenarioName = 'default') {
       })
       .then((data: ScenarioJSON) => {
         if (cancelled) return;
-        const parsed = parseScenario(data);
-        if (parsed.npcs.length > 0) {
-          setNpcs(parsed.npcs);
-          setSource('json');
-        }
-        if (parsed.screens) {
-          setScreens(parsed.screens);
-        }
+        applyScenario(data);
       })
       .catch(() => {
         // Fallback — keep hardcoded data
@@ -117,5 +121,6 @@ export function useScenario(scenarioName = 'default') {
     return () => { cancelled = true; };
   }, [scenarioName]);
 
-  return { npcs, screens, source, loading };
+  return { npcs, screens, source, loading, rawScenario, applyScenario };
 }
+
