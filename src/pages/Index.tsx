@@ -7,6 +7,7 @@ import { GLBModelNPC } from '@/components/GLBModelNPC';
 import { DialogPanel } from '@/components/DialogPanel';
 import { ProgressTracker } from '@/components/ProgressTracker';
 import { EnvironmentScreens } from '@/components/EnvironmentScreens';
+import { LibraryPanel } from '@/components/LibraryPanel';
 import { useProgress } from '@/hooks/useProgress';
 import { NPCData } from '@/data/npcData';
 import { useScenario } from '@/hooks/useScenario';
@@ -41,7 +42,7 @@ function StableOrbitControls() {
 const Index = () => {
   const [activeNPC, setActiveNPC] = useState<NPCData | null>(null);
   const { visited, markVisited, resetProgress } = useProgress();
-  const { npcs, screens } = useScenario();
+  const { npcs, screens, rawScenario, applyScenario } = useScenario();
 
   const handleNPCInteract = useCallback((npc: NPCData) => {
     setActiveNPC(npc);
@@ -84,6 +85,7 @@ const Index = () => {
       </Canvas>
 
       <ProgressTracker visited={visited} onReset={resetProgress} />
+      <LibraryPanel currentScenario={rawScenario} onLoadScenario={applyScenario} />
 
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40">
         <div className="progress-badge rounded-xl px-6 py-2 backdrop-blur-md text-center">
