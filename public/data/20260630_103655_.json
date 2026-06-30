@@ -1,0 +1,45 @@
+{
+  "characters": [
+    {
+      "id": "char_paul",
+      "name": "Απ. Παύλος",
+      "position_x": 10,
+      "position_y": 0,
+      "position_z": 5,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "Ο κήρυκας της 'μωρίας του Σταυρού' που αντιμετώπισε το θηρίο των διωγμών.",
+      "glbModel": "/models/Απ.Παύλος.glb"
+    },
+    {
+      "id": "char_john",
+      "name": "Ι. Χρυσόστομος",
+      "position_x": -10,
+      "position_y": 0,
+      "position_z": 5,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "Ο 'Νέος Παύλος' που μετέτρεψε τη ρητορική σε όπλο κατά της αυτοκρατορικής αδικίας.",
+      "glbModel": "/models/Ι.Χρυσόστομος.glb"
+    }
+  ],
+  "dialogs": [],
+  "facts": [
+    {
+      "character_id": "char_paul",
+      "fact": "Ρητορική ως Όπλο: Η χρυσή γλώσσα του Ιωάννη έδωσε φωνή στον Παύλο μέσα στις πολύβουες πόλεις. (4ος αιώνας)"
+    },
+    {
+      "character_id": "char_paul",
+      "fact": "Διαφορά Πλαισίου: Ο Παύλος κηρύττει για να επιβιώσει η πίστη, ο Χρυσόστομος για να μην αλλοιωθεί από την εξουσία. (Διαχρονικό)"
+    }
+  ],
+  "screens": {
+    "left_image_url": "",
+    "right_image_url": "",
+    "left_label": "Από τον Άρειο Πάγο στο Παλάτι",
+    "right_label": ""
+  }
+}
