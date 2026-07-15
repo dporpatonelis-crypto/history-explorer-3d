@@ -1,0 +1,59 @@
+{
+  "characters": [
+    {
+      "id": "char_1",
+      "name": "Ιωάννης Θεολόγος",
+      "position_x": 10,
+      "position_y": 0,
+      "position_z": 5,
+      "rotation": 45,
+      "color": "",
+      "robeColor": "",
+      "description": "Ο 'Υιός της Βροντής' και μύστης του Λόγου [2, 3].",
+      "glbModel": "/models/ΙωάννηςΘεολόγος.glb"
+    },
+    {
+      "id": "char_2",
+      "name": "Γρηγόριος Θεολόγος",
+      "position_x": -10,
+      "position_y": 0,
+      "position_z": 5,
+      "rotation": -45,
+      "color": "",
+      "robeColor": "",
+      "description": "Ο δογματικός θωρακιστής της Τριάδας [2, 7].",
+      "glbModel": "/models/ΓρηγόριοςΘεολόγος.glb"
+    },
+    {
+      "id": "char_3",
+      "name": "Συμεών Νέος Θεολόγος",
+      "position_x": 0,
+      "position_y": 0,
+      "position_z": -5,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "Ο μάρτυρας του Ακτίστου Φωτός [2, 8].",
+      "glbModel": "/models/ΣυμεώνΝέοςΘεολόγος.glb"
+    }
+  ],
+  "dialogs": [
+    {
+      "character_id": "char_2",
+      "question": "Προσέγγιση στον Γρηγόριο",
+      "answer": "Πώς ορίζουμε τον Θεό;"
+    }
+  ],
+  "facts": [
+    {
+      "character_id": "char_1",
+      "fact": "Ο τίτλος του Θεολόγου: Αποδόθηκε μόνο σε τρεις στην ιστορία της Εκκλησίας για τη μοναδική τους συνεισφορά στη θεογνωσία [9]. (Βυζαντινή)"
+    }
+  ],
+  "screens": {
+    "left_image_url": "",
+    "right_image_url": "",
+    "left_label": "Ο Ναός της Αγίας Σοφίας",
+    "right_label": ""
+  }
+}
