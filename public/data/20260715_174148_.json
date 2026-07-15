@@ -1,0 +1,22 @@
+{
+  "characters": [],
+  "dialogs": [
+    {
+      "character_id": "",
+      "question": "",
+      "answer": ""
+    }
+  ],
+  "facts": [
+    {
+      "character_id": "char_1",
+      "fact": ": "
+    }
+  ],
+  "screens": {
+    "left_image_url": " /models/Judging_Socrates.mp4",
+    "right_image_url": "https://i.ibb.co/GQ7P88jD/bg-caseclosed.jpg",
+    "left_label": "",
+    "right_label": ""
+  }
+}
