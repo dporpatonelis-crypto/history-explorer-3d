@@ -134,3 +134,24 @@ All colors MUST be HSL.
   background: linear-gradient(135deg, hsl(var(--gold) / 0.2), hsl(var(--bronze) / 0.15));
   border: 1px solid hsl(var(--gold) / 0.3);
 }
+
+/* WebXR entry button (Meta Quest browser) */
+.vr-button {
+  position: fixed !important;
+  top: 1rem !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  bottom: auto !important;
+  z-index: 45;
+  padding: 0.5rem 1.25rem !important;
+  width: auto !important;
+  border-radius: 0.75rem !important;
+  border: 1px solid hsl(var(--primary)) !important;
+  background: hsl(var(--primary) / 0.9) !important;
+  color: hsl(var(--primary-foreground)) !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 0.8rem !important;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  opacity: 1 !important;
+}
