@@ -1,6 +1,7 @@
 import { useRef, useState, useMemo, Suspense, memo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Html, useGLTF } from '@react-three/drei';
+import { Html, Billboard, Text, useGLTF } from '@react-three/drei';
+import { useXR, Interactive } from '@react-three/xr';
 import * as THREE from 'three';
 import { NPCData } from '@/data/npcData';
 
@@ -45,13 +46,14 @@ export const GLBModelNPC = memo(function GLBModelNPC({ npc, isVisited, onInterac
   const groupRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
   const isDecoration = !npc.description && npc.name === 'tree';
+  const { isPresenting } = useXR();
 
   useFrame(({ clock }) => {
     if (!groupRef.current || isDecoration) return;
     groupRef.current.position.y = npc.position[1] + Math.sin(clock.elapsedTime * 1.5) * 0.015;
   });
 
-  return (
+  const content = (
     <group
       ref={groupRef}
       position={npc.position}
@@ -68,7 +70,20 @@ export const GLBModelNPC = memo(function GLBModelNPC({ npc, isVisited, onInterac
         <GLBModel url={npc.glbModel!} rotation={npc.rotation} scale={npc.scale} />
       </Suspense>
 
-      {!isDecoration && (
+      {/* DOM overlays are invisible inside an immersive session → 3D label in VR */}
+      {!isDecoration && isPresenting && (
+        <Billboard position={[0, 2.3, 0]}>
+          <mesh>
+            <planeGeometry args={[Math.max(1, npc.name.length * 0.13), 0.32]} />
+            <meshBasicMaterial color={isVisited ? '#7a5d1f' : '#1a1409'} transparent opacity={0.85} />
+          </mesh>
+          <Text position={[0, 0, 0.01]} fontSize={0.17} color="#f3ead8" anchorX="center" anchorY="middle">
+            {`${npc.name}${isVisited ? ' ✓' : ''}`}
+          </Text>
+        </Billboard>
+      )}
+
+      {!isDecoration && !isPresenting && (
         <Html position={[0, 2.3, 0]} center distanceFactor={8} style={{ pointerEvents: 'none' }}>
           <div
             style={{ pointerEvents: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}
@@ -113,5 +128,17 @@ export const GLBModelNPC = memo(function GLBModelNPC({ npc, isVisited, onInterac
         </mesh>
       )}
     </group>
+  );
+
+  if (isDecoration) return content;
+
+  return (
+    <Interactive
+      onSelect={onInteract}
+      onHover={() => setHovered(true)}
+      onBlur={() => setHovered(false)}
+    >
+      {content}
+    </Interactive>
   );
 });
