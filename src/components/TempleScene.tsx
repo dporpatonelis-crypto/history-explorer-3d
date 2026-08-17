@@ -91,7 +91,7 @@ const StaticGLBModel = memo(function StaticGLBModel({ url, position, scale = 1 }
 });
 
 /* ─── Permanent decorative trees ─── */
-const TREE_MODEL = '/models/tree compressed (2).glb';
+const TREE_MODEL = '/models/tree.glb';
 const TREE_SCALE = 6;
 const TREES: [number, number, number][] = [
   [-10, 0, 0.8],
