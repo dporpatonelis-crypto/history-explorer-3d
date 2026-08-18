@@ -84,6 +84,7 @@ export function useScenario(scenarioName = 'default') {
   const [source, setSource] = useState<'fallback' | 'json'>('fallback');
   const [loading, setLoading] = useState(true);
   const [rawScenario, setRawScenario] = useState<ScenarioJSON | null>(null);
+  const [props, setProps] = useState<ScenarioProp[] | undefined>();
 
   const applyScenario = (data: ScenarioJSON) => {
     setRawScenario(data);
@@ -93,6 +94,7 @@ export function useScenario(scenarioName = 'default') {
       setSource('json');
     }
     setScreens(parsed.screens);
+    setProps(Array.isArray(data.props) ? data.props.filter((p) => p?.glbModel?.trim()) : undefined);
   };
 
   useEffect(() => {
