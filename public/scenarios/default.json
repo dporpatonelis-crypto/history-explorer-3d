@@ -10,7 +10,7 @@
       "color": "",
       "robeColor": "",
       "description": "Ο πατέρας της φιλοσοφίας",
-      "glbModel": " /models/Socrates.glb"
+      "glbModel": "/models/Socrates.glb"
     },
     {
       "id": "hypatia",
@@ -22,7 +22,7 @@
       "color": "",
       "robeColor": "",
       "description": "Η φιλόσοφος της Αλεξάνδρειας",
-      "glbModel": "/models/hypatia compress).glb"
+      "glbModel": "/models/hypatia.glb"
     },
     {
       "id": "aristotle",
@@ -34,7 +34,7 @@
       "color": "",
       "robeColor": "",
       "description": "Πατέρας της επιστήμης",
-      "glbModel": "/models/Aristotle compressed (2).glb"
+      "glbModel": "/models/aristotle.glb"
     },
     {
       "id": "ancient_tiles.glb",
@@ -58,7 +58,7 @@
       "color": "",
       "robeColor": "",
       "description": "Πρώτος Βυζαντινός Αυτοκράτορας",
-      "glbModel": "/models/Constantine compressed (2).glb"
+      "glbModel": "/models/constantine.glb"
     },
     {
       "id": "monk compressed.glb",
@@ -70,7 +70,7 @@
       "color": "",
       "robeColor": "",
       "description": "Άγιος",
-      "glbModel": "/models/monk compressed.glb"
+      "glbModel": "/models/monk.glb"
     },
     {
       "id": "ancient_tiles.glb",
@@ -142,7 +142,7 @@
       "color": "",
       "robeColor": "",
       "description": "",
-      "glbModel": "/models/ψηφιδωτό Πέλλας compressed (2).glb"
+      "glbModel": "/models/pella_mosaic.glb"
     },
     {
       "id": "Αλεξάνδρεια compressed (1).glb",
@@ -154,7 +154,7 @@
       "color": "",
       "robeColor": "",
       "description": "",
-      "glbModel": "/models/Αλεξάνδρεια compressed (1).glb"
+      "glbModel": "/models/alexandria.glb"
     },
     {
       "id": "Λιβελο compressed (2).glb",
@@ -166,7 +166,7 @@
       "color": "",
       "robeColor": "",
       "description": "",
-      "glbModel": "/models/Λιβελο compressed (2).glb"
+      "glbModel": "/models/libelo.glb"
     },
     {
       "id": "Αθήνα.glb",
@@ -178,7 +178,7 @@
       "color": "",
       "robeColor": "",
       "description": "",
-      "glbModel": "/models/Αθήνα.glb"
+      "glbModel": "/models/athina.glb"
     },
     {
       "id": "Valhalla grok compress.glb",
@@ -190,7 +190,7 @@
       "color": "",
       "robeColor": "",
       "description": "",
-      "glbModel": "/models/Valhalla grok compress.glb"
+      "glbModel": "/models/valhalla.glb"
     },
     {
       "id": "Alexander.glb",
@@ -250,7 +250,7 @@
     }
   ],
   "screens": {
-    "left_image_url": " /models/Judging_Socrates.mp4",
+    "left_image_url": "/models/Judging_Socrates.mp4",
     "right_image_url": "https://i.ibb.co/GQ7P88jD/bg-caseclosed.jpg",
     "left_label": "Αρχαία αγορά Αθήνας Δίκη",
     "right_label": "Αρχαία Αθήνα"
