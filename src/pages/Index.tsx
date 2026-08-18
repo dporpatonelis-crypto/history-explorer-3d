@@ -75,6 +75,7 @@ function VRSpawn({ register }: { register: (fn: () => void) => void }) {
 const Index = () => {
   const [activeNPC, setActiveNPC] = useState<NPCData | null>(null);
   const [inVR, setInVR] = useState(false);
+  const [extraModels, setExtraModels] = useState<ExtraModel[]>([]);
   const { visited, markVisited, resetProgress } = useProgress();
   const { npcs, screens, props: scenarioProps, rawScenario, applyScenario } = useScenario();
   const respawnRef = useRef<() => void>(() => {});
