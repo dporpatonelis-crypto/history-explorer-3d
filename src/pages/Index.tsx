@@ -11,6 +11,8 @@ import { EnvironmentScreens } from '@/components/EnvironmentScreens';
 import { LibraryPanel } from '@/components/LibraryPanel';
 import { VRLocomotion } from '@/components/VRLocomotion';
 import { VRDialogBoard } from '@/components/VRDialogBoard';
+import { VRWristPanel } from '@/components/VRWristPanel';
+import { ScenarioProps } from '@/components/ScenarioProps';
 import { useProgress } from '@/hooks/useProgress';
 import { NPCData } from '@/data/npcData';
 import { useScenario } from '@/hooks/useScenario';
@@ -51,16 +53,37 @@ function VRDialogLayer({ npc, onClose }: { npc: NPCData | null; onClose: () => v
   return createPortal(<VRDialogBoard npc={npc} onClose={onClose} />, player);
 }
 
+/** Spawn point: in front of the NPC line, opposite the temple, clear of the colonnade. */
+const SPAWN: [number, number, number] = [0, 0, 9];
+
+function VRSpawn({ register }: { register: (fn: () => void) => void }) {
+  const { player, isPresenting } = useXR();
+
+  const respawn = useCallback(() => {
+    if (!player) return;
+    player.position.set(SPAWN[0], SPAWN[1], SPAWN[2]);
+    player.rotation.set(0, 0, 0);
+  }, [player]);
+
+  useEffect(() => { register(respawn); }, [register, respawn]);
+  useEffect(() => { if (isPresenting) respawn(); }, [isPresenting, respawn]);
+
+  return null;
+}
+
 const Index = () => {
   const [activeNPC, setActiveNPC] = useState<NPCData | null>(null);
   const [inVR, setInVR] = useState(false);
   const { visited, markVisited, resetProgress } = useProgress();
-  const { npcs, screens, rawScenario, applyScenario } = useScenario();
+  const { npcs, screens, props: scenarioProps, rawScenario, applyScenario } = useScenario();
+  const respawnRef = useRef<() => void>(() => {});
+  const registerRespawn = useCallback((fn: () => void) => { respawnRef.current = fn; }, []);
 
   const handleNPCInteract = useCallback((npc: NPCData) => {
     setActiveNPC(npc);
     markVisited(npc.id);
   }, [markVisited]);
+
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
@@ -81,11 +104,19 @@ const Index = () => {
           <Controllers rayMaterial={{ color: 'hsl(45, 90%, 60%)' }} />
           <Hands />
           <VRLocomotion />
+          <VRSpawn register={registerRespawn} />
+          <VRWristPanel
+            visitedCount={visited.size}
+            totalCount={npcs.length}
+            onRespawn={() => respawnRef.current()}
+            onCloseDialog={() => setActiveNPC(null)}
+          />
 
           <SceneLighting />
           <MarbleFloor />
           <TempleScene />
           <EnvironmentScreens config={screens} />
+          <ScenarioProps props={scenarioProps} />
 
           {npcs.map((npc) =>
             npc.glbModel ? (

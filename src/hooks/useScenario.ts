@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NPCData, npcData as fallbackData } from '@/data/npcData';
 import { ScreenConfig } from '@/components/EnvironmentScreens';
+import { ScenarioProp } from '@/components/ScenarioProps';
 
 interface ScenarioCharacter {
   id: string;
@@ -33,6 +34,7 @@ interface ScenarioJSON {
   dialogs: ScenarioDialog[];
   facts: ScenarioFact[];
   screens?: ScreenConfig;
+  props?: ScenarioProp[];
 }
 
 function sanitizeScreens(screens?: ScreenConfig): ScreenConfig | undefined {
@@ -82,6 +84,7 @@ export function useScenario(scenarioName = 'default') {
   const [source, setSource] = useState<'fallback' | 'json'>('fallback');
   const [loading, setLoading] = useState(true);
   const [rawScenario, setRawScenario] = useState<ScenarioJSON | null>(null);
+  const [props, setProps] = useState<ScenarioProp[] | undefined>();
 
   const applyScenario = (data: ScenarioJSON) => {
     setRawScenario(data);
@@ -91,6 +94,7 @@ export function useScenario(scenarioName = 'default') {
       setSource('json');
     }
     setScreens(parsed.screens);
+    setProps(Array.isArray(data.props) ? data.props.filter((p) => p?.glbModel?.trim()) : undefined);
   };
 
   useEffect(() => {
@@ -121,6 +125,6 @@ export function useScenario(scenarioName = 'default') {
     return () => { cancelled = true; };
   }, [scenarioName]);
 
-  return { npcs, screens, source, loading, rawScenario, applyScenario };
+  return { npcs, screens, props, source, loading, rawScenario, applyScenario };
 }
 
