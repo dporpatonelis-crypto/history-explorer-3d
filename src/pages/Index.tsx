@@ -13,6 +13,7 @@ import { VRLocomotion } from '@/components/VRLocomotion';
 import { VRDialogBoard } from '@/components/VRDialogBoard';
 import { VRWristPanel } from '@/components/VRWristPanel';
 import { ScenarioProps } from '@/components/ScenarioProps';
+import { ExtraModelsPanel, type ExtraModel } from '@/components/ExtraModelsPanel';
 import { useProgress } from '@/hooks/useProgress';
 import { NPCData } from '@/data/npcData';
 import { useScenario } from '@/hooks/useScenario';
@@ -74,6 +75,7 @@ function VRSpawn({ register }: { register: (fn: () => void) => void }) {
 const Index = () => {
   const [activeNPC, setActiveNPC] = useState<NPCData | null>(null);
   const [inVR, setInVR] = useState(false);
+  const [extraModels, setExtraModels] = useState<ExtraModel[]>([]);
   const { visited, markVisited, resetProgress } = useProgress();
   const { npcs, screens, props: scenarioProps, rawScenario, applyScenario } = useScenario();
   const respawnRef = useRef<() => void>(() => {});
@@ -116,7 +118,7 @@ const Index = () => {
           <MarbleFloor />
           <TempleScene />
           <EnvironmentScreens config={screens} />
-          <ScenarioProps props={scenarioProps} />
+          <ScenarioProps props={[...(scenarioProps ?? []), ...extraModels]} />
 
           {npcs.map((npc) =>
             npc.glbModel ? (
@@ -145,6 +147,7 @@ const Index = () => {
         <>
           <ProgressTracker visited={visited} onReset={resetProgress} />
           <LibraryPanel currentScenario={rawScenario} onLoadScenario={applyScenario} />
+          <ExtraModelsPanel models={extraModels} onChange={setExtraModels} />
 
           <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40">
             <div className="progress-badge rounded-xl px-6 py-2 backdrop-blur-md text-center">
