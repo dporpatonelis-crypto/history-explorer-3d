@@ -104,11 +104,19 @@ const Index = () => {
           <Controllers rayMaterial={{ color: 'hsl(45, 90%, 60%)' }} />
           <Hands />
           <VRLocomotion />
+          <VRSpawn register={registerRespawn} />
+          <VRWristPanel
+            visitedCount={visited.size}
+            totalCount={npcs.length}
+            onRespawn={() => respawnRef.current()}
+            onCloseDialog={() => setActiveNPC(null)}
+          />
 
           <SceneLighting />
           <MarbleFloor />
           <TempleScene />
           <EnvironmentScreens config={screens} />
+          <ScenarioProps props={scenarioProps} />
 
           {npcs.map((npc) =>
             npc.glbModel ? (
