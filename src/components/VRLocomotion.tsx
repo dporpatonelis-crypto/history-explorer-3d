@@ -1,52 +1,103 @@
-import { useRef } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
+import { useRef, useState } from 'react';
+import { useFrame } from '@react-three/fiber';
 import { useXR } from '@react-three/xr';
 import * as THREE from 'three';
 
-const SPEED = 2.2;        // meters / second
-const TURN_SPEED = 1.8;   // radians / second
-const DEADZONE = 0.15;
-const BOUNDS = 24;        // keep the player inside the colonnade
+const TURN_STEP = Math.PI / 6; // 30° snap turn — comfortable, no motion sickness
+const DEADZONE = 0.6;
+const BOUNDS = 22;
+const MAX_TELEPORT = 18;
+
+const GROUND = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 
 /**
- * Meta Quest style locomotion:
- *  - left thumbstick  -> smooth move (relative to head direction)
- *  - right thumbstick -> snap-free smooth turn
+ * Comfort locomotion for Meta Quest:
+ *  - left thumbstick forward -> aim teleport marker, release -> teleport
+ *  - right thumbstick left/right -> 30° snap turn
  */
 export function VRLocomotion() {
   const { player, controllers, isPresenting } = useXR();
-  const { camera } = useThree();
-  const forward = useRef(new THREE.Vector3());
-  const right = useRef(new THREE.Vector3());
+  const [marker, setMarker] = useState<[number, number, number] | null>(null);
+  const aiming = useRef(false);
+  const turnLatch = useRef(false);
 
-  useFrame((_, delta) => {
-    if (!isPresenting || !player) return;
+  const origin = useRef(new THREE.Vector3());
+  const dir = useRef(new THREE.Vector3());
+  const hit = useRef(new THREE.Vector3());
+  const raycaster = useRef(new THREE.Raycaster());
+
+  useFrame(() => {
+    if (!isPresenting || !player) {
+      if (marker) setMarker(null);
+      return;
+    }
+
+    let leftPushed = false;
 
     for (const controller of controllers) {
       const gamepad = controller.inputSource?.gamepad;
       if (!gamepad) continue;
-
       const axes = gamepad.axes ?? [];
-      // WebXR standard mapping: axes[2]/[3] is the thumbstick, [0]/[1] is the fallback
-      const x = Math.abs(axes[2] ?? 0) > DEADZONE ? axes[2] : (Math.abs(axes[0] ?? 0) > DEADZONE ? axes[0] : 0);
-      const y = Math.abs(axes[3] ?? 0) > DEADZONE ? axes[3] : (Math.abs(axes[1] ?? 0) > DEADZONE ? axes[1] : 0);
-      if (!x && !y) continue;
+      const x = Math.abs(axes[2] ?? 0) > 0.01 ? axes[2] : (axes[0] ?? 0);
+      const y = Math.abs(axes[3] ?? 0) > 0.01 ? axes[3] : (axes[1] ?? 0);
+      const hand = controller.inputSource?.handedness;
 
-      if (controller.inputSource?.handedness === 'right') {
-        player.rotation.y -= x * TURN_SPEED * delta;
-      } else {
-        camera.getWorldDirection(forward.current);
-        forward.current.y = 0;
-        forward.current.normalize();
-        right.current.crossVectors(forward.current, new THREE.Vector3(0, 1, 0)).normalize();
+      if (hand === 'right') {
+        if (Math.abs(x) > DEADZONE) {
+          if (!turnLatch.current) {
+            player.rotation.y -= Math.sign(x) * TURN_STEP;
+            turnLatch.current = true;
+          }
+        } else {
+          turnLatch.current = false;
+        }
+        continue;
+      }
 
-        player.position.addScaledVector(forward.current, -y * SPEED * delta);
-        player.position.addScaledVector(right.current, x * SPEED * delta);
-        player.position.x = THREE.MathUtils.clamp(player.position.x, -BOUNDS, BOUNDS);
-        player.position.z = THREE.MathUtils.clamp(player.position.z, -BOUNDS, BOUNDS);
+      // Left controller: teleport aiming
+      if (-y > DEADZONE) {
+        leftPushed = true;
+        const obj = controller.controller;
+        obj.getWorldPosition(origin.current);
+        obj.getWorldDirection(dir.current).negate(); // controller points along -Z
+        raycaster.current.set(origin.current, dir.current);
+        const point = raycaster.current.ray.intersectPlane(GROUND, hit.current);
+        if (point) {
+          const local = point.clone().sub(origin.current);
+          if (local.length() > MAX_TELEPORT) {
+            local.setLength(MAX_TELEPORT);
+            point.copy(origin.current).add(local);
+          }
+          point.x = THREE.MathUtils.clamp(point.x, -BOUNDS, BOUNDS);
+          point.z = THREE.MathUtils.clamp(point.z, -BOUNDS, BOUNDS);
+          setMarker([point.x, 0.02, point.z]);
+        }
       }
     }
+
+    if (aiming.current && !leftPushed) {
+      // stick released -> commit teleport
+      if (marker) {
+        player.position.x = marker[0];
+        player.position.z = marker[2];
+      }
+      setMarker(null);
+    }
+    aiming.current = leftPushed;
   });
 
-  return null;
+  if (!marker) return null;
+
+  return (
+    <group position={marker}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.35, 0.5, 32]} />
+        <meshBasicMaterial color="hsl(45, 90%, 60%)" transparent opacity={0.85} side={THREE.DoubleSide} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.001, 0]}>
+        <circleGeometry args={[0.35, 32]} />
+        <meshBasicMaterial color="hsl(45, 90%, 60%)" transparent opacity={0.25} side={THREE.DoubleSide} />
+      </mesh>
+    </group>
+  );
 }
