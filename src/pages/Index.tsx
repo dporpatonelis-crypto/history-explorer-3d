@@ -13,6 +13,7 @@ import { VRLocomotion } from '@/components/VRLocomotion';
 import { VRDialogBoard } from '@/components/VRDialogBoard';
 import { VRWristPanel } from '@/components/VRWristPanel';
 import { ScenarioProps } from '@/components/ScenarioProps';
+import { ExtraModelsPanel, type ExtraModel } from '@/components/ExtraModelsPanel';
 import { useProgress } from '@/hooks/useProgress';
 import { NPCData } from '@/data/npcData';
 import { useScenario } from '@/hooks/useScenario';
