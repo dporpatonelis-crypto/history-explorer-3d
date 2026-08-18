@@ -11,6 +11,8 @@ import { EnvironmentScreens } from '@/components/EnvironmentScreens';
 import { LibraryPanel } from '@/components/LibraryPanel';
 import { VRLocomotion } from '@/components/VRLocomotion';
 import { VRDialogBoard } from '@/components/VRDialogBoard';
+import { VRWristPanel } from '@/components/VRWristPanel';
+import { ScenarioProps } from '@/components/ScenarioProps';
 import { useProgress } from '@/hooks/useProgress';
 import { NPCData } from '@/data/npcData';
 import { useScenario } from '@/hooks/useScenario';
