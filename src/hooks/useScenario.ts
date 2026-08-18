@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NPCData, npcData as fallbackData } from '@/data/npcData';
 import { ScreenConfig } from '@/components/EnvironmentScreens';
+import { ScenarioProp } from '@/components/ScenarioProps';
 
 interface ScenarioCharacter {
   id: string;
@@ -33,6 +34,7 @@ interface ScenarioJSON {
   dialogs: ScenarioDialog[];
   facts: ScenarioFact[];
   screens?: ScreenConfig;
+  props?: ScenarioProp[];
 }
 
 function sanitizeScreens(screens?: ScreenConfig): ScreenConfig | undefined {
