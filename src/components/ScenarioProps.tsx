@@ -1,7 +1,8 @@
-import { Suspense, useMemo, memo, useRef } from 'react';
+import { Suspense, useEffect, useMemo, memo, useRef } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { clone as cloneSkeleton } from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 export interface ScenarioProp {
   id?: string;
@@ -19,13 +20,14 @@ const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
   const { scene, animations } = useGLTF(prop.glbModel);
 
   const { cloned, normalizedScale, offset } = useMemo(() => {
-    const clonedScene = scene.clone(true);
+    const clonedScene = cloneSkeleton(scene);
     clonedScene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         child.castShadow = true;
         child.receiveShadow = true;
       }
     });
+    clonedScene.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(clonedScene);
     const size = box.getSize(new THREE.Vector3());
     const maxDim = Math.max(size.x, size.y, size.z) || 1;
@@ -39,10 +41,16 @@ const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
 
   const { actions } = useAnimations(animations, cloned);
 
-  useMemo(() => {
+  useEffect(() => {
     const first = Object.values(actions)[0];
-    if (first) first.reset().fadeIn(0.3).play();
-  }, [actions]);
+    if (!first || prop.idle === false) return;
+
+    first.reset().fadeIn(0.3).play();
+    return () => {
+      first.fadeOut(0.2);
+      first.stop();
+    };
+  }, [actions, prop.idle]);
 
   const baseY = prop.position_y ?? 0;
   useFrame(({ clock }) => {

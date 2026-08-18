@@ -254,5 +254,17 @@
     "right_image_url": "https://i.ibb.co/GQ7P88jD/bg-caseclosed.jpg",
     "left_label": "Αρχαία αγορά Αθήνας Δίκη",
     "right_label": "Αρχαία Αθήνα"
-  }
+  },
+  "props": [
+    {
+      "id": "dimitris",
+      "glbModel": "/models/Dimitris.glb",
+      "position_x": 3,
+      "position_y": 0,
+      "position_z": 0,
+      "rotation": 0,
+      "scale": 1,
+      "idle": false
+    }
+  ]
 }
