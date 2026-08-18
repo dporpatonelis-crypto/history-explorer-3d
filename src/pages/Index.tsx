@@ -53,16 +53,37 @@ function VRDialogLayer({ npc, onClose }: { npc: NPCData | null; onClose: () => v
   return createPortal(<VRDialogBoard npc={npc} onClose={onClose} />, player);
 }
 
+/** Spawn point: in front of the NPC line, opposite the temple, clear of the colonnade. */
+const SPAWN: [number, number, number] = [0, 0, 9];
+
+function VRSpawn({ register }: { register: (fn: () => void) => void }) {
+  const { player, isPresenting } = useXR();
+
+  const respawn = useCallback(() => {
+    if (!player) return;
+    player.position.set(SPAWN[0], SPAWN[1], SPAWN[2]);
+    player.rotation.set(0, 0, 0);
+  }, [player]);
+
+  useEffect(() => { register(respawn); }, [register, respawn]);
+  useEffect(() => { if (isPresenting) respawn(); }, [isPresenting, respawn]);
+
+  return null;
+}
+
 const Index = () => {
   const [activeNPC, setActiveNPC] = useState<NPCData | null>(null);
   const [inVR, setInVR] = useState(false);
   const { visited, markVisited, resetProgress } = useProgress();
-  const { npcs, screens, rawScenario, applyScenario } = useScenario();
+  const { npcs, screens, props: scenarioProps, rawScenario, applyScenario } = useScenario();
+  const respawnRef = useRef<() => void>(() => {});
+  const registerRespawn = useCallback((fn: () => void) => { respawnRef.current = fn; }, []);
 
   const handleNPCInteract = useCallback((npc: NPCData) => {
     setActiveNPC(npc);
     markVisited(npc.id);
   }, [markVisited]);
+
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
