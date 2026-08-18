@@ -125,6 +125,6 @@ export function useScenario(scenarioName = 'default') {
     return () => { cancelled = true; };
   }, [scenarioName]);
 
-  return { npcs, screens, source, loading, rawScenario, applyScenario };
+  return { npcs, screens, props, source, loading, rawScenario, applyScenario };
 }
 
