@@ -118,7 +118,7 @@ const Index = () => {
           <MarbleFloor />
           <TempleScene />
           <EnvironmentScreens config={screens} />
-          <ScenarioProps props={scenarioProps} />
+          <ScenarioProps props={[...(scenarioProps ?? []), ...extraModels]} />
 
           {npcs.map((npc) =>
             npc.glbModel ? (
@@ -147,6 +147,7 @@ const Index = () => {
         <>
           <ProgressTracker visited={visited} onReset={resetProgress} />
           <LibraryPanel currentScenario={rawScenario} onLoadScenario={applyScenario} />
+          <ExtraModelsPanel models={extraModels} onChange={setExtraModels} />
 
           <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40">
             <div className="progress-badge rounded-xl px-6 py-2 backdrop-blur-md text-center">
