@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NPCData } from '@/data/npcData';
-import { X, ChevronRight, BookOpen, ScrollText, Sparkles, ExternalLink } from 'lucide-react';
+import { X, ChevronRight, BookOpen, ScrollText, Sparkles, ExternalLink, Volume2, Square } from 'lucide-react';
+import { speak, stopSpeaking, isSpeaking, subscribeLipSync } from '@/lib/lipsync';
 
 interface DialogPanelProps {
   npc: NPCData;
@@ -10,7 +11,12 @@ interface DialogPanelProps {
 export function DialogPanel({ npc, onClose }: DialogPanelProps) {
   const [activeTab, setActiveTab] = useState<'dialog' | 'facts' | 'interactive'>('dialog');
   const [selectedDialog, setSelectedDialog] = useState<number | null>(null);
+  const [speaking, setSpeaking] = useState(false);
   const interactiveBoardUrl = import.meta.env.VITE_MIND_WEAVER_URL ?? 'https://idea-weaver-board.vercel.app/';
+
+  useEffect(() => subscribeLipSync(() => setSpeaking(isSpeaking(npc.id))) as () => void, [npc.id]);
+  useEffect(() => () => stopSpeaking(), []);
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
