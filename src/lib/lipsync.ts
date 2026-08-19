@@ -155,13 +155,22 @@ export function stopSpeaking() {
   notify();
 }
 
-function pickGreekVoice(): SpeechSynthesisVoice | undefined {
+function pickGreekVoice(preferredName?: string): SpeechSynthesisVoice | undefined {
   const voices = window.speechSynthesis?.getVoices?.() ?? [];
+  if (preferredName) {
+    const preferred = preferredName.toLowerCase();
+    const named = voices.find((voice) => voice.name?.toLowerCase().includes(preferred));
+    if (named) return named;
+  }
   return voices.find((v) => v.lang?.toLowerCase().startsWith('el')) ?? voices[0];
 }
 
 /** Speaks `text` with the Web Speech API and drives the visemes of `npcId`. */
-export function speak(npcId: string, text: string, opts: { rate?: number; pitch?: number } = {}) {
+export function speak(
+  npcId: string,
+  text: string,
+  opts: { rate?: number; pitch?: number; voiceName?: string } = {},
+) {
   if (typeof window === 'undefined') return;
   stopSpeaking();
 
@@ -182,7 +191,7 @@ export function speak(npcId: string, text: string, opts: { rate?: number; pitch?
   utter.lang = 'el-GR';
   utter.rate = rate;
   utter.pitch = opts.pitch ?? 1;
-  const voice = pickGreekVoice();
+  const voice = pickGreekVoice(opts.voiceName);
   if (voice) utter.voice = voice;
 
   utter.onstart = () => {
