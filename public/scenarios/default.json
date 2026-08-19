@@ -269,7 +269,8 @@
       "welcome_voice": "Melina",
       "welcome_trigger": "both",
       "welcome_delay_ms": 2500,
-      "welcome_radius": 2.5
+      "welcome_radius": 2.5,
+      "welcome_audio": "/audio/dimitris.wav"
     }
   ]
 }
