@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NPCData } from '@/data/npcData';
-import { X, ChevronRight, BookOpen, ScrollText, Sparkles, ExternalLink } from 'lucide-react';
+import { X, ChevronRight, BookOpen, ScrollText, Sparkles, ExternalLink, Volume2, Square } from 'lucide-react';
+import { speak, stopSpeaking, isSpeaking, subscribeLipSync } from '@/lib/lipsync';
 
 interface DialogPanelProps {
   npc: NPCData;
@@ -10,7 +11,12 @@ interface DialogPanelProps {
 export function DialogPanel({ npc, onClose }: DialogPanelProps) {
   const [activeTab, setActiveTab] = useState<'dialog' | 'facts' | 'interactive'>('dialog');
   const [selectedDialog, setSelectedDialog] = useState<number | null>(null);
+  const [speaking, setSpeaking] = useState(false);
   const interactiveBoardUrl = import.meta.env.VITE_MIND_WEAVER_URL ?? 'https://idea-weaver-board.vercel.app/';
+
+  useEffect(() => subscribeLipSync(() => setSpeaking(isSpeaking(npc.id))) as () => void, [npc.id]);
+  useEffect(() => () => stopSpeaking(), []);
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
@@ -93,13 +99,25 @@ export function DialogPanel({ npc, onClose }: DialogPanelProps) {
                     «{npc.dialogs[selectedDialog].answer}»
                   </p>
                 </div>
-                <button
-                  onClick={() => setSelectedDialog(null)}
-                  className="text-sm font-cinzel text-accent hover:text-accent/80 transition-colors"
-                >
-                  ← Πίσω στις ερωτήσεις
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() =>
+                      speaking ? stopSpeaking() : speak(npc.id, npc.dialogs[selectedDialog].answer)
+                    }
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground font-cinzel text-sm hover:opacity-90 transition-opacity"
+                  >
+                    {speaking ? <Square size={14} /> : <Volume2 size={14} />}
+                    {speaking ? 'Διακοπή' : 'Εκφώνηση (lip sync)'}
+                  </button>
+                  <button
+                    onClick={() => { stopSpeaking(); setSelectedDialog(null); }}
+                    className="text-sm font-cinzel text-accent hover:text-accent/80 transition-colors"
+                  >
+                    ← Πίσω στις ερωτήσεις
+                  </button>
+                </div>
               </div>
+
             )}
           </div>
         )}
