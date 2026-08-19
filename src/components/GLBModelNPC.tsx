@@ -3,7 +3,9 @@ import { useFrame } from '@react-three/fiber';
 import { Html, Billboard, Text, useGLTF } from '@react-three/drei';
 import { useXR, Interactive } from '@react-three/xr';
 import * as THREE from 'three';
+import { clone as cloneSkeleton } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { NPCData } from '@/data/npcData';
+import { useLipSync } from '@/hooks/useLipSync';
 
 interface GLBModelNPCProps {
   npc: NPCData;
@@ -11,11 +13,11 @@ interface GLBModelNPCProps {
   onInteract: () => void;
 }
 
-function GLBModel({ url, rotation, scale }: { url: string; rotation: number; scale?: number }) {
+function GLBModel({ url, rotation, scale, npcId }: { url: string; rotation: number; scale?: number; npcId: string }) {
   const { scene } = useGLTF(url);
 
   const { cloned, normalizedScale, offset } = useMemo(() => {
-    const clonedScene = scene.clone(true);
+    const clonedScene = cloneSkeleton(scene);
     clonedScene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         child.castShadow = true;
@@ -33,7 +35,9 @@ function GLBModel({ url, rotation, scale }: { url: string; rotation: number; sca
       normalizedScale: s * (scale || 1),
       offset: [-center.x, -box.min.y, -center.z] as [number, number, number],
     };
-  }, [scene]);
+  }, [scene, scale]);
+
+  useLipSync(cloned, npcId);
 
   return (
     <group scale={[normalizedScale, normalizedScale, normalizedScale]} rotation={[0, rotation, 0]}>
@@ -41,6 +45,7 @@ function GLBModel({ url, rotation, scale }: { url: string; rotation: number; sca
     </group>
   );
 }
+
 
 export const GLBModelNPC = memo(function GLBModelNPC({ npc, isVisited, onInteract }: GLBModelNPCProps) {
   const groupRef = useRef<THREE.Group>(null);
