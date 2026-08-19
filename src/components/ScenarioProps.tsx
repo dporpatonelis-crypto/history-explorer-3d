@@ -1,8 +1,11 @@
-import { Suspense, useEffect, useMemo, memo, useRef } from 'react';
-import { useGLTF, useAnimations } from '@react-three/drei';
+import { Suspense, useEffect, useMemo, memo, useRef, useState } from 'react';
+import { useGLTF, useAnimations, Html, Billboard, Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
+import { useXR } from '@react-three/xr';
 import * as THREE from 'three';
 import { clone as cloneSkeleton } from 'three/examples/jsm/utils/SkeletonUtils.js';
+import { useLipSync } from '@/hooks/useLipSync';
+import { speak } from '@/lib/lipsync';
 
 export interface ScenarioProp {
   id?: string;
@@ -13,11 +16,16 @@ export interface ScenarioProp {
   rotation?: number;
   scale?: number;
   idle?: boolean;
+  /** Spoken + displayed when the viewer comes within `welcome_radius` metres. */
+  welcome?: string;
+  /** Trigger distance in metres (default 2). */
+  welcome_radius?: number;
 }
 
 const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
   const groupRef = useRef<THREE.Group>(null);
   const { scene, animations } = useGLTF(prop.glbModel);
+
 
   const { cloned, normalizedScale, offset } = useMemo(() => {
     const clonedScene = cloneSkeleton(scene);
