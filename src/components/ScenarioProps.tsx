@@ -5,7 +5,7 @@ import { useXR } from '@react-three/xr';
 import * as THREE from 'three';
 import { clone as cloneSkeleton } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { useLipSync } from '@/hooks/useLipSync';
-import { speak } from '@/lib/lipsync';
+import { playAudio, speak } from '@/lib/lipsync';
 
 type WelcomeTrigger = 'time' | 'proximity' | 'both';
 
@@ -26,6 +26,8 @@ export interface ScenarioProp {
   welcome_delay_ms?: number;
   /** Choose an automatic welcome trigger. Defaults to `proximity`. */
   welcome_trigger?: WelcomeTrigger;
+  /** Optional WAV/MP3/OGG URL or blob URL. `welcome` is used as its transcript. */
+  welcome_audio?: string;
 }
 
 const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
@@ -60,6 +62,8 @@ const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
   const { actions } = useAnimations(animations, cloned);
   const speakerId = prop.id ?? prop.glbModel;
   const welcomeText = prop.welcome?.trim() ?? '';
+  const welcomeAudio = prop.welcome_audio?.trim() ?? '';
+  const hasWelcome = Boolean(welcomeText || welcomeAudio);
   const welcomeTrigger = prop.welcome_trigger ?? 'proximity';
   const welcomeRadius = Math.max(0.25, prop.welcome_radius ?? 2.5);
 
@@ -67,23 +71,24 @@ const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
   useLipSync(cloned, speakerId);
 
   const triggerWelcome = useCallback((force = false) => {
-    if (!welcomeText || (!force && welcomeTriggered.current)) return;
+    if (!hasWelcome || (!force && welcomeTriggered.current)) return;
     welcomeTriggered.current = true;
     setWelcomeVisible(true);
-    speak(speakerId, welcomeText);
-  }, [speakerId, welcomeText]);
+    if (welcomeAudio) playAudio(speakerId, welcomeAudio, welcomeText);
+    else speak(speakerId, welcomeText);
+  }, [hasWelcome, speakerId, welcomeAudio, welcomeText]);
 
   useEffect(() => {
     welcomeTriggered.current = false;
     setWelcomeVisible(false);
-  }, [speakerId, welcomeText, welcomeTrigger]);
+  }, [speakerId, welcomeAudio, welcomeText, welcomeTrigger]);
 
   useEffect(() => {
-    if (!welcomeText || (welcomeTrigger !== 'time' && welcomeTrigger !== 'both')) return;
+    if (!hasWelcome || (welcomeTrigger !== 'time' && welcomeTrigger !== 'both')) return;
     const delay = Math.max(0, prop.welcome_delay_ms ?? 2500);
     const timer = window.setTimeout(() => triggerWelcome(), delay);
     return () => window.clearTimeout(timer);
-  }, [prop.welcome_delay_ms, triggerWelcome, welcomeText, welcomeTrigger]);
+  }, [hasWelcome, prop.welcome_delay_ms, triggerWelcome, welcomeTrigger]);
 
   useEffect(() => {
     const first = Object.values(actions)[0];
@@ -105,7 +110,7 @@ const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
     }
 
     if (
-      !welcomeText ||
+      !hasWelcome ||
       welcomeTriggered.current ||
       (welcomeTrigger !== 'proximity' && welcomeTrigger !== 'both')
     ) return;
@@ -127,7 +132,7 @@ const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
         <primitive object={cloned} position={offset} />
       </group>
 
-      {welcomeVisible && welcomeText && (isPresenting ? (
+      {welcomeVisible && hasWelcome && (isPresenting ? (
         <Billboard position={[0, 2.35, 0]}>
           <Text
             color="#f3ead8"
@@ -138,7 +143,7 @@ const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
             anchorX="center"
             anchorY="middle"
           >
-            {welcomeText}
+            {welcomeText || 'Ηχητικό μήνυμα'}
           </Text>
         </Billboard>
       ) : (
@@ -163,7 +168,7 @@ const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
             }}
             onClick={(event) => event.stopPropagation()}
           >
-            <span>{welcomeText}</span>
+            <span>{welcomeText || '🔊 Ηχητικό μήνυμα'}</span>
             <button
               type="button"
               onClick={(event) => { event.stopPropagation(); triggerWelcome(true); }}
@@ -178,7 +183,7 @@ const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
                 cursor: 'pointer',
               }}
             >
-              🔊 Επανάληψη
+              {welcomeAudio ? '▶️ Αναπαραγωγή' : '🔊 Επανάληψη'}
             </button>
           </div>
         </Html>
