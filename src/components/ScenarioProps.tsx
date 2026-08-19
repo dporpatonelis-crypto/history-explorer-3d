@@ -1,7 +1,7 @@
 import { Suspense, useCallback, useEffect, useMemo, memo, useRef, useState } from 'react';
 import { useGLTF, useAnimations, Html, Billboard, Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import { useXR } from '@react-three/xr';
+import { Interactive, useXR } from '@react-three/xr';
 import * as THREE from 'three';
 import { clone as cloneSkeleton } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { useLipSync } from '@/hooks/useLipSync';
@@ -38,7 +38,7 @@ const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
   const modelPosition = useRef(new THREE.Vector3());
   const viewerPosition = useRef(new THREE.Vector3());
   const [welcomeVisible, setWelcomeVisible] = useState(false);
-  const { isPresenting } = useXR();
+  const { isPresenting, player } = useXR();
   const { scene, animations } = useGLTF(prop.glbModel);
 
   const { cloned, normalizedScale, offset } = useMemo(() => {
@@ -91,7 +91,7 @@ const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
     const delay = Math.max(0, prop.welcome_delay_ms ?? 2500);
     const timer = window.setTimeout(() => triggerWelcome(), delay);
     return () => window.clearTimeout(timer);
-  }, [hasWelcome, prop.welcome_delay_ms, triggerWelcome, welcomeTrigger]);
+  }, [hasWelcome, prop.welcome_delay_ms, triggerWelcome, welcomeTrigger, isPresenting]);
 
   useEffect(() => {
     const first = Object.values(actions)[0];
@@ -119,7 +119,11 @@ const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
     ) return;
 
     groupRef.current.getWorldPosition(modelPosition.current);
-    camera.getWorldPosition(viewerPosition.current);
+    // In immersive mode the render camera is the headset camera and may be
+        // offset from the XR player rig. Use the rig for proximity triggers so
+    // teleporting/locomotion is measured consistently on the floor plane.
+    if (isPresenting && player) player.getWorldPosition(viewerPosition.current);
+    else camera.getWorldPosition(viewerPosition.current);
     if (modelPosition.current.distanceToSquared(viewerPosition.current) <= welcomeRadius ** 2) {
       triggerWelcome();
     }
@@ -136,18 +140,51 @@ const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
       </group>
 
       {welcomeVisible && hasWelcome && (isPresenting ? (
-        <Billboard position={[0, 2.35, 0]}>
+        <Billboard position={[0, 2.35, 0]} renderOrder={1000}>
+          <mesh position={[0, 0, -0.02]} renderOrder={999}>
+            <planeGeometry args={[1.9, 0.85]} />
+            <meshBasicMaterial
+              color="#161009"
+              transparent
+              opacity={0.9}
+              depthTest={false}
+              depthWrite={false}
+            />
+          </mesh>
           <Text
+            position={[0, 0.12, 0.01]}
             color="#f3ead8"
-            fontSize={0.16}
-            maxWidth={2.5}
+            fontSize={0.075}
+            maxWidth={1.7}
             lineHeight={1.15}
             textAlign="center"
             anchorX="center"
             anchorY="middle"
+            depthOffset={-10}
           >
             {welcomeText || 'Ηχητικό μήνυμα'}
           </Text>
+          <Interactive onSelect={() => triggerWelcome(true)}>
+            <group
+              position={[0, -0.29, 0.02]}
+              onClick={(event) => { event.stopPropagation(); triggerWelcome(true); }}
+            >
+              <mesh renderOrder={1001}>
+                <planeGeometry args={[0.8, 0.16]} />
+                <meshBasicMaterial color="#e7c66a" depthTest={false} />
+              </mesh>
+              <Text
+                position={[0, 0, 0.02]}
+                color="#1a1409"
+                fontSize={0.055}
+                anchorX="center"
+                anchorY="middle"
+                depthOffset={-11}
+              >
+                {welcomeAudio ? '▶ Αναπαραγωγή' : '🔊 Επανάληψη'}
+              </Text>
+            </group>
+          </Interactive>
         </Billboard>
       ) : (
         <Html position={[0, 2.35, 0]} center distanceFactor={8}>
