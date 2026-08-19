@@ -99,13 +99,25 @@ export function DialogPanel({ npc, onClose }: DialogPanelProps) {
                     «{npc.dialogs[selectedDialog].answer}»
                   </p>
                 </div>
-                <button
-                  onClick={() => setSelectedDialog(null)}
-                  className="text-sm font-cinzel text-accent hover:text-accent/80 transition-colors"
-                >
-                  ← Πίσω στις ερωτήσεις
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() =>
+                      speaking ? stopSpeaking() : speak(npc.id, npc.dialogs[selectedDialog].answer)
+                    }
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground font-cinzel text-sm hover:opacity-90 transition-opacity"
+                  >
+                    {speaking ? <Square size={14} /> : <Volume2 size={14} />}
+                    {speaking ? 'Διακοπή' : 'Εκφώνηση (lip sync)'}
+                  </button>
+                  <button
+                    onClick={() => { stopSpeaking(); setSelectedDialog(null); }}
+                    className="text-sm font-cinzel text-accent hover:text-accent/80 transition-colors"
+                  >
+                    ← Πίσω στις ερωτήσεις
+                  </button>
+                </div>
               </div>
+
             )}
           </div>
         )}
