@@ -213,13 +213,20 @@ export function playAudio(npcId: string, src: string, transcript = '') {
   if (typeof window === 'undefined' || !src.trim()) return;
   stopSpeaking();
 
+  const textVisemes = textToVisemes(transcript);
+  if (typeof Audio === 'undefined') {
+    const duration = Math.max(textVisemes.length / (12 * 0.95), 0.8);
+    startVisemePlayback(npcId, textVisemes.length ? textVisemes : buildFallbackVisemes(duration), duration);
+    fallbackTimer = window.setTimeout(stopSpeaking, Math.max(250, (duration + 0.25) * 1000));
+    return;
+  }
+
   const audio = new Audio(src);
   audio.preload = 'auto';
   activeAudio = audio;
 
   audio.onplay = () => {
     if (activeAudio !== audio) return;
-    const textVisemes = textToVisemes(transcript);
     const duration = Number.isFinite(audio.duration) && audio.duration > 0
       ? audio.duration
       : Math.max(textVisemes.length / (12 * 0.95), 0.8);
