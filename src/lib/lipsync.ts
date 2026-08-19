@@ -30,6 +30,7 @@ interface LipSyncState {
 const state: LipSyncState = { npcId: null, startedAt: 0, frames: [], duration: 0 };
 const listeners = new Set<() => void>();
 let fallbackTimer: number | null = null;
+let activeAudio: HTMLAudioElement | null = null;
 
 export function subscribeLipSync(fn: () => void) {
   listeners.add(fn);
@@ -49,6 +50,12 @@ function startVisemePlayback(npcId: string, visemes: Viseme[], duration: number)
   state.duration = duration;
   state.startedAt = performance.now();
   notify();
+}
+
+function buildFallbackVisemes(duration: number): Viseme[] {
+  const pattern: Viseme[] = ['aa', 'oh', 'ih', 'E', 'ou', 'aa'];
+  const count = Math.max(1, Math.round(Math.max(duration, 0.8) * 8));
+  return Array.from({ length: count }, (_, index) => pattern[index % pattern.length]);
 }
 
 /** Greek (and latin) grapheme → viseme. Digraphs are matched first. */
@@ -136,6 +143,13 @@ export function isSpeaking(npcId?: string) {
 export function stopSpeaking() {
   clearFallbackTimer();
   if (typeof window !== 'undefined') window.speechSynthesis?.cancel();
+  if (activeAudio) {
+    activeAudio.onplay = null;
+    activeAudio.onended = null;
+    activeAudio.onerror = null;
+    activeAudio.pause();
+    activeAudio = null;
+  }
   state.npcId = null;
   state.frames = [];
   notify();
@@ -183,4 +197,33 @@ export function speak(npcId: string, text: string, opts: { rate?: number; pitch?
   window.setTimeout(() => {
     if (state.npcId === null && window.speechSynthesis.speaking) utter.onstart?.(null as never);
   }, 250);
+}
+
+/** Plays a user-provided audio file and stretches the transcript visemes to its duration. */
+export function playAudio(npcId: string, src: string, transcript = '') {
+  if (typeof window === 'undefined' || !src.trim()) return;
+  stopSpeaking();
+
+  const audio = new Audio(src);
+  audio.preload = 'auto';
+  activeAudio = audio;
+
+  audio.onplay = () => {
+    if (activeAudio !== audio) return;
+    const textVisemes = textToVisemes(transcript);
+    const duration = Number.isFinite(audio.duration) && audio.duration > 0
+      ? audio.duration
+      : Math.max(textVisemes.length / (12 * 0.95), 0.8);
+    startVisemePlayback(npcId, textVisemes.length ? textVisemes : buildFallbackVisemes(duration), duration);
+  };
+  audio.onended = () => {
+    if (activeAudio === audio) stopSpeaking();
+  };
+  audio.onerror = () => {
+    if (activeAudio === audio) stopSpeaking();
+  };
+
+  void audio.play().catch(() => {
+    if (activeAudio === audio) stopSpeaking();
+  });
 }
