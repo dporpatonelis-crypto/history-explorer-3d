@@ -72,7 +72,7 @@ export const GLBModelNPC = memo(function GLBModelNPC({ npc, isVisited, onInterac
           <meshStandardMaterial color={npc.color || '#888'} wireframe />
         </mesh>
       }>
-        <GLBModel url={npc.glbModel!} rotation={npc.rotation} scale={npc.scale} />
+        <GLBModel url={npc.glbModel!} rotation={npc.rotation} scale={npc.scale} npcId={npc.id} />
       </Suspense>
 
       {/* DOM overlays are invisible inside an immersive session → 3D label in VR */}
