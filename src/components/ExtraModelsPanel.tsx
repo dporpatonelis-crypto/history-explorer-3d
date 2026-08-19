@@ -15,6 +15,7 @@ interface ExtraModelsPanelProps {
 export function ExtraModelsPanel({ models, onChange }: ExtraModelsPanelProps) {
   const [open, setOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const audioInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const handleFiles = (files: FileList | null) => {
     if (!files?.length) return;
@@ -30,6 +31,7 @@ export function ExtraModelsPanel({ models, onChange }: ExtraModelsPanelProps) {
         rotation: 0,
         scale: 1,
         idle: false,
+        welcome_trigger: 'proximity',
       }));
     if (added.length) onChange([...models, ...added]);
     if (fileRef.current) fileRef.current.value = '';
@@ -41,7 +43,18 @@ export function ExtraModelsPanel({ models, onChange }: ExtraModelsPanelProps) {
   const remove = (id: string) => {
     const target = models.find((m) => m.id === id);
     if (target?.glbModel.startsWith('blob:')) URL.revokeObjectURL(target.glbModel);
+    if (target?.welcome_audio?.startsWith('blob:')) URL.revokeObjectURL(target.welcome_audio);
     onChange(models.filter((m) => m.id !== id));
+  };
+
+  const handleAudio = (id: string, files: FileList | null) => {
+    const file = files?.[0];
+    if (!file) return;
+    const target = models.find((m) => m.id === id);
+    if (target?.welcome_audio?.startsWith('blob:')) URL.revokeObjectURL(target.welcome_audio);
+    update(id, { welcome_audio: URL.createObjectURL(file) });
+    const input = audioInputRefs.current[id];
+    if (input) input.value = '';
   };
 
   const numField = (
@@ -159,6 +172,63 @@ export function ExtraModelsPanel({ models, onChange }: ExtraModelsPanelProps) {
                       onChange={(e) => update(m.id, { idle: e.target.checked })}
                     />
                     Idle κίνηση
+                  </label>
+                  <label className="mt-3 flex flex-col gap-1">
+                    <span className="font-cinzel text-[10px] uppercase tracking-wide text-muted-foreground">
+                      Κείμενο / transcript για lip sync
+                    </span>
+                    <input
+                      type="text"
+                      value={m.welcome ?? ''}
+                      onChange={(e) => update(m.id, { welcome: e.target.value })}
+                      placeholder="Προαιρετικό κείμενο της ηχογράφησης"
+                      className="w-full rounded-md border border-border bg-background/60 px-2 py-1 text-xs text-foreground"
+                    />
+                  </label>
+                  <label className="mt-2 flex flex-col gap-1">
+                    <span className="font-cinzel text-[10px] uppercase tracking-wide text-muted-foreground">
+                      Όνομα φωνής browser (προαιρετικό)
+                    </span>
+                    <input
+                      type="text"
+                      value={m.welcome_voice ?? ''}
+                      onChange={(e) => update(m.id, { welcome_voice: e.target.value })}
+                      placeholder="π.χ. Melina"
+                      className="w-full rounded-md border border-border bg-background/60 px-2 py-1 text-xs text-foreground"
+                    />
+                  </label>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <input
+                      ref={(node) => { audioInputRefs.current[m.id] = node; }}
+                      type="file"
+                      accept=".wav,.mp3,.ogg,.m4a,audio/*"
+                      className="hidden"
+                      onChange={(e) => handleAudio(m.id, e.target.files)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => audioInputRefs.current[m.id]?.click()}
+                      className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-md border border-border hover:bg-secondary/40 transition-colors font-cinzel text-[10px]"
+                    >
+                      <Upload size={13} /> Φόρτωση WAV / ήχου
+                    </button>
+                    {m.welcome_audio && (
+                      <span className="font-cormorant text-xs text-muted-foreground">
+                        ✓ ήχος έτοιμος για αναπαραγωγή
+                      </span>
+                    )}
+                  </div>
+                  <label className="mt-2 flex items-center gap-2 text-xs font-cormorant text-muted-foreground">
+                    <span>Trigger</span>
+                    <select
+                      value={m.welcome_trigger ?? 'proximity'}
+                      onChange={(e) => update(m.id, { welcome_trigger: e.target.value as ScenarioProp['welcome_trigger'] })}
+                      className="rounded-md border border-border bg-background/60 px-2 py-1 text-xs text-foreground"
+                    >
+                      <option value="proximity">Πλησίασμα</option>
+                      <option value="time">Χρόνος</option>
+                      <option value="both">Και τα δύο</option>
+                    </select>
                   </label>
                 </div>
               ))}

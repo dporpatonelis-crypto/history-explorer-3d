@@ -264,7 +264,12 @@
       "position_z": 3,
       "rotation": 0,
       "scale": 1,
-      "idle": false
+      "idle": false,
+      "welcome": "Καλώς ήρθες στην Αρχαία Αγορά. Είμαι ο Δημήτρης και θα σε ξεναγήσω.",
+      "welcome_voice": "Melina",
+      "welcome_trigger": "both",
+      "welcome_delay_ms": 2500,
+      "welcome_radius": 2.5
     }
   ]
 }
