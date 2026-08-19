@@ -28,6 +28,8 @@ export interface ScenarioProp {
   welcome_trigger?: WelcomeTrigger;
   /** Optional WAV/MP3/OGG URL or blob URL. `welcome` is used as its transcript. */
   welcome_audio?: string;
+  /** Optional browser SpeechSynthesis voice name, e.g. `Melina`. */
+  welcome_voice?: string;
 }
 
 const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
@@ -63,6 +65,7 @@ const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
   const speakerId = prop.id ?? prop.glbModel;
   const welcomeText = prop.welcome?.trim() ?? '';
   const welcomeAudio = prop.welcome_audio?.trim() ?? '';
+  const welcomeVoice = prop.welcome_voice?.trim() ?? '';
   const hasWelcome = Boolean(welcomeText || welcomeAudio);
   const welcomeTrigger = prop.welcome_trigger ?? 'proximity';
   const welcomeRadius = Math.max(0.25, prop.welcome_radius ?? 2.5);
@@ -75,13 +78,13 @@ const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
     welcomeTriggered.current = true;
     setWelcomeVisible(true);
     if (welcomeAudio) playAudio(speakerId, welcomeAudio, welcomeText);
-    else speak(speakerId, welcomeText);
-  }, [hasWelcome, speakerId, welcomeAudio, welcomeText]);
+    else speak(speakerId, welcomeText, welcomeVoice ? { voiceName: welcomeVoice } : undefined);
+  }, [hasWelcome, speakerId, welcomeAudio, welcomeText, welcomeVoice]);
 
   useEffect(() => {
     welcomeTriggered.current = false;
     setWelcomeVisible(false);
-  }, [speakerId, welcomeAudio, welcomeText, welcomeTrigger]);
+  }, [speakerId, welcomeAudio, welcomeText, welcomeTrigger, welcomeVoice]);
 
   useEffect(() => {
     if (!hasWelcome || (welcomeTrigger !== 'time' && welcomeTrigger !== 'both')) return;
