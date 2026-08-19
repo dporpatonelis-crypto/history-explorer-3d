@@ -29,12 +29,27 @@ interface LipSyncState {
 
 const state: LipSyncState = { npcId: null, startedAt: 0, frames: [], duration: 0 };
 const listeners = new Set<() => void>();
+let fallbackTimer: number | null = null;
 
 export function subscribeLipSync(fn: () => void) {
   listeners.add(fn);
   return () => listeners.delete(fn);
 }
 const notify = () => listeners.forEach((l) => l());
+
+function clearFallbackTimer() {
+  if (fallbackTimer === null || typeof window === 'undefined') return;
+  window.clearTimeout(fallbackTimer);
+  fallbackTimer = null;
+}
+
+function startVisemePlayback(npcId: string, visemes: Viseme[], duration: number) {
+  state.npcId = npcId;
+  state.frames = buildFrames(visemes, duration);
+  state.duration = duration;
+  state.startedAt = performance.now();
+  notify();
+}
 
 /** Greek (and latin) grapheme → viseme. Digraphs are matched first. */
 const DIGRAPHS: Array<[string, Viseme]> = [
@@ -119,7 +134,8 @@ export function isSpeaking(npcId?: string) {
 }
 
 export function stopSpeaking() {
-  window.speechSynthesis?.cancel();
+  clearFallbackTimer();
+  if (typeof window !== 'undefined') window.speechSynthesis?.cancel();
   state.npcId = null;
   state.frames = [];
   notify();
@@ -132,10 +148,22 @@ function pickGreekVoice(): SpeechSynthesisVoice | undefined {
 
 /** Speaks `text` with the Web Speech API and drives the visemes of `npcId`. */
 export function speak(npcId: string, text: string, opts: { rate?: number; pitch?: number } = {}) {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+  if (typeof window === 'undefined') return;
   stopSpeaking();
 
   const rate = opts.rate ?? 0.95;
+  const visemes = textToVisemes(text);
+  // ~12 visemes/sec at rate 1 gives a natural mouth cadence.
+  const duration = visemes.length / (12 * rate);
+
+  // WebViews can omit SpeechSynthesis entirely. Keep the mouth animation
+  // testable there and let a real browser provide audio when available.
+  if (!('speechSynthesis' in window) || typeof window.speechSynthesis?.speak !== 'function') {
+    startVisemePlayback(npcId, visemes, duration);
+    fallbackTimer = window.setTimeout(stopSpeaking, Math.max(250, (duration + 0.25) * 1000));
+    return;
+  }
+
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = 'el-GR';
   utter.rate = rate;
@@ -143,16 +171,8 @@ export function speak(npcId: string, text: string, opts: { rate?: number; pitch?
   const voice = pickGreekVoice();
   if (voice) utter.voice = voice;
 
-  const visemes = textToVisemes(text);
-  // ~12 visemes/sec at rate 1 gives a natural mouth cadence.
-  const duration = visemes.length / (12 * rate);
-
   utter.onstart = () => {
-    state.npcId = npcId;
-    state.frames = buildFrames(visemes, duration);
-    state.duration = duration;
-    state.startedAt = performance.now();
-    notify();
+    startVisemePlayback(npcId, visemes, duration);
   };
   utter.onend = stopSpeaking;
   utter.onerror = stopSpeaking;
