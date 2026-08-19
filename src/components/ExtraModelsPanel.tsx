@@ -185,6 +185,18 @@ export function ExtraModelsPanel({ models, onChange }: ExtraModelsPanelProps) {
                       className="w-full rounded-md border border-border bg-background/60 px-2 py-1 text-xs text-foreground"
                     />
                   </label>
+                  <label className="mt-2 flex flex-col gap-1">
+                    <span className="font-cinzel text-[10px] uppercase tracking-wide text-muted-foreground">
+                      Όνομα φωνής browser (προαιρετικό)
+                    </span>
+                    <input
+                      type="text"
+                      value={m.welcome_voice ?? ''}
+                      onChange={(e) => update(m.id, { welcome_voice: e.target.value })}
+                      placeholder="π.χ. Melina"
+                      className="w-full rounded-md border border-border bg-background/60 px-2 py-1 text-xs text-foreground"
+                    />
+                  </label>
                   <div className="mt-3 flex flex-wrap items-center gap-2">
                     <input
                       ref={(node) => { audioInputRefs.current[m.id] = node; }}
