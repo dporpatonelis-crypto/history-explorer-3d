@@ -1,5 +1,5 @@
 import { Suspense, useCallback, useEffect, useMemo, memo, useRef, useState } from 'react';
-import { useGLTF, useAnimations, Html, Billboard, Text } from '@react-three/drei';
+import { useFBX, useGLTF, useAnimations, Html, Billboard, Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { Interactive, useXR } from '@react-three/xr';
 import * as THREE from 'three';
@@ -8,10 +8,13 @@ import { useLipSync } from '@/hooks/useLipSync';
 import { playAudio, speak } from '@/lib/lipsync';
 
 type WelcomeTrigger = 'time' | 'proximity' | 'both';
+type ModelFormat = 'glb' | 'gltf' | 'fbx';
 
 export interface ScenarioProp {
   id?: string;
   glbModel: string;
+  /** File format for the model source. GLB/GLTF remain the default for legacy JSON. */
+  model_format?: ModelFormat;
   position_x?: number;
   position_y?: number;
   position_z?: number;
@@ -32,15 +35,23 @@ export interface ScenarioProp {
   welcome_voice?: string;
 }
 
-const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
+interface LoadedPropModelProps {
+  prop: ScenarioProp;
+  scene: THREE.Object3D;
+  animations: THREE.AnimationClip[];
+}
+
+const LoadedPropModel = memo(function LoadedPropModel({
+  prop,
+  scene,
+  animations,
+}: LoadedPropModelProps) {
   const groupRef = useRef<THREE.Group>(null);
   const welcomeTriggered = useRef(false);
   const modelPosition = useRef(new THREE.Vector3());
   const viewerPosition = useRef(new THREE.Vector3());
   const [welcomeVisible, setWelcomeVisible] = useState(false);
   const { isPresenting, player } = useXR();
-  const { scene, animations } = useGLTF(prop.glbModel);
-
   const { cloned, normalizedScale, offset } = useMemo(() => {
     const clonedScene = cloneSkeleton(scene);
     clonedScene.traverse((child) => {
@@ -230,6 +241,22 @@ const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
       ))}
     </group>
   );
+});
+
+const GLBPropModel = memo(function GLBPropModel({ prop }: { prop: ScenarioProp }) {
+  const { scene, animations } = useGLTF(prop.glbModel);
+  return <LoadedPropModel prop={prop} scene={scene} animations={animations} />;
+});
+
+const FBXPropModel = memo(function FBXPropModel({ prop }: { prop: ScenarioProp }) {
+  const scene = useFBX(prop.glbModel);
+  const animations = (scene as THREE.Group & { animations?: THREE.AnimationClip[] }).animations ?? [];
+  return <LoadedPropModel prop={prop} scene={scene} animations={animations} />;
+});
+
+const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
+  const isFbx = prop.model_format === 'fbx' || /\.fbx(?:$|[?#])/i.test(prop.glbModel);
+  return isFbx ? <FBXPropModel prop={prop} /> : <GLBPropModel prop={prop} />;
 });
 
 export const ScenarioProps = memo(function ScenarioProps({ props: items }: { props?: ScenarioProp[] }) {
