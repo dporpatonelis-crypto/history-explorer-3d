@@ -20,11 +20,12 @@ export function ExtraModelsPanel({ models, onChange }: ExtraModelsPanelProps) {
   const handleFiles = (files: FileList | null) => {
     if (!files?.length) return;
     const added: ExtraModel[] = Array.from(files)
-      .filter((f) => /\.(glb|gltf)$/i.test(f.name))
+      .filter((f) => /\.(glb|gltf|fbx)$/i.test(f.name))
       .map((f) => ({
         id: `${f.name}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         name: f.name,
         glbModel: URL.createObjectURL(f),
+        model_format: /\.fbx$/i.test(f.name) ? 'fbx' : /\.gltf$/i.test(f.name) ? 'gltf' : 'glb',
         position_x: 0,
         position_y: 0,
         position_z: 0,
@@ -118,7 +119,7 @@ export function ExtraModelsPanel({ models, onChange }: ExtraModelsPanelProps) {
               <input
                 ref={fileRef}
                 type="file"
-                accept=".glb,.gltf"
+                accept=".glb,.gltf,.fbx"
                 multiple
                 className="hidden"
                 onChange={(e) => handleFiles(e.target.files)}
@@ -128,7 +129,7 @@ export function ExtraModelsPanel({ models, onChange }: ExtraModelsPanelProps) {
                 className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border hover:bg-secondary/40 transition-colors"
               >
                 <Upload size={16} />
-                <span className="font-cinzel text-xs font-semibold">Φόρτωση GLB από υπολογιστή</span>
+                <span className="font-cinzel text-xs font-semibold">Φόρτωση GLB / GLTF / FBX</span>
               </button>
               <p className="mt-2 font-cormorant text-xs text-muted-foreground">
                 Τα μοντέλα είναι προσωρινά (χάνονται με την ανανέωση). Για μόνιμα, χρησιμοποίησε το
