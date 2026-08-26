@@ -1,111 +1,33 @@
 {
   "scenarios": [
     {
-      "file": "20260701_084428_three-theologians-theological-concept.json",
-      "title": "null",
-      "description": "Μάθημα: null (2026-07-01)",
-      "thumbnail": ""
-    },
-    {
-      "file": "20260701_092934_.json",
-      "title": "Ο Απόστολος των Εθνών και το Στόμα της Εκκλησίας",
-      "description": "Μάθημα: Ο Απόστολος των Εθνών και το Στόμα της Εκκλησίας (2026-07-01)",
-      "thumbnail": ""
-    },
-    {
-      "file": "20260701_100001_apostolic-interpretive-power-nexus.json",
-      "title": "Apostolic Interpretive Power and Authority",
-      "description": "Μάθημα: Apostolic Interpretive Power and Authority (2026-07-01)",
-      "thumbnail": ""
-    },
-    {
-      "file": "20260701_110853_oikonomia-tou-pneumatos.json",
-      "title": "Η Οικονομία του Πνεύματος",
-      "description": "Μάθημα: Η Οικονομία του Πνεύματος (2026-07-01)",
-      "thumbnail": ""
-    },
-    {
-      "file": "20260702_075602_.json",
-      "title": "Ο Απόστολος των Εθνών και το Στόμα της Εκκλησίας",
-      "description": "Μάθημα: Ο Απόστολος των Εθνών και το Στόμα της Εκκλησίας (2026-07-02)",
-      "thumbnail": ""
-    },
-    {
       "file": "20260702_091526_the-triple-testimony-of-the-one-god.json",
       "title": "Η Τριπλή Μαρτυρία του Ενός Θεού",
-      "description": "Μάθημα: Η Τριπλή Μαρτυρία του Ενός Θεού (2026-07-02)",
-      "thumbnail": ""
-    },
-    {
-      "file": "20260702_152528_.json",
-      "title": "Ο Απόστολος των Εθνών και το Στόμα της Εκκλησίας",
-      "description": "Μάθημα: Ο Απόστολος των Εθνών και το Στόμα της Εκκλησίας (2026-07-02)",
+      "description": "Μάθημα: Η Τριπλή Μαρτυρία του Ενός Θεού (2026-08-26)",
       "thumbnail": ""
     },
     {
       "file": "20260702_174242_participation.json",
-      "title": "null",
-      "description": "Μάθημα: null (2026-07-02)",
+      "title": "Το Αίνιγμα του Ωριγένη",
+      "description": "Μάθημα: Το Αίνιγμα του Ωριγένη (2026-08-26)",
       "thumbnail": ""
     },
     {
-      "file": "20260704_130240_.json",
-      "title": "Η Τριπλή Μαρτυρία του Ενός Θεού",
-      "description": "Μάθημα: Η Τριπλή Μαρτυρία του Ενός Θεού (2026-07-04)",
-      "thumbnail": ""
-    },
-    {
-      "file": "20260705_110829_.json",
-      "title": "null",
-      "description": "Μάθημα: null (2026-07-05)",
-      "thumbnail": ""
-    },
-    {
-      "file": "20260712_084945_.json",
-      "title": "To Ainigma tou Origen",
-      "description": "Μάθημα: To Ainigma tou Origen (2026-07-13)",
-      "thumbnail": ""
-    },
-    {
-      "file": "20260715_125646_.json",
-      "title": "Η Τριπλή Μαρτυρία του Ενός Θεού",
-      "description": "Μάθημα: Η Τριπλή Μαρτυρία του Ενός Θεού (2026-07-15)",
-      "thumbnail": ""
-    },
-    {
-      "file": "20260715_174148_.json",
-      "title": "null",
-      "description": "Μάθημα: null (2026-07-15)",
-      "thumbnail": ""
-    },
-    {
-      "file": "20260719_173023_.json",
+      "file": "20260720_143615_.json",
       "title": "Ο Απόστολος των Εθνών και το Στόμα της Εκκλησίας",
-      "description": "Μάθημα: Ο Απόστολος των Εθνών και το Στόμα της Εκκλησίας (2026-07-19)",
-      "thumbnail": ""
-    },
-    {
-      "file": "20260719_180438_spirit-enlightenment.json",
-      "title": "Η Τριπλή Μαρτυρία του Ενός Θεού",
-      "description": "Μάθημα: Η Τριπλή Μαρτυρία του Ενός Θεού (2026-07-19)",
-      "thumbnail": ""
-    },
-    {
-      "file": "20260720_081819_chrysostom.json",
-      "title": "null",
-      "description": "Μάθημα: null (2026-07-20)",
+      "description": "Μάθημα: Ο Απόστολος των Εθνών και το Στόμα της Εκκλησίας (2026-08-26)",
       "thumbnail": ""
     },
     {
       "file": "20260816_080042_three-theologians.json",
       "title": "Η Τριπλή Μαρτυρία του Ενός Θεού",
-      "description": "Μάθημα: Η Τριπλή Μαρτυρία του Ενός Θεού (2026-08-16)",
+      "description": "Μάθημα: Η Τριπλή Μαρτυρία του Ενός Θεού (2026-08-26)",
       "thumbnail": ""
     },
     {
       "file": "20260825_093143_lesson.json",
       "title": "Δύο αίθουσες κρίσης: λογική πρόθεση και εμπειρία σωτηρίας",
-      "description": "Μάθημα: Δύο αίθουσες κρίσης: λογική πρόθεση και εμπειρία σωτηρίας (2026-08-25)",
+      "description": "Μάθημα: Δύο αίθουσες κρίσης: λογική πρόθεση και εμπειρία σωτηρίας (2026-08-26)",
       "thumbnail": ""
     }
   ]

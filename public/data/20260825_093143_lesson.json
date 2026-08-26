@@ -249,36 +249,36 @@
   ],
   "facts": [
     {
-      "character_id": "socrates",
-      "fact": ": "
+      "character_id": "aristotle",
+      "fact": "Η φράση «ἦν ποτε ὅτε οὐκ ἦν» συνοψίζει την αρειανική άρνηση της συναιωνιότητας του Υιού."
+    },
+    {
+      "character_id": "aristotle",
+      "fact": "Το αγέννητον χρησιμοποιείται στην υπεράσπιση ως γνώρισμα που ανήκει αποκλειστικά στον Πατέρα."
+    },
+    {
+      "character_id": "monk compressed.glb",
+      "fact": "Η πατερική αντίκρουση συνδέει άμεσα την ταυτότητα του Χριστού με τη δυνατότητα θέωσης και νίκης κατά του θανάτου."
+    },
+    {
+      "character_id": "monk compressed.glb",
+      "fact": "Η λατρεία του Χριστού λειτουργεί στο μάθημα ως έλεγχος συνέπειας: η Εκκλησία δεν μπορεί να προσκυνά ένα κτίσμα ως Θεό."
+    },
+    {
+      "character_id": "Constantine compressed (2).glb",
+      "fact": "Η Α΄ Οικουμενική Σύνοδος συγκλήθηκε στη Νίκαια το 325 μ.Χ."
+    },
+    {
+      "character_id": "Constantine compressed (2).glb",
+      "fact": "Το ομοούσιο αποκλείει την ιδέα ότι ο Υιός ανήκει στην τάξη των δημιουργημάτων."
     },
     {
       "character_id": "socrates",
-      "fact": ": "
+      "fact": "Το Παροιμιών 8,22 είναι βασικό βιβλικό πειστήριο της αρειανικής επιχειρηματολογίας, αλλά η χρήση του προϋποθέτει συγκεκριμένη χριστολογική ερμηνεία της Σοφίας."
     },
     {
       "character_id": "socrates",
-      "fact": ": "
-    },
-    {
-      "character_id": "socrates",
-      "fact": ": "
-    },
-    {
-      "character_id": "socrates",
-      "fact": ": "
-    },
-    {
-      "character_id": "socrates",
-      "fact": ": "
-    },
-    {
-      "character_id": "socrates",
-      "fact": ": "
-    },
-    {
-      "character_id": "socrates",
-      "fact": ": "
+      "fact": "Ο φόβος σύγχυσης Πατρός και Υιού με τον Σαβελλιανισμό εξηγεί μέρος της πρόθεσης του Αρείου, χωρίς να δικαιώνει αναγκαστικά το συμπέρασμά του."
     }
   ],
   "screens": {
@@ -286,5 +286,23 @@
     "right_image_url": "",
     "left_label": "Παροιμίες 8,22 — πειστήριο και ερμηνεία",
     "right_label": "Νίκαια 325 — από το επιχείρημα στην ετυμηγορία"
-  }
+  },
+  "props": [
+    {
+      "id": "dimitris",
+      "glbModel": "/models/Dimitris.glb",
+      "position_x": 0,
+      "position_y": 0,
+      "position_z": 3,
+      "rotation": 0,
+      "scale": 1,
+      "idle": false,
+      "welcome": "Καλώς ήρθες στην Αρχαία Αγορά. Είμαι ο Δημήτρης και θα σε ξεναγήσω.",
+      "welcome_voice": "Melina",
+      "welcome_trigger": "both",
+      "welcome_delay_ms": 2500,
+      "welcome_radius": 2.5,
+      "welcome_audio": "/audio/dimitris.wav"
+    }
+  ]
 }
