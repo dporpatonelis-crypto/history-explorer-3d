@@ -7,7 +7,7 @@ import { NPCFigure } from '@/components/NPCFigure';
 import { GLBModelNPC } from '@/components/GLBModelNPC';
 import { DialogPanel } from '@/components/DialogPanel';
 import { ProgressTracker } from '@/components/ProgressTracker';
-import { EnvironmentScreens } from '@/components/EnvironmentScreens';
+import { EnvironmentScreens, type EnvironmentScreensHandle } from '@/components/EnvironmentScreens';
 import { LibraryPanel } from '@/components/LibraryPanel';
 import { VRLocomotion } from '@/components/VRLocomotion';
 import { VRDialogBoard } from '@/components/VRDialogBoard';
@@ -48,10 +48,21 @@ function StableOrbitControls() {
 }
 
 /** Renders the VR dialog board inside the player rig so it follows the viewer. */
-function VRDialogLayer({ npc, onClose }: { npc: NPCData | null; onClose: () => void }) {
+function VRDialogLayer({
+  npc,
+  onClose,
+  onPlayInteractive,
+}: {
+  npc: NPCData | null;
+  onClose: () => void;
+  onPlayInteractive?: () => void;
+}) {
   const { player, isPresenting } = useXR();
   if (!isPresenting || !npc || !player) return null;
-  return createPortal(<VRDialogBoard npc={npc} onClose={onClose} />, player);
+  return createPortal(
+    <VRDialogBoard npc={npc} onClose={onClose} onPlayInteractive={onPlayInteractive} />,
+    player
+  );
 }
 
 /** Spawn point: in front of the NPC line, opposite the temple, clear of the colonnade. */
@@ -77,7 +88,8 @@ const Index = () => {
   const [inVR, setInVR] = useState(false);
   const [extraModels, setExtraModels] = useState<ExtraModel[]>([]);
   const { visited, markVisited, resetProgress } = useProgress();
-  const { npcs, screens, props: scenarioProps, rawScenario, applyScenario } = useScenario();
+  const { npcs, screens, interactive, props: scenarioProps, rawScenario, applyScenario } = useScenario();
+  const environmentScreensRef = useRef<EnvironmentScreensHandle>(null);
   const respawnRef = useRef<() => void>(() => {});
   const registerRespawn = useCallback((fn: () => void) => { respawnRef.current = fn; }, []);
 
@@ -85,6 +97,10 @@ const Index = () => {
     setActiveNPC(npc);
     markVisited(npc.id);
   }, [markVisited]);
+
+  const handleInteractivePlayback = useCallback(() => {
+    void environmentScreensRef.current?.playInteractive();
+  }, []);
 
 
   return (
@@ -117,7 +133,7 @@ const Index = () => {
           <SceneLighting />
           <MarbleFloor />
           <TempleScene />
-          <EnvironmentScreens config={screens} />
+          <EnvironmentScreens ref={environmentScreensRef} config={screens} interactive={interactive} />
           <ScenarioProps props={[...(scenarioProps ?? []), ...extraModels]} />
 
           {npcs.map((npc) =>
@@ -138,7 +154,11 @@ const Index = () => {
             )
           )}
 
-          <VRDialogLayer npc={activeNPC} onClose={() => setActiveNPC(null)} />
+          <VRDialogLayer
+            npc={activeNPC}
+            onClose={() => setActiveNPC(null)}
+            onPlayInteractive={interactive ? handleInteractivePlayback : undefined}
+          />
           <StableOrbitControls />
         </XR>
       </Canvas>
@@ -160,7 +180,13 @@ const Index = () => {
             </div>
           </div>
 
-          {activeNPC && <DialogPanel npc={activeNPC} onClose={() => setActiveNPC(null)} />}
+          {activeNPC && (
+            <DialogPanel
+              npc={activeNPC}
+              onClose={() => setActiveNPC(null)}
+              onPlayInteractive={interactive ? handleInteractivePlayback : undefined}
+            />
+          )}
         </>
       )}
     </div>

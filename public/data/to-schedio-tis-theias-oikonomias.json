@@ -323,6 +323,11 @@
     "left_label": "Διαφάνειες — Θεία Οικονομία",
     "right_label": "Το γενικό Timeline της Θείας Οικονομίας — IMG-055"
   },
+  "interactive": {
+    "video_url": "/media/alexander-bucephalus-relay-v5-web.mp4",
+    "target_screen": "right",
+    "label": "Αλέξανδρος και Βουκεφάλας — εικαστική αφήγηση"
+  },
   "props": [
     {
       "id": "dimitris",

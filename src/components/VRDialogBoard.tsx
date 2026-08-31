@@ -6,6 +6,7 @@ import { NPCData } from '@/data/npcData';
 interface VRDialogBoardProps {
   npc: NPCData;
   onClose: () => void;
+  onPlayInteractive?: () => void;
 }
 
 /**
@@ -13,7 +14,7 @@ interface VRDialogBoardProps {
  * inside an immersive session, so the content is rendered as 3D text.
  * The board is attached to the player rig, floating in front of the viewer.
  */
-export function VRDialogBoard({ npc, onClose }: VRDialogBoardProps) {
+export function VRDialogBoard({ npc, onClose, onPlayInteractive }: VRDialogBoardProps) {
   const [index, setIndex] = useState(0);
   const dialogs = npc.dialogs ?? [];
   const current = dialogs[index];
@@ -59,7 +60,7 @@ export function VRDialogBoard({ npc, onClose }: VRDialogBoardProps) {
             onClick={(e) => { e.stopPropagation(); setIndex((i) => (i + 1) % dialogs.length); }}
           >
             <mesh>
-              <planeGeometry args={[0.6, 0.13]} />
+              <planeGeometry args={[0.55, 0.13]} />
               <meshBasicMaterial color="#3c2f18" />
             </mesh>
             <Text position={[0, 0, 0.01]} fontSize={0.048} color="#f3ead8" anchorX="center">
@@ -69,9 +70,26 @@ export function VRDialogBoard({ npc, onClose }: VRDialogBoardProps) {
         </Interactive>
       )}
 
+      {onPlayInteractive && (
+        <Interactive onSelect={() => { onPlayInteractive(); onClose(); }}>
+          <group
+            position={[0.1, -0.38, 0.01]}
+            onClick={(e) => { e.stopPropagation(); onPlayInteractive(); onClose(); }}
+          >
+            <mesh>
+              <planeGeometry args={[0.4, 0.13]} />
+              <meshBasicMaterial color="#7a5b16" />
+            </mesh>
+            <Text position={[0, 0, 0.01]} fontSize={0.042} color="#ffffff" anchorX="center">
+              Interactive ▶
+            </Text>
+          </group>
+        </Interactive>
+      )}
+
       <Interactive onSelect={onClose}>
         <group
-          position={[0.45, -0.38, 0.01]}
+          position={[0.52, -0.38, 0.01]}
           onClick={(e) => { e.stopPropagation(); onClose(); }}
         >
           <mesh>

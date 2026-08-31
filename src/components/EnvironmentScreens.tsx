@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState, useRef } from 'react';
+import { forwardRef, useMemo, useEffect, useState, useRef, useImperativeHandle } from 'react';
 import * as THREE from 'three';
 import { useTexture } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
@@ -8,23 +8,35 @@ function isVideoUrl(url: string): boolean {
   return lower.endsWith('.mp4') || lower.endsWith('.webm') || lower.endsWith('.ogg');
 }
 
-function useVideoTexture(url: string) {
+function useVideoTexture(url: string, autoplay = true, loop = true, muted = true) {
   const [texture, setTexture] = useState<THREE.VideoTexture | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
+    setTexture(null);
+    if (!url) {
+      videoRef.current = null;
+      return;
+    }
+
     const video = document.createElement('video');
-    video.src = url;
     video.crossOrigin = 'anonymous';
-    video.loop = true;
-    video.muted = true;
+    video.preload = 'auto';
+    video.loop = loop;
+    video.muted = muted;
+    video.defaultMuted = muted;
     video.playsInline = true;
-    video.autoplay = true;
+    video.autoplay = autoplay;
+    video.src = url;
     videoRef.current = video;
 
-    video.play().catch(() => {
-      // Autoplay might be blocked, user interaction needed
-    });
+    if (autoplay) {
+      video.play().catch(() => {
+        // Muted environment videos may still require a user gesture on some devices.
+      });
+    } else {
+      video.load();
+    }
 
     const videoTexture = new THREE.VideoTexture(video);
     videoTexture.colorSpace = THREE.SRGBColorSpace;
@@ -36,15 +48,16 @@ function useVideoTexture(url: string) {
       video.pause();
       video.src = '';
       videoTexture.dispose();
+      if (videoRef.current === video) videoRef.current = null;
     };
-  }, [url]);
+  }, [url, autoplay, loop, muted]);
 
   // Keep texture updated
   useFrame(() => {
     if (texture) texture.needsUpdate = true;
   });
 
-  return texture;
+  return { texture, videoRef };
 }
 
 function CurvedScreenMesh({
@@ -56,6 +69,7 @@ function CurvedScreenMesh({
   curveSegments = 8,
   thetaStart = 0,
   thetaLength = Math.PI,
+  textureOverride,
 }: {
   mediaUrl: string;
   position: [number, number, number];
@@ -65,24 +79,26 @@ function CurvedScreenMesh({
   curveSegments?: number;
   thetaStart?: number;
   thetaLength?: number;
+  textureOverride?: THREE.Texture | null;
 }) {
   const isVideo = isVideoUrl(mediaUrl);
+  const hasTextureOverride = textureOverride !== undefined;
   const [loadError, setLoadError] = useState(false);
-  const imageTexture = useTexture(isVideo ? '/placeholder.svg' : mediaUrl, (tex) => {
+  const imageTexture = useTexture(isVideo || hasTextureOverride ? '/placeholder.svg' : mediaUrl, (tex) => {
     // loaded ok
   });
   
   // Listen for load errors via onError on the texture loader
   useEffect(() => {
-    if (!isVideo && mediaUrl) {
+    if (!isVideo && !hasTextureOverride && mediaUrl) {
       const img = new Image();
       img.onerror = () => setLoadError(true);
       img.src = mediaUrl;
     }
-  }, [mediaUrl, isVideo]);
-  const videoTexture = useVideoTexture(isVideo ? mediaUrl : '');
+  }, [mediaUrl, isVideo, hasTextureOverride]);
+  const { texture: videoTexture } = useVideoTexture(isVideo && !hasTextureOverride ? mediaUrl : '');
   
-  const texture = isVideo ? videoTexture : imageTexture;
+  const texture = hasTextureOverride ? textureOverride : isVideo ? videoTexture : imageTexture;
 
   useEffect(() => {
     if (!isVideo && imageTexture) {
@@ -137,6 +153,16 @@ export interface ScreenConfig {
   right_label?: string;
 }
 
+export interface InteractiveMediaConfig {
+  video_url: string;
+  target_screen?: 'left' | 'right';
+  label?: string;
+}
+
+export interface EnvironmentScreensHandle {
+  playInteractive: () => Promise<boolean>;
+}
+
 const DEFAULT_SCREENS: ScreenConfig = {
   left_image_url: '',
   right_image_url: '',
@@ -144,11 +170,56 @@ const DEFAULT_SCREENS: ScreenConfig = {
 
 interface EnvironmentScreensProps {
   config?: ScreenConfig;
+  interactive?: InteractiveMediaConfig;
 }
 
-export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScreensProps) {
-  const hasLeft = config.left_image_url?.length > 0;
-  const hasRight = config.right_image_url?.length > 0;
+export const EnvironmentScreens = forwardRef<EnvironmentScreensHandle, EnvironmentScreensProps>(
+function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive }, ref) {
+  const [interactiveActive, setInteractiveActive] = useState(false);
+  const {
+    texture: interactiveTexture,
+    videoRef: interactiveVideoRef,
+  } = useVideoTexture(interactive?.video_url ?? '', false, false, true);
+
+  useEffect(() => {
+    setInteractiveActive(false);
+    const video = interactiveVideoRef.current;
+    if (!video) return;
+    video.pause();
+    video.currentTime = 0;
+    video.muted = true;
+  }, [config.left_image_url, config.right_image_url, interactive?.video_url, interactiveVideoRef]);
+
+  useImperativeHandle(ref, () => ({
+    playInteractive: async () => {
+      const video = interactiveVideoRef.current;
+      if (!video || !interactive?.video_url) return false;
+
+      video.pause();
+      video.currentTime = 0;
+      video.loop = false;
+      video.muted = false;
+      video.defaultMuted = false;
+      video.volume = 1;
+      setInteractiveActive(true);
+
+      try {
+        await video.play();
+        return true;
+      } catch (error) {
+        console.error('[EnvironmentScreens] Interactive video playback failed:', error);
+        return false;
+      }
+    },
+  }), [interactive?.video_url, interactiveVideoRef]);
+
+  const interactiveTarget = interactive?.target_screen ?? 'right';
+  const showInteractiveLeft = interactiveActive && interactiveTarget === 'left';
+  const showInteractiveRight = interactiveActive && interactiveTarget === 'right';
+  const leftMediaUrl = showInteractiveLeft ? interactive?.video_url ?? '' : config.left_image_url;
+  const rightMediaUrl = showInteractiveRight ? interactive?.video_url ?? '' : config.right_image_url;
+  const hasLeft = leftMediaUrl.length > 0;
+  const hasRight = rightMediaUrl.length > 0;
 
   if (!hasLeft && !hasRight) return null;
 
@@ -163,7 +234,7 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
       {/* Left screen: covers from PI to PI + halfArc (left side when facing center) */}
       {hasLeft && (
         <CurvedScreenMesh
-          mediaUrl={config.left_image_url}
+          mediaUrl={leftMediaUrl}
           position={[0, 0, 0]}
           rotation={[0, 0, 0]}
           radius={screenRadius}
@@ -171,12 +242,13 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
           thetaLength={halfArc}
           height={10.5}
           curveSegments={16}
+          textureOverride={showInteractiveLeft ? interactiveTexture : undefined}
         />
       )}
       {/* Right screen: covers from PI - halfArc to PI (right side) */}
       {hasRight && (
         <CurvedScreenMesh
-          mediaUrl={config.right_image_url}
+          mediaUrl={rightMediaUrl}
           position={[0, 0, 0]}
           rotation={[0, 0, 0]}
           radius={screenRadius}
@@ -184,8 +256,9 @@ export function EnvironmentScreens({ config = DEFAULT_SCREENS }: EnvironmentScre
           thetaLength={halfArc}
           height={10.5}
           curveSegments={16}
+          textureOverride={showInteractiveRight ? interactiveTexture : undefined}
         />
       )}
     </group>
   );
-}
+});

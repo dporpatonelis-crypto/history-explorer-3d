@@ -293,6 +293,11 @@
     "left_label": "Αρχαία αγορά Αθήνας Δίκη",
     "right_label": "Αρχαία Αθήνα"
   },
+  "interactive": {
+    "video_url": "/media/alexander-bucephalus-relay-v5-web.mp4",
+    "target_screen": "right",
+    "label": "Αλέξανδρος και Βουκεφάλας — εικαστική αφήγηση"
+  },
   "props": [
     {
       "id": "dimitris",

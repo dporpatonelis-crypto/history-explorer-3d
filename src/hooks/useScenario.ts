@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NPCData, npcData as fallbackData } from '@/data/npcData';
-import { ScreenConfig } from '@/components/EnvironmentScreens';
+import { InteractiveMediaConfig, ScreenConfig } from '@/components/EnvironmentScreens';
 import { ScenarioProp } from '@/components/ScenarioProps';
 
 interface ScenarioCharacter {
@@ -34,6 +34,7 @@ interface ScenarioJSON {
   dialogs: ScenarioDialog[];
   facts: ScenarioFact[];
   screens?: ScreenConfig;
+  interactive?: InteractiveMediaConfig;
   props?: ScenarioProp[];
 }
 
@@ -56,7 +57,22 @@ function sanitizeScreens(screens?: ScreenConfig): ScreenConfig | undefined {
   return clean;
 }
 
-function parseScenario(data: ScenarioJSON): { npcs: NPCData[]; screens?: ScreenConfig } {
+function sanitizeInteractive(interactive?: InteractiveMediaConfig): InteractiveMediaConfig | undefined {
+  if (!interactive?.video_url?.trim() || !/^(https?:\/\/|\/)/.test(interactive.video_url.trim())) {
+    return undefined;
+  }
+  return {
+    video_url: interactive.video_url.trim(),
+    target_screen: interactive.target_screen === 'left' ? 'left' : 'right',
+    ...(interactive.label?.trim() ? { label: interactive.label.trim() } : {}),
+  };
+}
+
+function parseScenario(data: ScenarioJSON): {
+  npcs: NPCData[];
+  screens?: ScreenConfig;
+  interactive?: InteractiveMediaConfig;
+} {
   const npcs = data.characters.map((char) => ({
     id: char.id,
     name: char.name,
@@ -75,7 +91,11 @@ function parseScenario(data: ScenarioJSON): { npcs: NPCData[]; screens?: ScreenC
       .filter((f) => f.character_id === char.id)
       .map((f) => f.fact),
   }));
-  return { npcs, screens: sanitizeScreens(data.screens) };
+  return {
+    npcs,
+    screens: sanitizeScreens(data.screens),
+    interactive: sanitizeInteractive(data.interactive),
+  };
 }
 
 export function useScenario(scenarioName = 'default') {
@@ -85,6 +105,7 @@ export function useScenario(scenarioName = 'default') {
   const [loading, setLoading] = useState(true);
   const [rawScenario, setRawScenario] = useState<ScenarioJSON | null>(null);
   const [props, setProps] = useState<ScenarioProp[] | undefined>();
+  const [interactive, setInteractive] = useState<InteractiveMediaConfig | undefined>();
 
   const applyScenario = (data: ScenarioJSON) => {
     setRawScenario(data);
@@ -94,6 +115,7 @@ export function useScenario(scenarioName = 'default') {
       setSource('json');
     }
     setScreens(parsed.screens);
+    setInteractive(parsed.interactive);
     setProps(Array.isArray(data.props) ? data.props.filter((p) => p?.glbModel?.trim()) : undefined);
   };
 
@@ -125,6 +147,5 @@ export function useScenario(scenarioName = 'default') {
     return () => { cancelled = true; };
   }, [scenarioName]);
 
-  return { npcs, screens, props, source, loading, rawScenario, applyScenario };
+  return { npcs, screens, interactive, props, source, loading, rawScenario, applyScenario };
 }
-

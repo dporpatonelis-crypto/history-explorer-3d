@@ -6,9 +6,10 @@ import { speak, stopSpeaking, isSpeaking, subscribeLipSync } from '@/lib/lipsync
 interface DialogPanelProps {
   npc: NPCData;
   onClose: () => void;
+  onPlayInteractive?: () => void;
 }
 
-export function DialogPanel({ npc, onClose }: DialogPanelProps) {
+export function DialogPanel({ npc, onClose, onPlayInteractive }: DialogPanelProps) {
   const [activeTab, setActiveTab] = useState<'dialog' | 'facts' | 'interactive'>('dialog');
   const [selectedDialog, setSelectedDialog] = useState<number | null>(null);
   const [speaking, setSpeaking] = useState(false);
@@ -17,6 +18,15 @@ export function DialogPanel({ npc, onClose }: DialogPanelProps) {
   useEffect(() => subscribeLipSync(() => setSpeaking(isSpeaking(npc.id))) as () => void, [npc.id]);
   useEffect(() => () => stopSpeaking(), []);
 
+  const handleInteractive = () => {
+    stopSpeaking();
+    if (onPlayInteractive) {
+      onPlayInteractive();
+      onClose();
+      return;
+    }
+    setActiveTab('interactive');
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
@@ -64,7 +74,7 @@ export function DialogPanel({ npc, onClose }: DialogPanelProps) {
             <ScrollText size={14} /> Ιστορικά
           </button>
           <button
-            onClick={() => setActiveTab('interactive')}
+            onClick={handleInteractive}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-cinzel text-sm transition-colors ${
               activeTab === 'interactive'
                 ? 'bg-primary text-primary-foreground'
