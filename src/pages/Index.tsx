@@ -1,7 +1,8 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { Canvas, createPortal } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { XR, VRButton, Controllers, Hands, useXR } from '@react-three/xr';
+import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { TempleScene, MarbleFloor, SceneLighting } from '@/components/TempleScene';
 import { NPCFigure } from '@/components/NPCFigure';
 import { GLBModelNPC } from '@/components/GLBModelNPC';
@@ -15,11 +16,13 @@ import { VRWristPanel } from '@/components/VRWristPanel';
 import { ScenarioProps } from '@/components/ScenarioProps';
 import { ExtraModelsPanel, type ExtraModel } from '@/components/ExtraModelsPanel';
 import { useProgress } from '@/hooks/useProgress';
-import { NPCData } from '@/data/npcData';
+import { NPCData, npcData } from '@/data/npcData';
+import { QuizResult } from '@/data/quizData';
 import { useScenario } from '@/hooks/useScenario';
+import { narrate, stopSpeaking } from '@/lib/lipsync';
 
 function StableOrbitControls() {
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<OrbitControlsImpl>(null);
   const initialized = useRef(false);
   const { isPresenting } = useXR();
 
@@ -87,20 +90,169 @@ const Index = () => {
   const [activeNPC, setActiveNPC] = useState<NPCData | null>(null);
   const [inVR, setInVR] = useState(false);
   const [extraModels, setExtraModels] = useState<ExtraModel[]>([]);
+  const [quizOpen, setQuizOpen] = useState(false);
+  const [quizUnlocked, setQuizUnlocked] = useState(false);
+  const [quizResult, setQuizResult] = useState<QuizResult | null>(null);
   const { visited, markVisited, resetProgress } = useProgress();
-  const { npcs, screens, interactive, props: scenarioProps, rawScenario, applyScenario } = useScenario();
+  const {
+    npcs,
+    screens,
+    interactive,
+    props: scenarioProps,
+    completionIds,
+    quiz,
+    loading,
+    rawScenario,
+    applyScenario,
+  } = useScenario();
   const environmentScreensRef = useRef<EnvironmentScreensHandle>(null);
   const respawnRef = useRef<() => void>(() => {});
+  const completionArmedRef = useRef(false);
+  const autoVideoStartedRef = useRef(false);
+  const rewardPlayedRef = useRef(false);
+  const workflowKeyRef = useRef('');
   const registerRespawn = useCallback((fn: () => void) => { respawnRef.current = fn; }, []);
 
+  const requiredCompletionIds = useMemo(
+    () => completionIds?.length
+      ? completionIds
+      : npcs
+        .filter((npc) => npc.name !== 'tree' && npc.dialogs.length > 0)
+        .slice(0, npcData.length)
+        .map((npc) => npc.id),
+    [completionIds, npcs],
+  );
+  const requiredCompletionIdSet = useMemo(
+    () => new Set(requiredCompletionIds),
+    [requiredCompletionIds],
+  );
+  const completionCount = requiredCompletionIds.filter((id) => visited.has(id)).length;
+  const completionWorkflowConfigured = Boolean(completionIds?.length);
+  const completionReached = completionWorkflowConfigured
+    && completionCount >= requiredCompletionIds.length;
+  const workflowKey = `${interactive?.video_url ?? ''}|${quiz?.id ?? ''}|${requiredCompletionIds.join('|')}`;
+
+  const quizHostNPC = useMemo<NPCData | null>(() => quiz ? ({
+    id: quiz.hostPropId,
+    name: quiz.hostName,
+    title: quiz.hostTitle,
+    position: [0, 0, 3],
+    rotation: 0,
+    color: '#d4a574',
+    robeColor: '#4a6fa5',
+    description: quiz.intro,
+    dialogs: [],
+    historicalFacts: [],
+    glbModel: scenarioProps?.find((prop) => prop.id === quiz.hostPropId)?.glbModel,
+  }) : null, [quiz, scenarioProps]);
+
+  useEffect(() => {
+    if (loading || !workflowKey || workflowKeyRef.current === workflowKey) return;
+    workflowKeyRef.current = workflowKey;
+    completionArmedRef.current = completionWorkflowConfigured && !completionReached;
+    autoVideoStartedRef.current = false;
+    rewardPlayedRef.current = false;
+    setQuizOpen(false);
+    setQuizUnlocked(false);
+    setQuizResult(null);
+  }, [completionReached, completionWorkflowConfigured, loading, workflowKey]);
+
   const handleNPCInteract = useCallback((npc: NPCData) => {
-    setActiveNPC(npc);
+    const isNewRequiredVisit = requiredCompletionIdSet.has(npc.id) && !visited.has(npc.id);
+    const completesNow = completionWorkflowConfigured
+      && completionArmedRef.current
+      && !autoVideoStartedRef.current
+      && isNewRequiredVisit
+      && completionCount + 1 >= requiredCompletionIds.length;
+
     markVisited(npc.id);
-  }, [markVisited]);
+
+    if (completesNow) {
+      completionArmedRef.current = false;
+      setActiveNPC(null);
+      setQuizOpen(false);
+
+      if (interactive) {
+        autoVideoStartedRef.current = true;
+        const playback = environmentScreensRef.current?.playInteractive();
+        const handlePlaybackFailure = () => {
+          autoVideoStartedRef.current = false;
+          if (quiz) {
+            setQuizUnlocked(true);
+            setQuizOpen(true);
+          }
+        };
+        if (!playback) {
+          handlePlaybackFailure();
+          return;
+        }
+        void playback.then((started) => {
+          if (started) return;
+          handlePlaybackFailure();
+        });
+      } else if (quiz) {
+        setQuizUnlocked(true);
+        setQuizOpen(true);
+      }
+      return;
+    }
+
+    setQuizOpen(false);
+    setActiveNPC(npc);
+  }, [
+    completionCount,
+    completionWorkflowConfigured,
+    interactive,
+    markVisited,
+    quiz,
+    requiredCompletionIdSet,
+    requiredCompletionIds.length,
+    visited,
+  ]);
 
   const handleInteractivePlayback = useCallback(() => {
+    stopSpeaking();
+    setActiveNPC(null);
+    setQuizOpen(false);
     void environmentScreensRef.current?.playInteractive();
   }, []);
+
+  const handleInteractiveEnded = useCallback(() => {
+    if (!completionReached || !quiz || quizResult?.passed) return;
+    setActiveNPC(null);
+    setQuizUnlocked(true);
+    setQuizOpen(true);
+  }, [completionReached, quiz, quizResult?.passed]);
+
+  const handleQuizComplete = useCallback((result: QuizResult) => {
+    setQuizResult(result);
+    if (!result.passed || !quiz || rewardPlayedRef.current) return;
+    rewardPlayedRef.current = true;
+    void narrate(quiz.hostPropId, quiz.rewardText, quiz.rewardAudioUrl);
+  }, [quiz]);
+
+  const handleQuizRetry = useCallback(() => {
+    setQuizResult(null);
+  }, []);
+
+  const handleQuizHostInteract = useCallback(() => {
+    if (!quizUnlocked || !quiz) return;
+    stopSpeaking();
+    setActiveNPC(null);
+    setQuizOpen(true);
+  }, [quiz, quizUnlocked]);
+
+  const handleResetProgress = useCallback(() => {
+    stopSpeaking();
+    resetProgress();
+    completionArmedRef.current = completionWorkflowConfigured;
+    autoVideoStartedRef.current = false;
+    rewardPlayedRef.current = false;
+    setActiveNPC(null);
+    setQuizOpen(false);
+    setQuizUnlocked(false);
+    setQuizResult(null);
+  }, [completionWorkflowConfigured, resetProgress]);
 
 
   return (
@@ -124,8 +276,8 @@ const Index = () => {
           <VRLocomotion />
           <VRSpawn register={registerRespawn} />
           <VRWristPanel
-            visitedCount={visited.size}
-            totalCount={npcs.length}
+            visitedCount={completionCount}
+            totalCount={requiredCompletionIds.length}
             onRespawn={() => respawnRef.current()}
             onCloseDialog={() => setActiveNPC(null)}
           />
@@ -133,20 +285,29 @@ const Index = () => {
           <SceneLighting />
           <MarbleFloor />
           <TempleScene />
-          <EnvironmentScreens ref={environmentScreensRef} config={screens} interactive={interactive} />
-          <ScenarioProps props={[...(scenarioProps ?? []), ...extraModels]} />
+          <EnvironmentScreens
+            ref={environmentScreensRef}
+            config={screens}
+            interactive={interactive}
+            onInteractiveEnded={handleInteractiveEnded}
+          />
+          <ScenarioProps
+            props={[...(scenarioProps ?? []), ...extraModels]}
+            interactivePropId={quizUnlocked ? quiz?.hostPropId : undefined}
+            onPropInteract={handleQuizHostInteract}
+          />
 
-          {npcs.map((npc) =>
+          {npcs.map((npc, index) =>
             npc.glbModel ? (
               <GLBModelNPC
-                key={npc.id}
+                key={`${npc.id}-${index}`}
                 npc={npc}
                 isVisited={visited.has(npc.id)}
                 onInteract={() => handleNPCInteract(npc)}
               />
             ) : (
               <NPCFigure
-                key={npc.id}
+                key={`${npc.id}-${index}`}
                 npc={npc}
                 isVisited={visited.has(npc.id)}
                 onInteract={() => handleNPCInteract(npc)}
@@ -165,7 +326,11 @@ const Index = () => {
 
       {!inVR && (
         <>
-          <ProgressTracker visited={visited} onReset={resetProgress} />
+          <ProgressTracker
+            visited={visited}
+            requiredIds={requiredCompletionIds}
+            onReset={handleResetProgress}
+          />
           <LibraryPanel currentScenario={rawScenario} onLoadScenario={applyScenario} />
           <ExtraModelsPanel models={extraModels} onChange={setExtraModels} />
 
@@ -180,7 +345,17 @@ const Index = () => {
             </div>
           </div>
 
-          {activeNPC && (
+          {quizOpen && quiz && quizHostNPC ? (
+            <DialogPanel
+              key={`quiz-${quiz.id}`}
+              npc={quizHostNPC}
+              quiz={quiz}
+              quizResult={quizResult}
+              onQuizComplete={handleQuizComplete}
+              onQuizRetry={handleQuizRetry}
+              onClose={() => { stopSpeaking(); setQuizOpen(false); }}
+            />
+          ) : activeNPC && (
             <DialogPanel
               npc={activeNPC}
               onClose={() => setActiveNPC(null)}

@@ -8,6 +8,20 @@ function isVideoUrl(url: string): boolean {
   return lower.endsWith('.mp4') || lower.endsWith('.webm') || lower.endsWith('.ogg');
 }
 
+function slideshowUrlsFromMediaUrl(mediaUrl: string): string[] {
+  try {
+    const parsed = new URL(mediaUrl, window.location.origin);
+    const encodedSlides = new URLSearchParams(parsed.hash.slice(1)).get('sb-slides');
+    if (!encodedSlides) return [];
+    return encodedSlides
+      .split('|')
+      .map((url) => url.trim())
+      .filter((url) => /^(https?:\/\/|\/)/.test(url));
+  } catch {
+    return [];
+  }
+}
+
 function useVideoTexture(url: string, autoplay = true, loop = true, muted = true) {
   const [texture, setTexture] = useState<THREE.VideoTexture | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -171,15 +185,31 @@ const DEFAULT_SCREENS: ScreenConfig = {
 interface EnvironmentScreensProps {
   config?: ScreenConfig;
   interactive?: InteractiveMediaConfig;
+  onInteractiveEnded?: () => void;
 }
 
 export const EnvironmentScreens = forwardRef<EnvironmentScreensHandle, EnvironmentScreensProps>(
-function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive }, ref) {
+function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteractiveEnded }, ref) {
   const [interactiveActive, setInteractiveActive] = useState(false);
   const {
     texture: interactiveTexture,
     videoRef: interactiveVideoRef,
   } = useVideoTexture(interactive?.video_url ?? '', false, false, true);
+  const leftSlides = useMemo(
+    () => slideshowUrlsFromMediaUrl(config.left_image_url),
+    [config.left_image_url]
+  );
+  const [leftSlideIndex, setLeftSlideIndex] = useState(0);
+
+  useEffect(() => {
+    setLeftSlideIndex(0);
+    leftSlides.forEach((url) => useTexture.preload(url));
+    if (leftSlides.length < 2) return;
+    const interval = window.setInterval(() => {
+      setLeftSlideIndex((current) => (current + 1) % leftSlides.length);
+    }, 6500);
+    return () => window.clearInterval(interval);
+  }, [leftSlides]);
 
   useEffect(() => {
     setInteractiveActive(false);
@@ -189,6 +219,19 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive }, ref) {
     video.currentTime = 0;
     video.muted = true;
   }, [config.left_image_url, config.right_image_url, interactive?.video_url, interactiveVideoRef]);
+
+  useEffect(() => {
+    const video = interactiveVideoRef.current;
+    if (!video) return;
+
+    const handleEnded = () => {
+      setInteractiveActive(false);
+      onInteractiveEnded?.();
+    };
+
+    video.addEventListener('ended', handleEnded);
+    return () => video.removeEventListener('ended', handleEnded);
+  }, [interactive?.video_url, interactiveVideoRef, onInteractiveEnded]);
 
   useImperativeHandle(ref, () => ({
     playInteractive: async () => {
@@ -216,8 +259,12 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive }, ref) {
   const interactiveTarget = interactive?.target_screen ?? 'right';
   const showInteractiveLeft = interactiveActive && interactiveTarget === 'left';
   const showInteractiveRight = interactiveActive && interactiveTarget === 'right';
-  const leftMediaUrl = showInteractiveLeft ? interactive?.video_url ?? '' : config.left_image_url;
-  const rightMediaUrl = showInteractiveRight ? interactive?.video_url ?? '' : config.right_image_url;
+  const leftMediaUrl = showInteractiveLeft
+    ? interactive?.video_url ?? ''
+    : leftSlides[leftSlideIndex] ?? config.left_image_url;
+  const rightMediaUrl = showInteractiveRight
+    ? interactive?.video_url ?? ''
+    : config.right_image_url;
   const hasLeft = leftMediaUrl.length > 0;
   const hasRight = rightMediaUrl.length > 0;
 

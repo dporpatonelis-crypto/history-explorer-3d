@@ -243,3 +243,21 @@ export function playAudio(npcId: string, src: string, transcript = '') {
     if (activeAudio === audio) stopSpeaking();
   });
 }
+
+/** Narrates quiz/reward text, preferring a supplied recording and otherwise Melina TTS. */
+export function narrate(
+  npcId: string,
+  text: string,
+  audioUrl?: string,
+  opts: { rate?: number; pitch?: number; voiceName?: string } = {},
+) {
+  if (audioUrl?.trim()) {
+    playAudio(npcId, audioUrl, text);
+    return;
+  }
+
+  speak(npcId, text, {
+    ...opts,
+    voiceName: opts.voiceName ?? 'Melina',
+  });
+}

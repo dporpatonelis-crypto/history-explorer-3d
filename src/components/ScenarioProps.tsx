@@ -39,18 +39,21 @@ interface LoadedPropModelProps {
   prop: ScenarioProp;
   scene: THREE.Object3D;
   animations: THREE.AnimationClip[];
+  onInteract?: () => void;
 }
 
 const LoadedPropModel = memo(function LoadedPropModel({
   prop,
   scene,
   animations,
+  onInteract,
 }: LoadedPropModelProps) {
   const groupRef = useRef<THREE.Group>(null);
   const welcomeTriggered = useRef(false);
   const modelPosition = useRef(new THREE.Vector3());
   const viewerPosition = useRef(new THREE.Vector3());
   const [welcomeVisible, setWelcomeVisible] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const { isPresenting, player } = useXR();
   const { cloned, normalizedScale, offset } = useMemo(() => {
     const clonedScene = cloneSkeleton(scene);
@@ -140,17 +143,27 @@ const LoadedPropModel = memo(function LoadedPropModel({
     }
   });
 
-  return (
+  const content = (
     <group
       ref={groupRef}
       position={[prop.position_x ?? 0, baseY, prop.position_z ?? 0]}
       rotation={[0, ((prop.rotation ?? 0) * Math.PI) / 180, 0]}
+      onClick={onInteract ? (event) => { event.stopPropagation(); onInteract(); } : undefined}
+      onPointerOver={onInteract ? (event) => {
+        event.stopPropagation();
+        setHovered(true);
+        document.body.style.cursor = 'pointer';
+      } : undefined}
+      onPointerOut={onInteract ? () => {
+        setHovered(false);
+        document.body.style.cursor = 'default';
+      } : undefined}
     >
       <group scale={[normalizedScale, normalizedScale, normalizedScale]}>
         <primitive object={cloned} position={offset} />
       </group>
 
-      {welcomeVisible && hasWelcome && (isPresenting ? (
+      {!onInteract && welcomeVisible && hasWelcome && (isPresenting ? (
         <Billboard position={[0, 2.35, 0]} renderOrder={1000}>
           <mesh position={[0, 0, -0.02]} renderOrder={999}>
             <planeGeometry args={[1.9, 0.85]} />
@@ -198,7 +211,7 @@ const LoadedPropModel = memo(function LoadedPropModel({
           </Interactive>
         </Billboard>
       ) : (
-        <Html position={[0, 2.35, 0]} center distanceFactor={8}>
+        <Html position={[0, 2.35, 0]} center distanceFactor={8} zIndexRange={[10, 0]}>
           <div
             style={{
               display: 'flex',
@@ -239,34 +252,136 @@ const LoadedPropModel = memo(function LoadedPropModel({
           </div>
         </Html>
       ))}
+
+      {onInteract && isPresenting && (
+        <Billboard position={[0, 2.35, 0]} renderOrder={1000}>
+          <mesh renderOrder={999}>
+            <planeGeometry args={[1.45, 0.34]} />
+            <meshBasicMaterial
+              color={hovered ? '#e7c66a' : '#161009'}
+              transparent
+              opacity={0.92}
+              depthTest={false}
+              depthWrite={false}
+            />
+          </mesh>
+          <Text
+            position={[0, 0, 0.02]}
+            color={hovered ? '#1a1409' : '#f3ead8'}
+            fontSize={0.1}
+            anchorX="center"
+            anchorY="middle"
+            depthOffset={-10}
+          >
+            Δημήτρης · Quiz
+          </Text>
+        </Billboard>
+      )}
+
+      {onInteract && !isPresenting && (
+        <Html
+          position={[0, 2.35, 0]}
+          center
+          distanceFactor={8}
+          zIndexRange={[10, 0]}
+          style={{ pointerEvents: 'none' }}
+        >
+          <button
+            type="button"
+            onClick={(event) => { event.stopPropagation(); onInteract(); }}
+            style={{
+              pointerEvents: 'auto',
+              border: '1px solid hsla(45, 90%, 70%, 0.65)',
+              borderRadius: 6,
+              padding: '5px 12px',
+              color: hovered ? '#1a1409' : '#f3ead8',
+              background: hovered ? '#e7c66a' : 'hsla(0, 0%, 0%, 0.78)',
+              fontFamily: 'Cinzel, serif',
+              fontSize: 11,
+              fontWeight: 700,
+              whiteSpace: 'nowrap',
+              cursor: 'pointer',
+            }}
+          >
+            Δημήτρης · Quiz
+          </button>
+        </Html>
+      )}
+
+      {onInteract && hovered && (
+        <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[0.5, 0.7, 24]} />
+          <meshBasicMaterial
+            color="hsl(45, 90%, 55%)"
+            transparent
+            opacity={0.45}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      )}
     </group>
+  );
+
+  if (!onInteract) return content;
+
+  return (
+    <Interactive
+      onSelect={onInteract}
+      onHover={() => setHovered(true)}
+      onBlur={() => setHovered(false)}
+    >
+      {content}
+    </Interactive>
   );
 });
 
-const GLBPropModel = memo(function GLBPropModel({ prop }: { prop: ScenarioProp }) {
+interface PropModelProps {
+  prop: ScenarioProp;
+  onInteract?: () => void;
+}
+
+const GLBPropModel = memo(function GLBPropModel({ prop, onInteract }: PropModelProps) {
   const { scene, animations } = useGLTF(prop.glbModel);
-  return <LoadedPropModel prop={prop} scene={scene} animations={animations} />;
+  return <LoadedPropModel prop={prop} scene={scene} animations={animations} onInteract={onInteract} />;
 });
 
-const FBXPropModel = memo(function FBXPropModel({ prop }: { prop: ScenarioProp }) {
+const FBXPropModel = memo(function FBXPropModel({ prop, onInteract }: PropModelProps) {
   const scene = useFBX(prop.glbModel);
   const animations = (scene as THREE.Group & { animations?: THREE.AnimationClip[] }).animations ?? [];
-  return <LoadedPropModel prop={prop} scene={scene} animations={animations} />;
+  return <LoadedPropModel prop={prop} scene={scene} animations={animations} onInteract={onInteract} />;
 });
 
-const PropModel = memo(function PropModel({ prop }: { prop: ScenarioProp }) {
+const PropModel = memo(function PropModel({ prop, onInteract }: PropModelProps) {
   const isFbx = prop.model_format === 'fbx' || /\.fbx(?:$|[?#])/i.test(prop.glbModel);
-  return isFbx ? <FBXPropModel prop={prop} /> : <GLBPropModel prop={prop} />;
+  return isFbx
+    ? <FBXPropModel prop={prop} onInteract={onInteract} />
+    : <GLBPropModel prop={prop} onInteract={onInteract} />;
 });
 
-export const ScenarioProps = memo(function ScenarioProps({ props: items }: { props?: ScenarioProp[] }) {
+interface ScenarioPropsProps {
+  props?: ScenarioProp[];
+  interactivePropId?: string;
+  onPropInteract?: (prop: ScenarioProp) => void;
+}
+
+export const ScenarioProps = memo(function ScenarioProps({
+  props: items,
+  interactivePropId,
+  onPropInteract,
+}: ScenarioPropsProps) {
   if (!items?.length) return null;
   return (
     <Suspense fallback={null}>
       {items
         .filter((p) => p.glbModel?.trim())
         .map((p, i) => (
-          <PropModel key={p.id ?? `${p.glbModel}-${i}`} prop={p} />
+          <PropModel
+            key={p.id ?? `${p.glbModel}-${i}`}
+            prop={p}
+            onInteract={p.id === interactivePropId && onPropInteract
+              ? () => onPropInteract(p)
+              : undefined}
+          />
         ))}
     </Suspense>
   );

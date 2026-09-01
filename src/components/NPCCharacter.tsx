@@ -128,7 +128,7 @@ export function NPCCharacter({ npc, isVisited, onInteract }: NPCCharacterProps) 
       )}
 
       {/* Name label */}
-      <Html position={[0, 2.7, 0]} center distanceFactor={8}>
+      <Html position={[0, 2.7, 0]} center distanceFactor={8} zIndexRange={[10, 0]}>
         <div className="npc-label px-3 py-1.5 rounded-lg text-center pointer-events-none select-none whitespace-nowrap">
           <p className="font-cinzel text-sm font-bold text-gold">{npc.name}</p>
           {hovered && (

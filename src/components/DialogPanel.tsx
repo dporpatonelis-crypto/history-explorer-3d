@@ -1,15 +1,29 @@
 import { useEffect, useState } from 'react';
 import { NPCData } from '@/data/npcData';
-import { X, ChevronRight, BookOpen, ScrollText, Sparkles, ExternalLink, Volume2, Square } from 'lucide-react';
+import { X, ChevronRight, BookOpen, ScrollText, Sparkles, ExternalLink, Volume2, Square, BrainCircuit } from 'lucide-react';
 import { speak, stopSpeaking, isSpeaking, subscribeLipSync } from '@/lib/lipsync';
+import { LessonQuiz, QuizResult } from '@/data/quizData';
+import { QuizDialogContent } from '@/components/QuizDialogContent';
 
 interface DialogPanelProps {
   npc: NPCData;
   onClose: () => void;
   onPlayInteractive?: () => void;
+  quiz?: LessonQuiz;
+  quizResult?: QuizResult | null;
+  onQuizComplete?: (result: QuizResult) => void;
+  onQuizRetry?: () => void;
 }
 
-export function DialogPanel({ npc, onClose, onPlayInteractive }: DialogPanelProps) {
+export function DialogPanel({
+  npc,
+  onClose,
+  onPlayInteractive,
+  quiz,
+  quizResult,
+  onQuizComplete,
+  onQuizRetry,
+}: DialogPanelProps) {
   const [activeTab, setActiveTab] = useState<'dialog' | 'facts' | 'interactive'>('dialog');
   const [selectedDialog, setSelectedDialog] = useState<number | null>(null);
   const [speaking, setSpeaking] = useState(false);
@@ -49,9 +63,18 @@ export function DialogPanel({ npc, onClose, onPlayInteractive }: DialogPanelProp
           </button>
         </div>
 
-        <p className="font-cormorant text-base text-foreground/80 mb-4">{npc.description}</p>
+        <p className="font-cormorant text-base text-foreground/80 mb-4">
+          {quiz?.intro ?? npc.description}
+        </p>
 
         {/* Tabs */}
+        {quiz ? (
+          <div className="mb-4 flex">
+            <span className="flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 font-cinzel text-sm text-primary-foreground">
+              <BrainCircuit size={14} /> Quiz κατανόησης
+            </span>
+          </div>
+        ) : (
         <div className="flex gap-2 mb-4 flex-wrap">
           <button
             onClick={() => { setActiveTab('dialog'); setSelectedDialog(null); }}
@@ -84,9 +107,17 @@ export function DialogPanel({ npc, onClose, onPlayInteractive }: DialogPanelProp
             <Sparkles size={14} /> Interactive
           </button>
         </div>
+        )}
 
         {/* Content */}
-        {activeTab === 'dialog' && (
+        {quiz && onQuizComplete && onQuizRetry ? (
+          <QuizDialogContent
+            quiz={quiz}
+            initialResult={quizResult}
+            onComplete={onQuizComplete}
+            onRetry={onQuizRetry}
+          />
+        ) : activeTab === 'dialog' && (
           <div className="space-y-2">
             {selectedDialog === null ? (
               npc.dialogs.map((d, i) => (
@@ -132,7 +163,7 @@ export function DialogPanel({ npc, onClose, onPlayInteractive }: DialogPanelProp
           </div>
         )}
 
-        {activeTab === 'facts' && (
+        {!quiz && activeTab === 'facts' && (
           <ul className="space-y-2">
             {npc.historicalFacts.map((fact, i) => (
               <li key={i} className="flex items-start gap-2 p-2 rounded-lg bg-secondary/40">
@@ -143,7 +174,7 @@ export function DialogPanel({ npc, onClose, onPlayInteractive }: DialogPanelProp
           </ul>
         )}
 
-        {activeTab === 'interactive' && (
+        {!quiz && activeTab === 'interactive' && (
           <div className="space-y-3 p-4 rounded-lg bg-secondary/40 border border-border">
             <p className="font-cormorant text-base text-foreground">
               Άνοιξε το διαδραστικό board για δραστηριότητες μαθητή στο Idea Weaver Board.

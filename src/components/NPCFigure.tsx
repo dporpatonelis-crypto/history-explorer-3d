@@ -78,7 +78,13 @@ export const NPCFigure = memo(function NPCFigure({ npc, isVisited, onInteract }:
       </mesh>
 
       {/* HTML label */}
-      <Html position={[0, 2.1, 0]} center distanceFactor={8} style={{ pointerEvents: 'none' }}>
+      <Html
+        position={[0, 2.1, 0]}
+        center
+        distanceFactor={8}
+        zIndexRange={[10, 0]}
+        style={{ pointerEvents: 'none' }}
+      >
         <div
           style={{
             display: 'flex',

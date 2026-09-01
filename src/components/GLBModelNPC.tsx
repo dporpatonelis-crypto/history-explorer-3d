@@ -89,7 +89,13 @@ export const GLBModelNPC = memo(function GLBModelNPC({ npc, isVisited, onInterac
       )}
 
       {!isDecoration && !isPresenting && (
-        <Html position={[0, 2.3, 0]} center distanceFactor={8} style={{ pointerEvents: 'none' }}>
+        <Html
+          position={[0, 2.3, 0]}
+          center
+          distanceFactor={8}
+          zIndexRange={[10, 0]}
+          style={{ pointerEvents: 'none' }}
+        >
           <div
             style={{ pointerEvents: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}
             onClick={(e) => { e.stopPropagation(); onInteract(); }}
