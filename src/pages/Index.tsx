@@ -8,7 +8,11 @@ import { NPCFigure } from '@/components/NPCFigure';
 import { GLBModelNPC } from '@/components/GLBModelNPC';
 import { DialogPanel } from '@/components/DialogPanel';
 import { ProgressTracker } from '@/components/ProgressTracker';
-import { EnvironmentScreens, type EnvironmentScreensHandle } from '@/components/EnvironmentScreens';
+import {
+  EnvironmentScreens,
+  type EnvironmentScreensHandle,
+  type InteractivePlaybackEvent,
+} from '@/components/EnvironmentScreens';
 import { LibraryPanel } from '@/components/LibraryPanel';
 import { VRLocomotion } from '@/components/VRLocomotion';
 import { VRDialogBoard } from '@/components/VRDialogBoard';
@@ -98,8 +102,10 @@ const Index = () => {
     npcs,
     screens,
     interactive,
+    characterInteractives,
     props: scenarioProps,
     completionIds,
+    completionInteractive,
     quiz,
     loading,
     rawScenario,
@@ -130,7 +136,20 @@ const Index = () => {
   const completionWorkflowConfigured = Boolean(completionIds?.length);
   const completionReached = completionWorkflowConfigured
     && completionCount >= requiredCompletionIds.length;
-  const workflowKey = `${interactive?.video_url ?? ''}|${quiz?.id ?? ''}|${requiredCompletionIds.join('|')}`;
+  const workflowKey = [
+    interactive?.video_url ?? '',
+    completionInteractive?.video_url ?? '',
+    quiz?.id ?? '',
+    quiz?.rewardInteractive?.video_url ?? '',
+    requiredCompletionIds.join('|'),
+  ].join('|');
+
+  const activeNPCInteractive = useMemo(
+    () => activeNPC
+      ? characterInteractives?.[activeNPC.id] ?? interactive
+      : undefined,
+    [activeNPC, characterInteractives, interactive],
+  );
 
   const quizHostNPC = useMemo<NPCData | null>(() => quiz ? ({
     id: quiz.hostPropId,
@@ -172,9 +191,13 @@ const Index = () => {
       setActiveNPC(null);
       setQuizOpen(false);
 
-      if (interactive) {
+      const completionReward = completionInteractive ?? interactive;
+      if (completionReward) {
         autoVideoStartedRef.current = true;
-        const playback = environmentScreensRef.current?.playInteractive();
+        const playback = environmentScreensRef.current?.playInteractive(
+          completionReward,
+          'completion-reward',
+        );
         const handlePlaybackFailure = () => {
           autoVideoStartedRef.current = false;
           if (quiz) {
@@ -201,6 +224,7 @@ const Index = () => {
     setActiveNPC(npc);
   }, [
     completionCount,
+    completionInteractive,
     completionWorkflowConfigured,
     interactive,
     markVisited,
@@ -211,13 +235,15 @@ const Index = () => {
   ]);
 
   const handleInteractivePlayback = useCallback(() => {
+    if (!activeNPCInteractive) return;
     stopSpeaking();
     setActiveNPC(null);
     setQuizOpen(false);
-    void environmentScreensRef.current?.playInteractive();
-  }, []);
+    void environmentScreensRef.current?.playInteractive(activeNPCInteractive, 'model');
+  }, [activeNPCInteractive]);
 
-  const handleInteractiveEnded = useCallback(() => {
+  const handleInteractiveEnded = useCallback((event: InteractivePlaybackEvent) => {
+    if (event.purpose !== 'completion-reward') return;
     if (!completionReached || !quiz || quizResult?.passed) return;
     setActiveNPC(null);
     setQuizUnlocked(true);
@@ -228,7 +254,25 @@ const Index = () => {
     setQuizResult(result);
     if (!result.passed || !quiz || rewardPlayedRef.current) return;
     rewardPlayedRef.current = true;
-    void narrate(quiz.hostPropId, quiz.rewardText, quiz.rewardAudioUrl);
+    const rewardMedia = quiz.rewardInteractive;
+    if (!rewardMedia) {
+      void narrate(quiz.hostPropId, quiz.rewardText, quiz.rewardAudioUrl);
+      return;
+    }
+
+    stopSpeaking();
+    setQuizOpen(false);
+    const playback = environmentScreensRef.current?.playInteractive(rewardMedia, 'quiz-reward');
+    const narrateFallback = () => {
+      void narrate(quiz.hostPropId, quiz.rewardText, quiz.rewardAudioUrl);
+    };
+    if (!playback) {
+      narrateFallback();
+      return;
+    }
+    void playback.then((started) => {
+      if (!started) narrateFallback();
+    });
   }, [quiz]);
 
   const handleQuizRetry = useCallback(() => {
@@ -244,6 +288,7 @@ const Index = () => {
 
   const handleResetProgress = useCallback(() => {
     stopSpeaking();
+    environmentScreensRef.current?.stopInteractive();
     resetProgress();
     completionArmedRef.current = completionWorkflowConfigured;
     autoVideoStartedRef.current = false;
@@ -318,7 +363,7 @@ const Index = () => {
           <VRDialogLayer
             npc={activeNPC}
             onClose={() => setActiveNPC(null)}
-            onPlayInteractive={interactive ? handleInteractivePlayback : undefined}
+            onPlayInteractive={activeNPCInteractive ? handleInteractivePlayback : undefined}
           />
           <StableOrbitControls />
         </XR>
@@ -359,7 +404,7 @@ const Index = () => {
             <DialogPanel
               npc={activeNPC}
               onClose={() => setActiveNPC(null)}
-              onPlayInteractive={interactive ? handleInteractivePlayback : undefined}
+              onPlayInteractive={activeNPCInteractive ? handleInteractivePlayback : undefined}
             />
           )}
         </>

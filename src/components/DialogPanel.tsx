@@ -57,6 +57,7 @@ export function DialogPanel({
           </div>
           <button
             onClick={onClose}
+            aria-label="Κλείσιμο διαλόγου"
             className="p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
           >
             <X size={20} />

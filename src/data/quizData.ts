@@ -1,3 +1,5 @@
+import type { InteractiveMediaConfig } from '@/components/EnvironmentScreens';
+
 export interface QuizQuestion {
   id: string;
   prompt: string;
@@ -16,6 +18,7 @@ export interface LessonQuiz {
   passScore: number;
   rewardText: string;
   rewardAudioUrl?: string;
+  rewardInteractive?: InteractiveMediaConfig;
   questions: QuizQuestion[];
 }
 

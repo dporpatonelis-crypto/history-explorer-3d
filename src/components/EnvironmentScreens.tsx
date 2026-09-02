@@ -1,4 +1,4 @@
-import { forwardRef, useMemo, useEffect, useState, useRef, useImperativeHandle } from 'react';
+import { forwardRef, useMemo, useEffect, useState, useRef, useImperativeHandle, useCallback } from 'react';
 import * as THREE from 'three';
 import { useTexture } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
@@ -173,8 +173,19 @@ export interface InteractiveMediaConfig {
   label?: string;
 }
 
+export type InteractivePlaybackPurpose = 'model' | 'completion-reward' | 'quiz-reward';
+
+export interface InteractivePlaybackEvent {
+  media: InteractiveMediaConfig;
+  purpose: InteractivePlaybackPurpose;
+}
+
 export interface EnvironmentScreensHandle {
-  playInteractive: () => Promise<boolean>;
+  playInteractive: (
+    media?: InteractiveMediaConfig,
+    purpose?: InteractivePlaybackPurpose,
+  ) => Promise<boolean>;
+  stopInteractive: () => void;
 }
 
 const DEFAULT_SCREENS: ScreenConfig = {
@@ -185,16 +196,17 @@ const DEFAULT_SCREENS: ScreenConfig = {
 interface EnvironmentScreensProps {
   config?: ScreenConfig;
   interactive?: InteractiveMediaConfig;
-  onInteractiveEnded?: () => void;
+  onInteractiveEnded?: (event: InteractivePlaybackEvent) => void;
 }
 
 export const EnvironmentScreens = forwardRef<EnvironmentScreensHandle, EnvironmentScreensProps>(
 function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteractiveEnded }, ref) {
   const [interactiveActive, setInteractiveActive] = useState(false);
-  const {
-    texture: interactiveTexture,
-    videoRef: interactiveVideoRef,
-  } = useVideoTexture(interactive?.video_url ?? '', false, false, true);
+  const [activeInteractive, setActiveInteractive] = useState<InteractiveMediaConfig>();
+  const [interactiveTexture, setInteractiveTexture] = useState<THREE.VideoTexture | null>(null);
+  const interactiveVideoRef = useRef<HTMLVideoElement | null>(null);
+  const interactiveTextureRef = useRef<THREE.VideoTexture | null>(null);
+  const onInteractiveEndedRef = useRef(onInteractiveEnded);
   const leftSlides = useMemo(
     () => slideshowUrlsFromMediaUrl(config.left_image_url),
     [config.left_image_url]
@@ -212,58 +224,115 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteracti
   }, [leftSlides]);
 
   useEffect(() => {
+    onInteractiveEndedRef.current = onInteractiveEnded;
+  }, [onInteractiveEnded]);
+
+  const stopInteractive = useCallback(() => {
+    const video = interactiveVideoRef.current;
+    interactiveVideoRef.current = null;
+    if (video) {
+      video.onended = null;
+      video.onerror = null;
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+      video.remove();
+    }
+
+    const texture = interactiveTextureRef.current;
+    interactiveTextureRef.current = null;
+    texture?.dispose();
+
+    setInteractiveTexture(null);
     setInteractiveActive(false);
-    const video = interactiveVideoRef.current;
-    if (!video) return;
-    video.pause();
-    video.currentTime = 0;
-    video.muted = true;
-  }, [config.left_image_url, config.right_image_url, interactive?.video_url, interactiveVideoRef]);
+    setActiveInteractive(undefined);
+  }, []);
 
-  useEffect(() => {
-    const video = interactiveVideoRef.current;
-    if (!video) return;
+  const playInteractive = useCallback(async (
+    requestedMedia?: InteractiveMediaConfig,
+    purpose: InteractivePlaybackPurpose = 'model',
+  ) => {
+    const media = requestedMedia ?? interactive;
+    if (!media?.video_url?.trim()) return false;
 
-    const handleEnded = () => {
-      setInteractiveActive(false);
-      onInteractiveEnded?.();
+    stopInteractive();
+
+    const video = document.createElement('video');
+    video.crossOrigin = 'anonymous';
+    video.preload = 'auto';
+    video.loop = false;
+    video.muted = false;
+    video.defaultMuted = false;
+    video.playsInline = true;
+    video.volume = 1;
+    video.src = media.video_url;
+    video.dataset.lessonVideoPurpose = purpose;
+    video.setAttribute('aria-hidden', 'true');
+    video.style.display = 'none';
+    document.body.appendChild(video);
+
+    const texture = new THREE.VideoTexture(video);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+
+    interactiveVideoRef.current = video;
+    interactiveTextureRef.current = texture;
+    setActiveInteractive(media);
+    setInteractiveTexture(texture);
+    setInteractiveActive(true);
+
+    video.onended = () => {
+      if (interactiveVideoRef.current !== video) return;
+      console.info(`[EnvironmentScreens] Playback ended (${purpose}): ${media.video_url}`);
+      stopInteractive();
+      onInteractiveEndedRef.current?.({ media, purpose });
+    };
+    video.onerror = () => {
+      if (interactiveVideoRef.current !== video) return;
+      console.error('[EnvironmentScreens] Interactive video failed while playing:', media.video_url);
+      stopInteractive();
     };
 
-    video.addEventListener('ended', handleEnded);
-    return () => video.removeEventListener('ended', handleEnded);
-  }, [interactive?.video_url, interactiveVideoRef, onInteractiveEnded]);
+    try {
+      await video.play();
+      console.info(`[EnvironmentScreens] Playback started (${purpose}): ${media.video_url}`);
+      return true;
+    } catch (error) {
+      console.error('[EnvironmentScreens] Interactive video playback failed:', error);
+      if (interactiveVideoRef.current === video) stopInteractive();
+      return false;
+    }
+  }, [interactive, stopInteractive]);
+
+  useEffect(() => {
+    stopInteractive();
+  }, [config.left_image_url, config.right_image_url, interactive?.video_url, stopInteractive]);
+
+  useEffect(() => () => {
+    const video = interactiveVideoRef.current;
+    if (video) {
+      video.onended = null;
+      video.onerror = null;
+      video.pause();
+      video.remove();
+    }
+    interactiveTextureRef.current?.dispose();
+  }, []);
 
   useImperativeHandle(ref, () => ({
-    playInteractive: async () => {
-      const video = interactiveVideoRef.current;
-      if (!video || !interactive?.video_url) return false;
+    playInteractive,
+    stopInteractive,
+  }), [playInteractive, stopInteractive]);
 
-      video.pause();
-      video.currentTime = 0;
-      video.loop = false;
-      video.muted = false;
-      video.defaultMuted = false;
-      video.volume = 1;
-      setInteractiveActive(true);
-
-      try {
-        await video.play();
-        return true;
-      } catch (error) {
-        console.error('[EnvironmentScreens] Interactive video playback failed:', error);
-        return false;
-      }
-    },
-  }), [interactive?.video_url, interactiveVideoRef]);
-
-  const interactiveTarget = interactive?.target_screen ?? 'right';
+  const interactiveTarget = activeInteractive?.target_screen ?? 'right';
   const showInteractiveLeft = interactiveActive && interactiveTarget === 'left';
   const showInteractiveRight = interactiveActive && interactiveTarget === 'right';
   const leftMediaUrl = showInteractiveLeft
-    ? interactive?.video_url ?? ''
+    ? activeInteractive?.video_url ?? ''
     : leftSlides[leftSlideIndex] ?? config.left_image_url;
   const rightMediaUrl = showInteractiveRight
-    ? interactive?.video_url ?? ''
+    ? activeInteractive?.video_url ?? ''
     : config.right_image_url;
   const hasLeft = leftMediaUrl.length > 0;
   const hasRight = rightMediaUrl.length > 0;

@@ -324,9 +324,16 @@
     "right_label": "Το γενικό Timeline της Θείας Οικονομίας — IMG-055"
   },
   "interactive": {
-    "video_url": "/media/alexander-bucephalus-relay-v5-web.mp4",
+    "video_url": "/media/theia-oikonomia-history-relay.mp4",
     "target_screen": "right",
-    "label": "Αλέξανδρος και Βουκεφάλας — εικαστική αφήγηση"
+    "label": "Θεία Οικονομία — ιστορική σύνθεση"
+  },
+  "character_interactives": {
+    "Alexander.glb": {
+      "video_url": "/media/alexander-bucephalus-relay-v5-web.mp4",
+      "target_screen": "right",
+      "label": "Αλέξανδρος και Βουκεφάλας — εικαστική αφήγηση"
+    }
   },
   "completion": {
     "required_character_ids": [
@@ -335,7 +342,12 @@
       "Alexander.glb",
       "Constantine compressed (2).glb",
       "hypatia"
-    ]
+    ],
+    "reward_interactive": {
+      "video_url": "/media/alexander-bucephalus-relay-v5-web.mp4",
+      "target_screen": "right",
+      "label": "Επιβράβευση εξερεύνησης — Αλέξανδρος και Βουκεφάλας"
+    }
   },
   "quiz": {
     "id": "history3d-understanding",
@@ -345,6 +357,11 @@
     "intro": "Η ιστορική εξερεύνηση ολοκληρώθηκε. Απάντησε σε τρεις σύντομες ερωτήσεις κατανόησης.",
     "pass_score": 2,
     "reward_text": "Μπράβο! Ολοκλήρωσες με επιτυχία το quiz κατανόησης.",
+    "reward_interactive": {
+      "video_url": "/media/theia-oikonomia-history-relay.mp4",
+      "target_screen": "right",
+      "label": "Τελική επιβράβευση — Θεία Οικονομία"
+    },
     "questions": [
       {
         "id": "socratic-virtue",

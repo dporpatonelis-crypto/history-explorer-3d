@@ -32,6 +32,7 @@ interface ScenarioFact {
 
 interface ScenarioCompletion {
   required_character_ids: string[];
+  reward_interactive?: InteractiveMediaConfig;
 }
 
 interface ScenarioQuizQuestion {
@@ -52,6 +53,7 @@ interface ScenarioQuiz {
   pass_score: number;
   reward_text: string;
   reward_audio_url?: string;
+  reward_interactive?: InteractiveMediaConfig;
   questions: ScenarioQuizQuestion[];
 }
 
@@ -61,6 +63,7 @@ interface ScenarioJSON {
   facts: ScenarioFact[];
   screens?: ScreenConfig;
   interactive?: InteractiveMediaConfig;
+  character_interactives?: Record<string, InteractiveMediaConfig>;
   props?: ScenarioProp[];
   completion?: ScenarioCompletion;
   quiz?: ScenarioQuiz;
@@ -108,6 +111,24 @@ function sanitizeCompletion(
   if (!Array.isArray(completion?.required_character_ids)) return undefined;
   const ids = [...new Set(completion.required_character_ids.filter((id) => characterIds.has(id)))];
   return ids.length ? ids : undefined;
+}
+
+function sanitizeCharacterInteractives(
+  interactives: Record<string, InteractiveMediaConfig> | undefined,
+  characterIds: Set<string>,
+): Record<string, InteractiveMediaConfig> | undefined {
+  if (!interactives || Array.isArray(interactives) || typeof interactives !== 'object') return undefined;
+
+  const clean = Object.entries(interactives).reduce<Record<string, InteractiveMediaConfig>>(
+    (valid, [characterId, media]) => {
+      const sanitized = characterIds.has(characterId) ? sanitizeInteractive(media) : undefined;
+      if (sanitized) valid[characterId] = sanitized;
+      return valid;
+    },
+    {},
+  );
+
+  return Object.keys(clean).length ? clean : undefined;
 }
 
 function sanitizeQuiz(quiz?: ScenarioQuiz): LessonQuiz | undefined {
@@ -160,6 +181,9 @@ function sanitizeQuiz(quiz?: ScenarioQuiz): LessonQuiz | undefined {
     ...(sanitizeMediaUrl(quiz.reward_audio_url)
       ? { rewardAudioUrl: sanitizeMediaUrl(quiz.reward_audio_url) }
       : {}),
+    ...(sanitizeInteractive(quiz.reward_interactive)
+      ? { rewardInteractive: sanitizeInteractive(quiz.reward_interactive) }
+      : {}),
     questions,
   };
 }
@@ -168,7 +192,9 @@ function parseScenario(data: ScenarioJSON): {
   npcs: NPCData[];
   screens?: ScreenConfig;
   interactive?: InteractiveMediaConfig;
+  characterInteractives?: Record<string, InteractiveMediaConfig>;
   completionIds?: string[];
+  completionInteractive?: InteractiveMediaConfig;
   quiz?: LessonQuiz;
 } {
   const npcs = data.characters.map((char) => ({
@@ -189,14 +215,17 @@ function parseScenario(data: ScenarioJSON): {
       .filter((f) => f.character_id === char.id)
       .map((f) => f.fact),
   }));
+  const characterIds = new Set(data.characters.map((character) => character.id));
   return {
     npcs,
     screens: sanitizeScreens(data.screens),
     interactive: sanitizeInteractive(data.interactive),
+    characterInteractives: sanitizeCharacterInteractives(data.character_interactives, characterIds),
     completionIds: sanitizeCompletion(
       data.completion,
-      new Set(data.characters.map((character) => character.id)),
+      characterIds,
     ),
+    completionInteractive: sanitizeInteractive(data.completion?.reward_interactive),
     quiz: sanitizeQuiz(data.quiz),
   };
 }
@@ -223,7 +252,13 @@ function stableJson(value: unknown): string {
 
 function validateProtectedScenario(candidate: ScenarioJSON, template: ScenarioJSON): void {
   const requiredKeys = ['characters', 'dialogs', 'facts', 'props', 'screens'];
-  const allowedKeys = new Set([...requiredKeys, 'interactive', 'completion', 'quiz']);
+  const allowedKeys = new Set([
+    ...requiredKeys,
+    'interactive',
+    'character_interactives',
+    'completion',
+    'quiz',
+  ]);
   const actualKeys = Object.keys(candidate);
   if (requiredKeys.some((key) => !actualKeys.includes(key)) || actualKeys.some((key) => !allowedKeys.has(key))) {
     throw new Error('Scenario may contain only characters, dialogs, facts, props, screens and interactive media');
@@ -256,10 +291,30 @@ function validateProtectedScenario(candidate: ScenarioJSON, template: ScenarioJS
       throw new Error('Interactive media contains invalid fields or URL');
     }
   }
-  if (candidate.completion && !sanitizeCompletion(candidate.completion, allowedIds)) {
-    throw new Error('Completion must contain valid required character ids');
+  if (candidate.character_interactives) {
+    const entries = Object.entries(candidate.character_interactives);
+    if (
+      Array.isArray(candidate.character_interactives) ||
+      entries.some(([characterId, media]) => !allowedIds.has(characterId) || !sanitizeInteractive(media))
+    ) {
+      throw new Error('Character interactives must map valid character ids to valid media');
+    }
   }
-  if (candidate.quiz && !sanitizeQuiz(candidate.quiz)) {
+  if (candidate.completion) {
+    const completionKeys = Object.keys(candidate.completion);
+    if (
+      completionKeys.some((key) => !['required_character_ids', 'reward_interactive'].includes(key)) ||
+      !sanitizeCompletion(candidate.completion, allowedIds) ||
+      (candidate.completion.reward_interactive && !sanitizeInteractive(candidate.completion.reward_interactive))
+    ) {
+      throw new Error('Completion must contain valid required ids and optional reward media');
+    }
+  }
+  if (
+    candidate.quiz &&
+    (!sanitizeQuiz(candidate.quiz) ||
+      (candidate.quiz.reward_interactive && !sanitizeInteractive(candidate.quiz.reward_interactive)))
+  ) {
     throw new Error('Quiz contains invalid questions, scoring or media fields');
   }
 }
@@ -272,7 +327,9 @@ export function useScenario(scenarioName = 'default') {
   const [rawScenario, setRawScenario] = useState<ScenarioJSON | null>(null);
   const [props, setProps] = useState<ScenarioProp[] | undefined>();
   const [interactive, setInteractive] = useState<InteractiveMediaConfig | undefined>();
+  const [characterInteractives, setCharacterInteractives] = useState<Record<string, InteractiveMediaConfig> | undefined>();
   const [completionIds, setCompletionIds] = useState<string[] | undefined>();
+  const [completionInteractive, setCompletionInteractive] = useState<InteractiveMediaConfig | undefined>();
   const [quiz, setQuiz] = useState<LessonQuiz | undefined>();
 
   const applyScenario = (data: ScenarioJSON) => {
@@ -284,7 +341,9 @@ export function useScenario(scenarioName = 'default') {
     }
     setScreens(parsed.screens);
     setInteractive(parsed.interactive);
+    setCharacterInteractives(parsed.characterInteractives);
     setCompletionIds(parsed.completionIds);
+    setCompletionInteractive(parsed.completionInteractive);
     setQuiz(parsed.quiz);
     setProps(Array.isArray(data.props) ? data.props.filter((p) => p?.glbModel?.trim()) : undefined);
   };
@@ -331,8 +390,10 @@ export function useScenario(scenarioName = 'default') {
     npcs,
     screens,
     interactive,
+    characterInteractives,
     props,
     completionIds,
+    completionInteractive,
     quiz,
     source,
     loading,
