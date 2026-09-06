@@ -17,7 +17,7 @@ import { LibraryPanel } from '@/components/LibraryPanel';
 import { VRLocomotion } from '@/components/VRLocomotion';
 import { VRDialogBoard } from '@/components/VRDialogBoard';
 import { VRWristPanel } from '@/components/VRWristPanel';
-import { ScenarioProps } from '@/components/ScenarioProps';
+import { ScenarioProps, type ScenarioProp } from '@/components/ScenarioProps';
 import { ExtraModelsPanel, type ExtraModel } from '@/components/ExtraModelsPanel';
 import { useProgress } from '@/hooks/useProgress';
 import { NPCData, npcData } from '@/data/npcData';
@@ -92,6 +92,7 @@ function VRSpawn({ register }: { register: (fn: () => void) => void }) {
 
 const Index = () => {
   const [activeNPC, setActiveNPC] = useState<NPCData | null>(null);
+  const [activePropDialog, setActivePropDialog] = useState<ScenarioProp | null>(null);
   const [inVR, setInVR] = useState(false);
   const [extraModels, setExtraModels] = useState<ExtraModel[]>([]);
   const [quizOpen, setQuizOpen] = useState(false);
@@ -165,6 +166,34 @@ const Index = () => {
     glbModel: scenarioProps?.find((prop) => prop.id === quiz.hostPropId)?.glbModel,
   }) : null, [quiz, scenarioProps]);
 
+  const activePropNPC = useMemo<NPCData | null>(() => {
+    if (!activePropDialog) return null;
+    const text = activePropDialog.dialog_text?.trim() || activePropDialog.welcome?.trim();
+    if (!text) return null;
+    const id = activePropDialog.id ?? activePropDialog.glbModel;
+    return {
+      id,
+      name: activePropDialog.dialog_title?.trim() || 'Bishop',
+      title: activePropDialog.dialog_subtitle?.trim() || 'Δοκιμή animation και lipsync',
+      position: [
+        activePropDialog.position_x ?? 0,
+        activePropDialog.position_y ?? 0,
+        activePropDialog.position_z ?? 0,
+      ],
+      rotation: activePropDialog.rotation ?? 0,
+      color: '#d4a574',
+      robeColor: '#4a6fa5',
+      description: text,
+      dialogs: [{
+        question: activePropDialog.dialog_prompt?.trim() || 'Μήνυμα υποδοχής',
+        answer: text,
+      }],
+      historicalFacts: [],
+      glbModel: activePropDialog.glbModel,
+      scale: activePropDialog.scale,
+    };
+  }, [activePropDialog]);
+
   useEffect(() => {
     if (loading || !workflowKey || workflowKeyRef.current === workflowKey) return;
     workflowKeyRef.current = workflowKey;
@@ -221,6 +250,7 @@ const Index = () => {
     }
 
     setQuizOpen(false);
+    setActivePropDialog(null);
     setActiveNPC(npc);
   }, [
     completionCount,
@@ -238,6 +268,7 @@ const Index = () => {
     if (!activeNPCInteractive) return;
     stopSpeaking();
     setActiveNPC(null);
+    setActivePropDialog(null);
     setQuizOpen(false);
     void environmentScreensRef.current?.playInteractive(activeNPCInteractive, 'model');
   }, [activeNPCInteractive]);
@@ -283,8 +314,21 @@ const Index = () => {
     if (!quizUnlocked || !quiz) return;
     stopSpeaking();
     setActiveNPC(null);
+    setActivePropDialog(null);
     setQuizOpen(true);
   }, [quiz, quizUnlocked]);
+
+  const handlePropInteract = useCallback((prop: ScenarioProp) => {
+    if (prop.id === quiz?.hostPropId) {
+      handleQuizHostInteract();
+      return;
+    }
+    if (!prop.dialog_enabled) return;
+    stopSpeaking();
+    setActiveNPC(null);
+    setQuizOpen(false);
+    setActivePropDialog(prop);
+  }, [handleQuizHostInteract, quiz?.hostPropId]);
 
   const handleResetProgress = useCallback(() => {
     stopSpeaking();
@@ -294,6 +338,7 @@ const Index = () => {
     autoVideoStartedRef.current = false;
     rewardPlayedRef.current = false;
     setActiveNPC(null);
+    setActivePropDialog(null);
     setQuizOpen(false);
     setQuizUnlocked(false);
     setQuizResult(null);
@@ -339,7 +384,7 @@ const Index = () => {
           <ScenarioProps
             props={[...(scenarioProps ?? []), ...extraModels]}
             interactivePropId={quizUnlocked ? quiz?.hostPropId : undefined}
-            onPropInteract={handleQuizHostInteract}
+            onPropInteract={handlePropInteract}
           />
 
           {npcs.map((npc, index) =>
@@ -400,13 +445,21 @@ const Index = () => {
               onQuizRetry={handleQuizRetry}
               onClose={() => { stopSpeaking(); setQuizOpen(false); }}
             />
-          ) : activeNPC && (
+          ) : activeNPC ? (
             <DialogPanel
               npc={activeNPC}
               onClose={() => setActiveNPC(null)}
               onPlayInteractive={activeNPCInteractive ? handleInteractivePlayback : undefined}
             />
-          )}
+          ) : activePropDialog && activePropNPC ? (
+            <DialogPanel
+              key={`prop-${activePropNPC.id}`}
+              npc={activePropNPC}
+              speechAudioUrl={activePropDialog.dialog_audio ?? activePropDialog.welcome_audio}
+              speechEnabled={activePropDialog.dialog_speech_enabled !== false}
+              onClose={() => { stopSpeaking(); setActivePropDialog(null); }}
+            />
+          ) : null}
         </>
       )}
     </div>

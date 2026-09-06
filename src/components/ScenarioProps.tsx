@@ -21,6 +21,17 @@ export interface ScenarioProp {
   rotation?: number;
   scale?: number;
   idle?: boolean;
+  /** Optional animation action to use for the prop's idle loop. */
+  idle_animation?: string;
+  /** Enables the reusable dialog panel for this permanent prop. */
+  dialog_enabled?: boolean;
+  dialog_label?: string;
+  dialog_title?: string;
+  dialog_subtitle?: string;
+  dialog_prompt?: string;
+  dialog_text?: string;
+  dialog_audio?: string;
+  dialog_speech_enabled?: boolean;
   /** Text spoken and shown when this prop's welcome trigger fires. */
   welcome?: string;
   /** Fire welcome when the viewer is within this many metres (default 2.5). */
@@ -40,6 +51,7 @@ interface LoadedPropModelProps {
   scene: THREE.Object3D;
   animations: THREE.AnimationClip[];
   onInteract?: () => void;
+  interactionLabel?: string;
 }
 
 const LoadedPropModel = memo(function LoadedPropModel({
@@ -47,6 +59,7 @@ const LoadedPropModel = memo(function LoadedPropModel({
   scene,
   animations,
   onInteract,
+  interactionLabel,
 }: LoadedPropModelProps) {
   const groupRef = useRef<THREE.Group>(null);
   const welcomeTriggered = useRef(false);
@@ -108,15 +121,15 @@ const LoadedPropModel = memo(function LoadedPropModel({
   }, [hasWelcome, prop.welcome_delay_ms, triggerWelcome, welcomeTrigger, isPresenting]);
 
   useEffect(() => {
-    const first = Object.values(actions)[0];
-    if (!first || prop.idle === false) return;
+    const idleAction = prop.idle_animation ? actions[prop.idle_animation] : Object.values(actions)[0];
+    if (!idleAction || prop.idle === false) return;
 
-    first.reset().fadeIn(0.3).play();
+    idleAction.reset().fadeIn(0.3).play();
     return () => {
-      first.fadeOut(0.2);
-      first.stop();
+      idleAction.fadeOut(0.2);
+      idleAction.stop();
     };
-  }, [actions, prop.idle]);
+  }, [actions, prop.idle, prop.idle_animation]);
 
   const baseY = prop.position_y ?? 0;
   useFrame(({ clock, camera }) => {
@@ -273,7 +286,7 @@ const LoadedPropModel = memo(function LoadedPropModel({
             anchorY="middle"
             depthOffset={-10}
           >
-            Δημήτρης · Quiz
+            {interactionLabel ?? 'Δημήτρης · Quiz'}
           </Text>
         </Billboard>
       )}
@@ -303,7 +316,7 @@ const LoadedPropModel = memo(function LoadedPropModel({
               cursor: 'pointer',
             }}
           >
-            Δημήτρης · Quiz
+            {interactionLabel ?? 'Δημήτρης · Quiz'}
           </button>
         </Html>
       )}
@@ -374,15 +387,19 @@ export const ScenarioProps = memo(function ScenarioProps({
     <Suspense fallback={null}>
       {items
         .filter((p) => p.glbModel?.trim())
-        .map((p, i) => (
-          <PropModel
-            key={p.id ?? `${p.glbModel}-${i}`}
-            prop={p}
-            onInteract={p.id === interactivePropId && onPropInteract
-              ? () => onPropInteract(p)
-              : undefined}
-          />
-        ))}
+        .map((p, i) => {
+          const canInteract = Boolean(
+            onPropInteract && (p.id === interactivePropId || p.dialog_enabled),
+          );
+          return (
+            <PropModel
+              key={p.id ?? `${p.glbModel}-${i}`}
+              prop={p}
+              onInteract={canInteract ? () => onPropInteract(p) : undefined}
+              interactionLabel={p.dialog_label ?? (p.id === interactivePropId ? 'Δημήτρης · Quiz' : undefined)}
+            />
+          );
+        })}
     </Suspense>
   );
 });

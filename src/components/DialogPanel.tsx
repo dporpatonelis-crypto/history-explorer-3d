@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NPCData } from '@/data/npcData';
 import { X, ChevronRight, BookOpen, ScrollText, Sparkles, ExternalLink, Volume2, Square, BrainCircuit } from 'lucide-react';
-import { speak, stopSpeaking, isSpeaking, subscribeLipSync } from '@/lib/lipsync';
+import { narrate, speak, stopSpeaking, isSpeaking, subscribeLipSync } from '@/lib/lipsync';
 import { LessonQuiz, QuizResult } from '@/data/quizData';
 import { QuizDialogContent } from '@/components/QuizDialogContent';
 
@@ -9,6 +9,10 @@ interface DialogPanelProps {
   npc: NPCData;
   onClose: () => void;
   onPlayInteractive?: () => void;
+  /** Optional local narration asset for the selected answer. */
+  speechAudioUrl?: string;
+  /** Allows scenarios to show text-only dialogs when speech/lipsync is not ready. */
+  speechEnabled?: boolean;
   quiz?: LessonQuiz;
   quizResult?: QuizResult | null;
   onQuizComplete?: (result: QuizResult) => void;
@@ -19,6 +23,8 @@ export function DialogPanel({
   npc,
   onClose,
   onPlayInteractive,
+  speechAudioUrl,
+  speechEnabled = true,
   quiz,
   quizResult,
   onQuizComplete,
@@ -142,15 +148,26 @@ export function DialogPanel({
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <button
-                    onClick={() =>
-                      speaking ? stopSpeaking() : speak(npc.id, npc.dialogs[selectedDialog].answer)
-                    }
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground font-cinzel text-sm hover:opacity-90 transition-opacity"
-                  >
-                    {speaking ? <Square size={14} /> : <Volume2 size={14} />}
-                    {speaking ? 'Διακοπή' : 'Εκφώνηση (lip sync)'}
-                  </button>
+                  {speechEnabled && (
+                    <button
+                      onClick={() => {
+                        if (speaking) {
+                          stopSpeaking();
+                          return;
+                        }
+                        const answer = npc.dialogs[selectedDialog].answer;
+                        if (speechAudioUrl) {
+                          void narrate(npc.id, answer, speechAudioUrl);
+                        } else {
+                          speak(npc.id, answer);
+                        }
+                      }}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground font-cinzel text-sm hover:opacity-90 transition-opacity"
+                    >
+                      {speaking ? <Square size={14} /> : <Volume2 size={14} />}
+                      {speaking ? 'Διακοπή' : speechAudioUrl ? 'Αναπαραγωγή WAV (lip sync)' : 'Εκφώνηση (lip sync)'}
+                    </button>
+                  )}
                   <button
                     onClick={() => { stopSpeaking(); setSelectedDialog(null); }}
                     className="text-sm font-cinzel text-accent hover:text-accent/80 transition-colors"
