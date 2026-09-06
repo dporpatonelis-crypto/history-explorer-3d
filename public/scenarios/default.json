@@ -10,7 +10,7 @@
       "color": "",
       "robeColor": "",
       "description": "Ο πατέρας της φιλοσοφίας",
-      "glbModel": "/models/socrates.glb"
+      "glbModel": "/models/Socrates.glb"
     },
     {
       "id": "hypatia",
@@ -35,6 +35,18 @@
       "robeColor": "",
       "description": "Πατέρας της επιστήμης",
       "glbModel": "/models/aristotle.glb"
+    },
+    {
+      "id": "acropolis",
+      "name": "tree",
+      "position_x": -3.5,
+      "position_y": 0,
+      "position_z": 2,
+      "rotation": 0,
+      "color": "",
+      "robeColor": "",
+      "description": "",
+      "glbModel": "/models/acropolis_optimized_v1.glb"
     },
     {
       "id": "ancient_tiles.glb",
@@ -178,7 +190,7 @@
       "color": "",
       "robeColor": "",
       "description": "",
-      "glbModel": "/models/athina.glb"
+      "glbModel": "/models/solomon_temple_optimized_v1.glb"
     },
     {
       "id": "Valhalla grok compress.glb",
@@ -314,6 +326,34 @@
       "welcome_delay_ms": 2500,
       "welcome_radius": 2.5,
       "welcome_audio": "/audio/dimitris.wav"
+    },
+    {
+      "id": "bishop",
+      "glbModel": "/models/bishop_face_lipsync_optimized_v5.glb",
+      "position_x": 6.875,
+      "position_y": 0.05,
+      "position_z": 0.3,
+      "rotation": 0,
+      "scale": 1,
+      "idle": true,
+      "idle_animation": "Idle_Retarget_FK",
+      "dialog_enabled": true,
+      "dialog_label": "Ιεράρχης",
+      "dialog_title": "Ιεράρχης",
+      "dialog_subtitle": "Διάλογος από το scenario JSON",
+      "dialog_prompt": "Μήνυμα",
+      "dialog_speech_enabled": false,
+      "dialog_text": "Το περιεχόμενο του διαλόγου μπορεί να αντικατασταθεί αργότερα απευθείας από το scenario JSON."
+    },
+    {
+      "id": "agia_sophia",
+      "glbModel": "/models/agia_sophia_optimized_v1.glb",
+      "position_x": 6.3,
+      "position_y": 0.05,
+      "position_z": 2.3,
+      "rotation": 0,
+      "scale": 1,
+      "idle": false
     }
   ]
 }
