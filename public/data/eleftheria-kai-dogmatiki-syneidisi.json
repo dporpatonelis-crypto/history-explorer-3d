@@ -294,10 +294,10 @@
     }
   ],
   "screens": {
-    "left_image_url": "",
-    "right_image_url": "",
-    "left_label": "Ελευθερία και δογματική συνείδηση — διάλογος με τη φιλοσοφία",
-    "right_label": "Αξίωμα και χάρισμα — κριτήριο η ελεύθερη διακονία"
+    "left_image_url": "https://i.ibb.co/bjnZnM2S/file-000000003cac81f4acd58e41eeb2aa60.png",
+    "right_image_url": "https://docs.google.com/presentation/d/1kmnmtbIiGHRrPHlaKNaJ_QJPtuPZXSzGALTppAGILY0/embed?start=false&loop=false&delayms=3000",
+    "left_label": "Δόγμα και Βίωμα — Εικόνα",
+    "right_label": "Δόγμα και Βίωμα — Παρουσίαση"
   },
   "props": [
     {
