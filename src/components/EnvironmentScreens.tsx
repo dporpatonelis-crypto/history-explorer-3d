@@ -104,15 +104,38 @@ function GoogleSlidesCurvedScreen({
   const thetaStart = side === 'left'
     ? Math.PI
     : Math.PI - screenArc;
+  const backingGeometry = useMemo(() => (
+    new THREE.CylinderGeometry(
+      screenRadius,
+      screenRadius,
+      screenHeight,
+      16,
+      1,
+      true,
+      thetaStart,
+      screenArc,
+    )
+  ), [screenArc, screenHeight, screenRadius, thetaStart]);
+
+  useEffect(() => () => {
+    backingGeometry.dispose();
+  }, [backingGeometry]);
 
   return (
     <group>
+      <mesh geometry={backingGeometry}>
+        <meshBasicMaterial
+          color="#111"
+          side={THREE.BackSide}
+          toneMapped={false}
+        />
+      </mesh>
       {Array.from({ length: segmentCount }, (_, index) => {
         const theta = thetaStart + ((index + 0.5) / segmentCount) * screenArc;
         const position: [number, number, number] = [
-          screenRadius * Math.sin(theta),
+          (screenRadius + 0.04) * Math.sin(theta),
           0,
-          screenRadius * Math.cos(theta),
+          (screenRadius + 0.04) * Math.cos(theta),
         ];
         const rotation: [number, number, number] = [0, theta + Math.PI, 0];
 
