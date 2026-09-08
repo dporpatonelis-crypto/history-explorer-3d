@@ -487,6 +487,7 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteracti
           />
         ) : (
           <CurvedScreenMesh
+            key={`left-screen-${leftMediaUrl}`}
             mediaUrl={leftMediaUrl}
             position={[0, 0, 0]}
             rotation={[0, 0, 0]}
@@ -508,6 +509,7 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteracti
           />
         ) : (
           <CurvedScreenMesh
+            key={`right-screen-${rightMediaUrl}`}
             mediaUrl={rightMediaUrl}
             position={[0, 0, 0]}
             rotation={[0, 0, 0]}
