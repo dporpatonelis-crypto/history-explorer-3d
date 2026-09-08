@@ -138,6 +138,9 @@ function GoogleSlidesCurvedScreen({
           (screenRadius + 0.04) * Math.cos(theta),
         ];
         const rotation: [number, number, number] = [0, theta + Math.PI, 0];
+        // The inward-facing plane reverses its local horizontal axis. Match the
+        // same UV flip used by CurvedScreenMesh so the slide reads left-to-right.
+        const sourceIndex = segmentCount - 1 - index;
 
         return (
           <Html
@@ -174,7 +177,7 @@ function GoogleSlidesCurvedScreen({
                   border: 0,
                   margin: 0,
                   padding: 0,
-                  transform: `translateX(-${index * segmentWidth}px)`,
+                  transform: `translateX(-${sourceIndex * segmentWidth}px)`,
                   transformOrigin: 'top left',
                   pointerEvents: 'none',
                 }}
