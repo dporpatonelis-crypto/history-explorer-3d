@@ -332,7 +332,9 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteracti
     [config.right_image_url]
   );
   const [leftSlideIndex, setLeftSlideIndex] = useState(0);
-  const [rightSlideIndex, setRightSlideIndex] = useState(0);
+  // Start the presentation on the timeline (slide 2); if a timer is
+  // temporarily throttled, this remains the stable fallback frame.
+  const [rightSlideIndex, setRightSlideIndex] = useState(1);
 
   useEffect(() => {
     setLeftSlideIndex(0);
@@ -345,7 +347,7 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteracti
   }, [leftSlides]);
 
   useEffect(() => {
-    setRightSlideIndex(0);
+    setRightSlideIndex(rightSlides.length > 1 ? 1 : 0);
     rightSlides.forEach((url) => useTexture.preload(url));
     if (rightSlides.length < 2) return;
     const interval = window.setInterval(() => {
