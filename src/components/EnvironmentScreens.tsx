@@ -87,89 +87,80 @@ function useVideoTexture(url: string, autoplay = true, loop = true, muted = true
   return { texture, videoRef };
 }
 
-function GoogleSlidesScreen({
+function GoogleSlidesCurvedScreen({
   mediaUrl,
-  label,
   side,
 }: {
   mediaUrl: string;
-  label?: string;
   side: 'left' | 'right';
 }) {
-  const position: [number, number, number] = side === 'left'
-    ? [-4.2, 0, 0]
-    : [4.2, 0, 0];
+  const screenRadius = 10;
+  const screenArc = Math.PI * 0.48;
+  const screenHeight = 10.5;
+  const segmentCount = 5;
+  const slideWidth = 1000;
+  const slideHeight = 562.5;
+  const segmentWidth = slideWidth / segmentCount;
+  const thetaStart = side === 'left'
+    ? Math.PI
+    : Math.PI - screenArc;
 
   return (
-    <Html
-      transform
-      center
-      position={position}
-      distanceFactor={12}
-      zIndexRange={[100, 0]}
-      style={{ pointerEvents: 'auto' }}
-    >
-      <div
-        onPointerDown={(event) => event.stopPropagation()}
-        style={{
-          width: 'min(720px, 78vw)',
-          background: 'rgba(15, 17, 21, 0.96)',
-          border: '2px solid rgba(212, 165, 116, 0.72)',
-          borderRadius: '10px',
-          overflow: 'hidden',
-          boxShadow: '0 18px 48px rgba(0, 0, 0, 0.38)',
-          pointerEvents: 'auto',
-        }}
-      >
-        {label && (
-          <div
-            style={{
-              padding: '8px 12px',
-              color: '#f7efe5',
-              background: 'rgba(53, 38, 28, 0.94)',
-              fontFamily: 'Cinzel, serif',
-              fontSize: '14px',
-              letterSpacing: '0.04em',
-            }}
+    <group>
+      {Array.from({ length: segmentCount }, (_, index) => {
+        const theta = thetaStart + ((index + 0.5) / segmentCount) * screenArc;
+        const position: [number, number, number] = [
+          screenRadius * Math.sin(theta),
+          0,
+          screenRadius * Math.cos(theta),
+        ];
+        const rotation: [number, number, number] = [0, theta + Math.PI, 0];
+
+        return (
+          <Html
+            key={`google-slides-${side}-segment-${index}`}
+            transform
+            center
+            position={position}
+            rotation={rotation}
+            distanceFactor={6}
+            pointerEvents="none"
+            zIndexRange={[100, 0]}
           >
-            {label}
-          </div>
-        )}
-        <iframe
-          key={mediaUrl}
-          src={mediaUrl}
-          title={label || 'Google Slides'}
-          allow="autoplay; fullscreen; picture-in-picture"
-          allowFullScreen
-          referrerPolicy="strict-origin-when-cross-origin"
-          loading="lazy"
-          style={{
-            display: 'block',
-            width: '100%',
-            aspectRatio: '16 / 9',
-            border: 0,
-            background: '#111',
-          }}
-        />
-        <a
-          href={mediaUrl}
-          target="_blank"
-          rel="noreferrer"
-          style={{
-            display: 'block',
-            padding: '6px 10px',
-            color: '#f0c98b',
-            background: 'rgba(15, 17, 21, 0.98)',
-            fontFamily: 'Cormorant Garamond, serif',
-            fontSize: '14px',
-            textAlign: 'center',
-            textDecoration: 'none',
-          }}
-        >
-          Άνοιγμα παρουσίασης σε νέα καρτέλα
-        </a>
-      </div>
-    </Html>
+            <div
+              style={{
+                width: `${segmentWidth}px`,
+                height: `${slideHeight}px`,
+                overflow: 'hidden',
+                background: '#111',
+                pointerEvents: 'none',
+              }}
+            >
+              <iframe
+                src={mediaUrl}
+                title={`Google Slides ${side} screen segment ${index + 1}`}
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                referrerPolicy="strict-origin-when-cross-origin"
+                loading="eager"
+                style={{
+                  display: 'block',
+                  width: `${slideWidth}px`,
+                  height: `${slideHeight}px`,
+                  maxWidth: 'none',
+                  border: 0,
+                  margin: 0,
+                  padding: 0,
+                  transform: `translateX(-${index * segmentWidth}px)`,
+                  transformOrigin: 'top left',
+                  pointerEvents: 'none',
+                }}
+              />
+            </div>
+          </Html>
+        );
+      })}
+    </group>
   );
 }
 
@@ -449,9 +440,8 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteracti
       {/* Left screen: covers from PI to PI + halfArc (left side when facing center) */}
       {hasLeft && (
         isGoogleSlidesUrl(leftMediaUrl) ? (
-          <GoogleSlidesScreen
+          <GoogleSlidesCurvedScreen
             mediaUrl={leftMediaUrl}
-            label={config.left_label}
             side="left"
           />
         ) : (
@@ -471,9 +461,8 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteracti
       {/* Right screen: covers from PI - halfArc to PI (right side) */}
       {hasRight && (
         isGoogleSlidesUrl(rightMediaUrl) ? (
-          <GoogleSlidesScreen
+          <GoogleSlidesCurvedScreen
             mediaUrl={rightMediaUrl}
-            label={config.right_label}
             side="right"
           />
         ) : (
