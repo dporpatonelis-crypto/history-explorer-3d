@@ -1,11 +1,24 @@
 import { forwardRef, useMemo, useEffect, useState, useRef, useImperativeHandle, useCallback } from 'react';
 import * as THREE from 'three';
-import { useTexture } from '@react-three/drei';
+import { Html, useTexture } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 
 function isVideoUrl(url: string): boolean {
   const lower = url.toLowerCase();
   return lower.endsWith('.mp4') || lower.endsWith('.webm') || lower.endsWith('.ogg');
+}
+
+function isGoogleSlidesUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url, window.location.origin);
+    return (
+      (parsed.protocol === 'http:' || parsed.protocol === 'https:') &&
+      parsed.hostname === 'docs.google.com' &&
+      /^\/presentation\/d\/[^/]+(?:\/|$)/.test(parsed.pathname)
+    );
+  } catch {
+    return false;
+  }
 }
 
 function slideshowUrlsFromMediaUrl(mediaUrl: string): string[] {
@@ -72,6 +85,92 @@ function useVideoTexture(url: string, autoplay = true, loop = true, muted = true
   });
 
   return { texture, videoRef };
+}
+
+function GoogleSlidesScreen({
+  mediaUrl,
+  label,
+  side,
+}: {
+  mediaUrl: string;
+  label?: string;
+  side: 'left' | 'right';
+}) {
+  const position: [number, number, number] = side === 'left'
+    ? [-4.2, 0, 0]
+    : [4.2, 0, 0];
+
+  return (
+    <Html
+      transform
+      center
+      position={position}
+      distanceFactor={12}
+      zIndexRange={[100, 0]}
+      style={{ pointerEvents: 'auto' }}
+    >
+      <div
+        onPointerDown={(event) => event.stopPropagation()}
+        style={{
+          width: 'min(720px, 78vw)',
+          background: 'rgba(15, 17, 21, 0.96)',
+          border: '2px solid rgba(212, 165, 116, 0.72)',
+          borderRadius: '10px',
+          overflow: 'hidden',
+          boxShadow: '0 18px 48px rgba(0, 0, 0, 0.38)',
+          pointerEvents: 'auto',
+        }}
+      >
+        {label && (
+          <div
+            style={{
+              padding: '8px 12px',
+              color: '#f7efe5',
+              background: 'rgba(53, 38, 28, 0.94)',
+              fontFamily: 'Cinzel, serif',
+              fontSize: '14px',
+              letterSpacing: '0.04em',
+            }}
+          >
+            {label}
+          </div>
+        )}
+        <iframe
+          key={mediaUrl}
+          src={mediaUrl}
+          title={label || 'Google Slides'}
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowFullScreen
+          referrerPolicy="strict-origin-when-cross-origin"
+          loading="lazy"
+          style={{
+            display: 'block',
+            width: '100%',
+            aspectRatio: '16 / 9',
+            border: 0,
+            background: '#111',
+          }}
+        />
+        <a
+          href={mediaUrl}
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            display: 'block',
+            padding: '6px 10px',
+            color: '#f0c98b',
+            background: 'rgba(15, 17, 21, 0.98)',
+            fontFamily: 'Cormorant Garamond, serif',
+            fontSize: '14px',
+            textAlign: 'center',
+            textDecoration: 'none',
+          }}
+        >
+          Άνοιγμα παρουσίασης σε νέα καρτέλα
+        </a>
+      </div>
+    </Html>
+  );
 }
 
 function CurvedScreenMesh({
@@ -349,31 +448,47 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteracti
     <group position={[0, 5.5, 0]}>
       {/* Left screen: covers from PI to PI + halfArc (left side when facing center) */}
       {hasLeft && (
-        <CurvedScreenMesh
-          mediaUrl={leftMediaUrl}
-          position={[0, 0, 0]}
-          rotation={[0, 0, 0]}
-          radius={screenRadius}
-          thetaStart={Math.PI}
-          thetaLength={halfArc}
-          height={10.5}
-          curveSegments={16}
-          textureOverride={showInteractiveLeft ? interactiveTexture : undefined}
-        />
+        isGoogleSlidesUrl(leftMediaUrl) ? (
+          <GoogleSlidesScreen
+            mediaUrl={leftMediaUrl}
+            label={config.left_label}
+            side="left"
+          />
+        ) : (
+          <CurvedScreenMesh
+            mediaUrl={leftMediaUrl}
+            position={[0, 0, 0]}
+            rotation={[0, 0, 0]}
+            radius={screenRadius}
+            thetaStart={Math.PI}
+            thetaLength={halfArc}
+            height={10.5}
+            curveSegments={16}
+            textureOverride={showInteractiveLeft ? interactiveTexture : undefined}
+          />
+        )
       )}
       {/* Right screen: covers from PI - halfArc to PI (right side) */}
       {hasRight && (
-        <CurvedScreenMesh
-          mediaUrl={rightMediaUrl}
-          position={[0, 0, 0]}
-          rotation={[0, 0, 0]}
-          radius={screenRadius}
-          thetaStart={Math.PI - halfArc}
-          thetaLength={halfArc}
-          height={10.5}
-          curveSegments={16}
-          textureOverride={showInteractiveRight ? interactiveTexture : undefined}
-        />
+        isGoogleSlidesUrl(rightMediaUrl) ? (
+          <GoogleSlidesScreen
+            mediaUrl={rightMediaUrl}
+            label={config.right_label}
+            side="right"
+          />
+        ) : (
+          <CurvedScreenMesh
+            mediaUrl={rightMediaUrl}
+            position={[0, 0, 0]}
+            rotation={[0, 0, 0]}
+            radius={screenRadius}
+            thetaStart={Math.PI - halfArc}
+            thetaLength={halfArc}
+            height={10.5}
+            curveSegments={16}
+            textureOverride={showInteractiveRight ? interactiveTexture : undefined}
+          />
+        )
       )}
     </group>
   );
