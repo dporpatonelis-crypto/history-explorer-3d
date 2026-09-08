@@ -295,7 +295,7 @@
   ],
   "screens": {
     "left_image_url": "https://i.ibb.co/bjnZnM2S/file-000000003cac81f4acd58e41eeb2aa60.png",
-    "right_image_url": "https://docs.google.com/presentation/d/1kmnmtbIiGHRrPHlaKNaJ_QJPtuPZXSzGALTppAGILY0/embed?start=false&loop=false&delayms=3000",
+    "right_image_url": "https://docs.google.com/presentation/d/1kmnmtbIiGHRrPHlaKNaJ_QJPtuPZXSzGALTppAGILY0/embed?start=true&loop=true&delayms=6000",
     "left_label": "Δόγμα και Βίωμα — Εικόνα",
     "right_label": "Δόγμα και Βίωμα — Παρουσίαση"
   },
