@@ -327,7 +327,12 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteracti
     () => slideshowUrlsFromMediaUrl(config.left_image_url),
     [config.left_image_url]
   );
+  const rightSlides = useMemo(
+    () => slideshowUrlsFromMediaUrl(config.right_image_url),
+    [config.right_image_url]
+  );
   const [leftSlideIndex, setLeftSlideIndex] = useState(0);
+  const [rightSlideIndex, setRightSlideIndex] = useState(0);
 
   useEffect(() => {
     setLeftSlideIndex(0);
@@ -338,6 +343,16 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteracti
     }, 6500);
     return () => window.clearInterval(interval);
   }, [leftSlides]);
+
+  useEffect(() => {
+    setRightSlideIndex(0);
+    rightSlides.forEach((url) => useTexture.preload(url));
+    if (rightSlides.length < 2) return;
+    const interval = window.setInterval(() => {
+      setRightSlideIndex((current) => (current + 1) % rightSlides.length);
+    }, 6500);
+    return () => window.clearInterval(interval);
+  }, [rightSlides]);
 
   useEffect(() => {
     onInteractiveEndedRef.current = onInteractiveEnded;
@@ -449,7 +464,7 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteracti
     : leftSlides[leftSlideIndex] ?? config.left_image_url;
   const rightMediaUrl = showInteractiveRight
     ? activeInteractive?.video_url ?? ''
-    : config.right_image_url;
+    : rightSlides[rightSlideIndex] ?? config.right_image_url;
   const hasLeft = leftMediaUrl.length > 0;
   const hasRight = rightMediaUrl.length > 0;
 
