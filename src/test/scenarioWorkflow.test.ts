@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import defaultScenario from '../../public/scenarios/default.json';
 import divineEconomyScenario from '../../public/data/to-schedio-tis-theias-oikonomias.json';
+import activeScenario from '../../public/data/active-scenario.json';
+import { shouldLoopInteractiveVideo } from '../lib/interactivePlayback';
 import { resolvePropInteractionLabel } from '../lib/scenarioPropLabels';
+import { resolveStartupScenarioUrl } from '../lib/startupScenario';
 
 describe('scenario-scoped completion workflow', () => {
   it('keeps the default scenario free of an automatic quiz workflow', () => {
@@ -35,5 +38,16 @@ describe('scenario-scoped completion workflow', () => {
       .toBe('Ιεράρχης');
     expect(resolvePropInteractionLabel(dimitris!, divineEconomyScenario.quiz.host_prop_id))
       .toBe('Dimitris quiz');
+  });
+
+  it('starts with the active Divine Economy scenario', () => {
+    expect(resolveStartupScenarioUrl(activeScenario))
+      .toBe('/data/to-schedio-tis-theias-oikonomias.json');
+  });
+
+  it('loops only the quiz reward video', () => {
+    expect(shouldLoopInteractiveVideo('quiz-reward')).toBe(true);
+    expect(shouldLoopInteractiveVideo('completion-reward')).toBe(false);
+    expect(shouldLoopInteractiveVideo('model')).toBe(false);
   });
 });

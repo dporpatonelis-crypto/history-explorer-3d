@@ -3,6 +3,7 @@ import { NPCData, npcData as fallbackData } from '@/data/npcData';
 import { InteractiveMediaConfig, ScreenConfig } from '@/components/EnvironmentScreens';
 import { ScenarioProp } from '@/components/ScenarioProps';
 import { LessonQuiz, QuizQuestion } from '@/data/quizData';
+import { resolveStartupScenarioUrl } from '@/lib/startupScenario';
 
 interface ScenarioCharacter {
   id: string;
@@ -371,6 +372,30 @@ export function useScenario(scenarioName = 'default') {
             ...candidate,
             interactive: candidate.interactive ?? template.interactive,
           };
+        } else {
+          try {
+            const pointerResponse = await fetch(`/data/active-scenario.json?v=${Date.now()}`, {
+              cache: 'no-store',
+              headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
+            });
+            if (pointerResponse.ok) {
+              const scenarioUrl = resolveStartupScenarioUrl(await pointerResponse.json());
+              if (!scenarioUrl) throw new Error('Active scenario pointer is invalid');
+              const scenarioResponse = await fetch(`${scenarioUrl}?v=${Date.now()}`, {
+                cache: 'no-store',
+                headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
+              });
+              if (!scenarioResponse.ok) {
+                throw new Error(`Active scenario HTTP ${scenarioResponse.status}`);
+              }
+              data = await scenarioResponse.json() as ScenarioJSON;
+              console.info(`[useScenario] Loaded active scenario: ${scenarioUrl}`);
+            } else if (pointerResponse.status !== 404) {
+              throw new Error(`Active scenario pointer HTTP ${pointerResponse.status}`);
+            }
+          } catch (error) {
+            console.warn('[useScenario] Active scenario unavailable; using default template:', error);
+          }
         }
         if (!cancelled) applyScenario(data);
         if (externalUrl) console.info('[useScenario] Loaded protected Sacred Studio scenario');

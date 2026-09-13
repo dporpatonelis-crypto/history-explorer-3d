@@ -1,5 +1,6 @@
 import { forwardRef, useMemo, useEffect, useState, useRef, useImperativeHandle, useCallback } from 'react';
 import * as THREE from 'three';
+import { shouldLoopInteractiveVideo } from '@/lib/interactivePlayback';
 import { Html, useTexture } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 
@@ -393,7 +394,7 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteracti
     const video = document.createElement('video');
     video.crossOrigin = 'anonymous';
     video.preload = 'auto';
-    video.loop = false;
+    video.loop = shouldLoopInteractiveVideo(purpose);
     video.muted = false;
     video.defaultMuted = false;
     video.playsInline = true;
