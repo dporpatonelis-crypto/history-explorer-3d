@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { clone as cloneSkeleton } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { useLipSync } from '@/hooks/useLipSync';
 import { playAudio, speak } from '@/lib/lipsync';
+import { resolvePropInteractionLabel } from '@/lib/scenarioPropLabels';
 
 type WelcomeTrigger = 'time' | 'proximity' | 'both';
 type ModelFormat = 'glb' | 'gltf' | 'fbx';
@@ -51,7 +52,6 @@ interface LoadedPropModelProps {
   scene: THREE.Object3D;
   animations: THREE.AnimationClip[];
   onInteract?: () => void;
-  interactionLabel?: string;
 }
 
 const LoadedPropModel = memo(function LoadedPropModel({
@@ -59,7 +59,6 @@ const LoadedPropModel = memo(function LoadedPropModel({
   scene,
   animations,
   onInteract,
-  interactionLabel,
 }: LoadedPropModelProps) {
   const groupRef = useRef<THREE.Group>(null);
   const welcomeTriggered = useRef(false);
@@ -93,6 +92,7 @@ const LoadedPropModel = memo(function LoadedPropModel({
   const welcomeText = prop.welcome?.trim() ?? '';
   const welcomeAudio = prop.welcome_audio?.trim() ?? '';
   const welcomeVoice = prop.welcome_voice?.trim() ?? '';
+  const interactionLabel = prop.dialog_label?.trim() || 'Αλληλεπίδραση';
   const hasWelcome = Boolean(welcomeText || welcomeAudio);
   const welcomeTrigger = prop.welcome_trigger ?? 'proximity';
   const welcomeRadius = Math.max(0.25, prop.welcome_radius ?? 2.5);
@@ -391,12 +391,14 @@ export const ScenarioProps = memo(function ScenarioProps({
           const canInteract = Boolean(
             onPropInteract && (p.id === interactivePropId || p.dialog_enabled),
           );
+          const displayProp = canInteract
+            ? { ...p, dialog_label: resolvePropInteractionLabel(p, interactivePropId) }
+            : p;
           return (
             <PropModel
               key={p.id ?? `${p.glbModel}-${i}`}
-              prop={p}
+              prop={displayProp}
               onInteract={canInteract ? () => onPropInteract(p) : undefined}
-              interactionLabel={p.dialog_label ?? (p.id === interactivePropId ? 'Δημήτρης · Quiz' : undefined)}
             />
           );
         })}
