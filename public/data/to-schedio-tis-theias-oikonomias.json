@@ -438,7 +438,7 @@
       "idle": true,
       "idle_animation": "Idle_Retarget_FK",
       "dialog_enabled": true,
-      "dialog_label": "Dimitris quiz",
+      "dialog_label": "Ιεράρχης",
       "dialog_title": "Dimitris quiz",
       "dialog_subtitle": "Διάλογος από το scenario JSON",
       "dialog_prompt": "Μήνυμα",
