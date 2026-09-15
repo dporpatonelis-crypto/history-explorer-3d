@@ -18,6 +18,9 @@ export interface NPCData {
   scale?: number;
 }
 
+const BASE_URL = import.meta.env.BASE_URL;
+const resolveModelUrl = (path: string) => path.startsWith(BASE_URL) ? path : path.startsWith('/') ? BASE_URL + path.slice(1) : path;
+
 export const npcData: NPCData[] = [
   {
     id: "socrates",
@@ -27,7 +30,7 @@ export const npcData: NPCData[] = [
     rotation: 0.3,
     color: "#d4a574",
     robeColor: "#f5f0e8",
-    glbModel: "/models/ancient_greek_1.glb",
+    glbModel: resolveModelUrl("/models/ancient_greek_1.glb"),
     description: "Ο πατέρας της δυτικής φιλοσοφίας, γνωστός για τη σωκρατική μέθοδο.",
     dialogs: [
       {
@@ -53,7 +56,7 @@ export const npcData: NPCData[] = [
     rotation: -0.3,
     color: "#c9a06c",
     robeColor: "#4a6fa5",
-    glbModel: "/models/ancient_greek_1.glb",
+    glbModel: resolveModelUrl("/models/ancient_greek_1.glb"),
     description: "Μαθητής του Σωκράτη και ιδρυτής της Ακαδημίας της Αθήνας.",
     dialogs: [
       {
@@ -79,7 +82,7 @@ export const npcData: NPCData[] = [
     rotation: Math.PI,
     color: "#b8956a",
     robeColor: "#5a4a3a",
-    glbModel: "/models/ancient_greek_1.glb",
+    glbModel: resolveModelUrl("/models/ancient_greek_1.glb"),
     description: "Μαθητής του Πλάτωνα, δάσκαλος του Μεγάλου Αλεξάνδρου.",
     dialogs: [
       {
@@ -105,7 +108,7 @@ export const npcData: NPCData[] = [
     rotation: 0.6,
     color: "#d4b08c",
     robeColor: "#8b5e3c",
-    glbModel: "/models/ancient_greek_1.glb",
+    glbModel: resolveModelUrl("/models/ancient_greek_1.glb"),
     description: "Μία από τις πρώτες γυναίκες μαθηματικούς και φιλοσόφους.",
     dialogs: [
       {
@@ -131,7 +134,7 @@ export const npcData: NPCData[] = [
     rotation: -0.6,
     color: "#c4a882",
     robeColor: "#e8ddd0",
-    glbModel: "/models/ancient_greek_1.glb",
+    glbModel: resolveModelUrl("/models/ancient_greek_1.glb"),
     description: "Ο ιδρυτής της πυθαγόρειας σχολής και πατέρας των μαθηματικών.",
     dialogs: [
       {
