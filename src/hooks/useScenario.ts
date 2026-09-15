@@ -5,6 +5,17 @@ import { ScenarioProp } from '@/components/ScenarioProps';
 import { LessonQuiz, QuizQuestion } from '@/data/quizData';
 import { resolveStartupScenarioUrl } from '@/lib/startupScenario';
 
+const BASE_URL = import.meta.env.BASE_URL;
+
+function resolveAssetUrl(value?: string): string | undefined {
+  const clean = value?.trim();
+  if (!clean) return undefined;
+  if (/^(https?:\/\/|blob:|data:)/i.test(clean)) return clean;
+  if (clean.startsWith(BASE_URL)) return clean;
+  if (clean.startsWith('/')) return BASE_URL + clean.slice(1);
+  return clean;
+}
+
 interface ScenarioCharacter {
   id: string;
   name: string;
@@ -75,12 +86,12 @@ function sanitizeScreens(screens?: ScreenConfig): ScreenConfig | undefined {
   const clean: ScreenConfig = { left_image_url: '', right_image_url: '' };
   // Validate URLs: must start with http or /
   if (screens.left_image_url && /^(https?:\/\/|\/)/.test(screens.left_image_url.trim())) {
-    clean.left_image_url = screens.left_image_url.trim();
+    clean.left_image_url = resolveAssetUrl(screens.left_image_url) || '';
   } else if (screens.left_image_url) {
     console.warn('[useScenario] Invalid left_image_url, skipping:', screens.left_image_url);
   }
   if (screens.right_image_url && /^(https?:\/\/|\/)/.test(screens.right_image_url.trim())) {
-    clean.right_image_url = screens.right_image_url.trim();
+    clean.right_image_url = resolveAssetUrl(screens.right_image_url) || '';
   } else if (screens.right_image_url) {
     console.warn('[useScenario] Invalid right_image_url, skipping:', screens.right_image_url);
   }
@@ -94,14 +105,14 @@ function sanitizeInteractive(interactive?: InteractiveMediaConfig): InteractiveM
     return undefined;
   }
   return {
-    video_url: interactive.video_url.trim(),
+    video_url: resolveAssetUrl(interactive.video_url) || interactive.video_url.trim(),
     target_screen: interactive.target_screen === 'left' ? 'left' : 'right',
     ...(interactive.label?.trim() ? { label: interactive.label.trim() } : {}),
   };
 }
 
 function sanitizeMediaUrl(value?: string): string | undefined {
-  const clean = value?.trim();
+  const clean = resolveAssetUrl(value);
   return clean && /^(https?:\/\/|\/)/.test(clean) ? clean : undefined;
 }
 
@@ -207,7 +218,7 @@ function parseScenario(data: ScenarioJSON): {
     color: char.color,
     robeColor: char.robeColor,
     description: char.description,
-    glbModel: char.glbModel?.trim() || undefined,
+    glbModel: resolveAssetUrl(char.glbModel),
     scale: char.scale || undefined,
     dialogs: data.dialogs
       .filter((d) => d.character_id === char.id)
@@ -346,13 +357,24 @@ export function useScenario(scenarioName = 'default') {
     setCompletionIds(parsed.completionIds);
     setCompletionInteractive(parsed.completionInteractive);
     setQuiz(parsed.quiz);
-    setProps(Array.isArray(data.props) ? data.props.filter((p) => p?.glbModel?.trim()) : undefined);
+    setProps(
+      Array.isArray(data.props)
+        ? data.props
+            .filter((p) => p?.glbModel?.trim())
+            .map((prop) => ({
+              ...prop,
+              glbModel: resolveAssetUrl(prop.glbModel) || prop.glbModel,
+              ...(prop.dialog_audio ? { dialog_audio: resolveAssetUrl(prop.dialog_audio) || prop.dialog_audio } : {}),
+              ...(prop.welcome_audio ? { welcome_audio: resolveAssetUrl(prop.welcome_audio) || prop.welcome_audio } : {}),
+            }))
+        : undefined,
+    );
   };
 
   useEffect(() => {
     let cancelled = false;
     const externalUrl = previewDataUrl();
-    const defaultUrl = `/scenarios/${scenarioName}.json?v=${Date.now()}`;
+    const defaultUrl = `${BASE_URL}scenarios/${scenarioName}.json?v=${Date.now()}`;
 
     const load = async () => {
       try {
@@ -374,7 +396,7 @@ export function useScenario(scenarioName = 'default') {
           };
         } else {
           try {
-            const pointerResponse = await fetch(`/data/active-scenario.json?v=${Date.now()}`, {
+            const pointerResponse = await fetch(`${BASE_URL}data/active-scenario.json?v=${Date.now()}`, {
               cache: 'no-store',
               headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
             });
