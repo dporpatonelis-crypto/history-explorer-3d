@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+
+const BASE_URL = import.meta.env.BASE_URL;
 import { Library, Download, X, FileText, RefreshCw } from 'lucide-react';
 
 interface ScenarioEntry {
@@ -26,7 +28,7 @@ export function LibraryPanel({ currentScenario, onLoadScenario }: LibraryPanelPr
   const loadManifest = () => {
     setLoading(true);
     setError(null);
-    fetch(`/data/manifest.json?v=${Date.now()}`, { cache: 'no-store' })
+    fetch(`${BASE_URL}data/manifest.json?v=${Date.now()}`, { cache: 'no-store' })
       .then((res) => {
         if (!res.ok) throw new Error('Manifest not found');
         return res.json();
@@ -44,7 +46,7 @@ export function LibraryPanel({ currentScenario, onLoadScenario }: LibraryPanelPr
 
   const handleLoad = async (file: string) => {
     try {
-      const res = await fetch(`/data/${file}?v=${Date.now()}`, { cache: 'no-store' });
+      const res = await fetch(`${BASE_URL}data/${file}?v=${Date.now()}`, { cache: 'no-store' });
       if (!res.ok) throw new Error('Failed to load scenario');
       const data = await res.json();
       onLoadScenario(data);
