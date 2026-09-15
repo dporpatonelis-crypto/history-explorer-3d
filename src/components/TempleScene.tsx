@@ -2,6 +2,9 @@ import { useRef, Suspense, useMemo, memo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
+const BASE_URL = import.meta.env.BASE_URL;
+const resolveAssetUrl = (path: string) => path.startsWith(BASE_URL) ? path : path.startsWith('/') ? BASE_URL + path.slice(1) : path;
+
 /* ─── Marble floor ─── */
 export const MarbleFloor = memo(function MarbleFloor() {
   return (
@@ -91,7 +94,7 @@ const StaticGLBModel = memo(function StaticGLBModel({ url, position, scale = 1 }
 });
 
 /* ─── Permanent decorative trees ─── */
-const TREE_MODEL = '/models/tree.glb';
+const TREE_MODEL = resolveAssetUrl('/models/tree.glb');
 const TREE_SCALE = 6;
 const TREES: [number, number, number][] = [
   [-10, 0, 0.8],
@@ -129,7 +132,7 @@ export const TempleScene = memo(function TempleScene() {
   return (
     <group>
       <Suspense fallback={null}>
-        <StaticGLBModel url="/models/greek_kiosk.glb" position={[0, 0, -4]} scale={5} />
+        <StaticGLBModel url={resolveAssetUrl("/models/greek_kiosk.glb")} position={[0, 0, -4]} scale={5} />
         {TREES.map((pos, i) => (
           <StaticGLBModel key={`tree-${i}`} url={TREE_MODEL} position={pos} scale={TREE_SCALE} />
         ))}
