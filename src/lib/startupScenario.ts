@@ -1,4 +1,7 @@
 const BASE_URL = import.meta.env.BASE_URL;
+const SCENARIO_PREVIEWS: Record<string, string> = {
+  'jerusalem-time-of-christ': 'jerusalem-time-of-christ.json',
+};
 
 export interface StartupScenarioConfig {
   file?: unknown;
@@ -14,4 +17,11 @@ export function resolveStartupScenarioUrl(config: unknown): string | null {
     return null;
   }
   return BASE_URL + `data/${clean}`;
+}
+
+/** Allow only named, repository-owned scenarios through the direct preview query. */
+export function resolveScenarioPreviewUrl(environment: unknown): string | null {
+  if (typeof environment !== 'string') return null;
+  const file = SCENARIO_PREVIEWS[environment];
+  return file ? BASE_URL + `data/${file}` : null;
 }

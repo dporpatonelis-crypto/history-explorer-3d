@@ -1,9 +1,11 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { Canvas, createPortal } from '@react-three/fiber';
+import { Canvas, createPortal, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { XR, VRButton, Controllers, Hands, useXR } from '@react-three/xr';
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
+import * as THREE from 'three';
 import { TempleScene, MarbleFloor, SceneLighting } from '@/components/TempleScene';
+import { JerusalemEnvironment } from '@/components/JerusalemEnvironment';
 import { NPCFigure } from '@/components/NPCFigure';
 import { GLBModelNPC } from '@/components/GLBModelNPC';
 import { DialogPanel } from '@/components/DialogPanel';
@@ -24,6 +26,19 @@ import { NPCData, npcData } from '@/data/npcData';
 import { QuizResult } from '@/data/quizData';
 import { useScenario } from '@/hooks/useScenario';
 import { narrate, stopSpeaking } from '@/lib/lipsync';
+import { getScenePresentation, JERUSALEM_ENVIRONMENT } from '@/lib/sceneEnvironment';
+
+function CameraFarPlane({ far }: { far: number }) {
+  const camera = useThree((state) => state.camera);
+
+  useEffect(() => {
+    const perspectiveCamera = camera as THREE.PerspectiveCamera;
+    perspectiveCamera.far = far;
+    perspectiveCamera.updateProjectionMatrix();
+  }, [camera, far]);
+
+  return null;
+}
 
 function StableOrbitControls() {
   const controlsRef = useRef<OrbitControlsImpl>(null);
@@ -98,7 +113,6 @@ const Index = () => {
   const [quizOpen, setQuizOpen] = useState(false);
   const [quizUnlocked, setQuizUnlocked] = useState(false);
   const [quizResult, setQuizResult] = useState<QuizResult | null>(null);
-  const { visited, markVisited, resetProgress } = useProgress();
   const {
     npcs,
     screens,
@@ -110,15 +124,35 @@ const Index = () => {
     quiz,
     loading,
     rawScenario,
+    environment,
     applyScenario,
   } = useScenario();
+  const { visited, markVisited, resetProgress } = useProgress(environment);
   const environmentScreensRef = useRef<EnvironmentScreensHandle>(null);
   const respawnRef = useRef<() => void>(() => {});
   const completionArmedRef = useRef(false);
   const autoVideoStartedRef = useRef(false);
   const rewardPlayedRef = useRef(false);
   const workflowKeyRef = useRef('');
+  const [scenarioLoadRevision, setScenarioLoadRevision] = useState(0);
   const registerRespawn = useCallback((fn: () => void) => { respawnRef.current = fn; }, []);
+  const scenePresentation = getScenePresentation(environment);
+
+  const handleScenarioLoad = useCallback((data: unknown) => {
+    stopSpeaking();
+    environmentScreensRef.current?.stopInteractive();
+    setActiveNPC(null);
+    setActivePropDialog(null);
+    setQuizOpen(false);
+    setQuizUnlocked(false);
+    setQuizResult(null);
+    completionArmedRef.current = false;
+    autoVideoStartedRef.current = false;
+    rewardPlayedRef.current = false;
+    workflowKeyRef.current = '';
+    setScenarioLoadRevision((revision) => revision + 1);
+    applyScenario(data as Parameters<typeof applyScenario>[0]);
+  }, [applyScenario]);
 
   const requiredCompletionIds = useMemo(
     () => completionIds?.length
@@ -138,6 +172,8 @@ const Index = () => {
   const completionReached = completionWorkflowConfigured
     && completionCount >= requiredCompletionIds.length;
   const workflowKey = [
+    environment,
+    scenarioLoadRevision,
     interactive?.video_url ?? '',
     completionInteractive?.video_url ?? '',
     quiz?.id ?? '',
@@ -372,13 +408,21 @@ const Index = () => {
             onCloseDialog={() => setActiveNPC(null)}
           />
 
-          <SceneLighting />
-          <MarbleFloor />
-          <TempleScene />
+          <CameraFarPlane far={environment === JERUSALEM_ENVIRONMENT ? 140 : 100} />
+          <SceneLighting environment={environment} />
+          {environment === JERUSALEM_ENVIRONMENT ? (
+            <JerusalemEnvironment />
+          ) : (
+            <>
+              <MarbleFloor />
+              <TempleScene />
+            </>
+          )}
           <EnvironmentScreens
             ref={environmentScreensRef}
             config={screens}
             interactive={interactive}
+            environment={environment}
             onInteractiveEnded={handleInteractiveEnded}
           />
           <ScenarioProps
@@ -421,16 +465,16 @@ const Index = () => {
             requiredIds={requiredCompletionIds}
             onReset={handleResetProgress}
           />
-          <LibraryPanel currentScenario={rawScenario} onLoadScenario={applyScenario} />
+          <LibraryPanel currentScenario={rawScenario} onLoadScenario={handleScenarioLoad} />
           <ExtraModelsPanel models={extraModels} onChange={setExtraModels} />
 
           <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40">
             <div className="progress-badge rounded-xl px-6 py-2 backdrop-blur-md text-center">
               <h1 className="font-cinzel text-sm font-bold text-foreground tracking-wider">
-                Αρχαία Αγορά — Εκπαιδευτική Εξερεύνηση
+                {scenePresentation.title}
               </h1>
               <p className="font-cormorant text-xs text-muted-foreground">
-                Κάνε κλικ σε έναν φιλόσοφο για να μάθεις περισσότερα
+                {scenePresentation.instruction}
               </p>
             </div>
           </div>

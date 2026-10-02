@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { shouldLoopInteractiveVideo } from '@/lib/interactivePlayback';
 import { Html, useTexture } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
+import { JERUSALEM_ENVIRONMENT, type SceneEnvironmentId } from '@/lib/sceneEnvironment';
 
 function isVideoUrl(url: string): boolean {
   const lower = url.toLowerCase();
@@ -90,21 +91,19 @@ function useVideoTexture(url: string, autoplay = true, loop = true, muted = true
 
 function GoogleSlidesCurvedScreen({
   mediaUrl,
-  side,
+  thetaStart,
+  screenArc,
 }: {
   mediaUrl: string;
-  side: 'left' | 'right';
+  thetaStart: number;
+  screenArc: number;
 }) {
   const screenRadius = 10;
-  const screenArc = Math.PI * 0.48;
   const screenHeight = 10.5;
   const segmentCount = 5;
   const slideWidth = 1000;
   const slideHeight = 562.5;
   const segmentWidth = slideWidth / segmentCount;
-  const thetaStart = side === 'left'
-    ? Math.PI
-    : Math.PI - screenArc;
   const backingGeometry = useMemo(() => (
     new THREE.CylinderGeometry(
       screenRadius,
@@ -313,11 +312,12 @@ const DEFAULT_SCREENS: ScreenConfig = {
 interface EnvironmentScreensProps {
   config?: ScreenConfig;
   interactive?: InteractiveMediaConfig;
+  environment?: SceneEnvironmentId;
   onInteractiveEnded?: (event: InteractivePlaybackEvent) => void;
 }
 
 export const EnvironmentScreens = forwardRef<EnvironmentScreensHandle, EnvironmentScreensProps>(
-function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteractiveEnded }, ref) {
+function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, environment = 'agora', onInteractiveEnded }, ref) {
   const [interactiveActive, setInteractiveActive] = useState(false);
   const [activeInteractive, setActiveInteractive] = useState<InteractiveMediaConfig>();
   const [interactiveTexture, setInteractiveTexture] = useState<THREE.VideoTexture | null>(null);
@@ -477,7 +477,12 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteracti
   // thetaStart in CylinderGeometry: 0 = +X axis, goes counter-clockwise from top view
   // Camera is at z=12 looking at z=0, so the "back" of the cylinder (facing camera) is around theta=PI
   const screenRadius = 10;
-  const halfArc = Math.PI * 0.48; // Almost touching, small gap at seams
+  // Leave the temple axis clear in the Jerusalem scene while preserving both media screens.
+  const isJerusalem = environment === JERUSALEM_ENVIRONMENT;
+  const halfArc = Math.PI * (isJerusalem ? 0.34 : 0.48);
+  const centerGapHalf = isJerusalem ? Math.PI * 0.12 : 0;
+  const leftThetaStart = Math.PI + centerGapHalf;
+  const rightThetaStart = Math.PI - centerGapHalf - halfArc;
 
   return (
     <group position={[0, 5.5, 0]}>
@@ -486,7 +491,8 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteracti
         isGoogleSlidesUrl(leftMediaUrl) ? (
           <GoogleSlidesCurvedScreen
             mediaUrl={leftMediaUrl}
-            side="left"
+            thetaStart={leftThetaStart}
+            screenArc={halfArc}
           />
         ) : (
           <CurvedScreenMesh
@@ -495,7 +501,7 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteracti
             position={[0, 0, 0]}
             rotation={[0, 0, 0]}
             radius={screenRadius}
-            thetaStart={Math.PI}
+            thetaStart={leftThetaStart}
             thetaLength={halfArc}
             height={10.5}
             curveSegments={16}
@@ -508,7 +514,8 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteracti
         isGoogleSlidesUrl(rightMediaUrl) ? (
           <GoogleSlidesCurvedScreen
             mediaUrl={rightMediaUrl}
-            side="right"
+            thetaStart={rightThetaStart}
+            screenArc={halfArc}
           />
         ) : (
           <CurvedScreenMesh
@@ -517,7 +524,7 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, onInteracti
             position={[0, 0, 0]}
             rotation={[0, 0, 0]}
             radius={screenRadius}
-            thetaStart={Math.PI - halfArc}
+            thetaStart={rightThetaStart}
             thetaLength={halfArc}
             height={10.5}
             curveSegments={16}
