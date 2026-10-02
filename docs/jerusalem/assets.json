@@ -1,0 +1,167 @@
+{
+  "theme": "Jerusalem in the time of Christ",
+  "historical_policy": "Artistic reference-based environment; not an archaeological reconstruction.",
+  "source": "Existing Blender asset-library compact 2K exports",
+  "optimization": "Textures capped at 2048px; source geometry retained; no automatic LOD or mesh decimation.",
+  "coordinate_system": "glTF: right-handed, Y up, metres",
+  "assets": [
+    {
+      "file": "public/models/jerusalem/Jerusalem_House_compact_2k.glb",
+      "url": "/models/jerusalem/Jerusalem_House_compact_2k.glb",
+      "sha256": "501be25fd6f1e7bc1bedf10840deec2c060bf029fd175b9e2265b3d41308a80f",
+      "bytes": 12948504,
+      "triangles": 50000,
+      "mesh_objects": 1,
+      "textures": [
+        {
+          "size": [
+            2048,
+            2048
+          ],
+          "name": "Jerusalem_House_Normal"
+        },
+        {
+          "size": [
+            2048,
+            2048
+          ],
+          "name": "Jerusalem_House_Base_Color"
+        },
+        {
+          "size": [
+            2048,
+            2048
+          ],
+          "name": "Jerusalem_House_Metallic_Roughness"
+        }
+      ],
+      "bounds_gltf_y_up": {
+        "min": [
+          -3.1719822883605957,
+          0,
+          -3.5362303256988525
+        ],
+        "max": [
+          3.1719820499420166,
+          8.799999237060547,
+          3.5362303256988525
+        ]
+      },
+      "dimensions_gltf_y_up": [
+        6.343964338302612,
+        8.799999237060547,
+        7.072460651397705
+      ],
+      "pivot": "bottom centre",
+      "extensions_used": [
+        "KHR_materials_specular"
+      ]
+    },
+    {
+      "file": "public/models/jerusalem/Jerusalem_Market_compact_2k.glb",
+      "url": "/models/jerusalem/Jerusalem_Market_compact_2k.glb",
+      "sha256": "ce13a0b6005f74c8b97059bc8cf8bbb729d810a6c0d7daeabfa42f3294f2cc2d",
+      "bytes": 13379580,
+      "triangles": 50000,
+      "mesh_objects": 1,
+      "textures": [
+        {
+          "size": [
+            2048,
+            2048
+          ],
+          "name": "Jerusalem_Market_Normal"
+        },
+        {
+          "size": [
+            2048,
+            2048
+          ],
+          "name": "Jerusalem_Market_Base_Color"
+        },
+        {
+          "size": [
+            2048,
+            2048
+          ],
+          "name": "Jerusalem_Market_Metallic_Roughness"
+        }
+      ],
+      "bounds_gltf_y_up": {
+        "min": [
+          -1.7354979515075684,
+          0,
+          -0.9676172733306885
+        ],
+        "max": [
+          1.7354979515075684,
+          2.450000047683716,
+          0.9676172733306885
+        ]
+      },
+      "dimensions_gltf_y_up": [
+        3.4709959030151367,
+        2.450000047683716,
+        1.935234546661377
+      ],
+      "pivot": "bottom centre",
+      "extensions_used": [
+        "KHR_materials_specular"
+      ]
+    },
+    {
+      "file": "public/models/jerusalem/Jerusalem_Temple_compact_2k.glb",
+      "url": "/models/jerusalem/Jerusalem_Temple_compact_2k.glb",
+      "sha256": "da0311485c7116c5240900757c8c834fa38b197bac5d8ad598497d2d54316b0a",
+      "bytes": 12769724,
+      "triangles": 48346,
+      "mesh_objects": 1,
+      "textures": [
+        {
+          "size": [
+            2048,
+            2048
+          ],
+          "name": "Jerusalem_Temple_Normal"
+        },
+        {
+          "size": [
+            2048,
+            2048
+          ],
+          "name": "Jerusalem_Temple_Base_Color"
+        },
+        {
+          "size": [
+            2048,
+            2048
+          ],
+          "name": "Jerusalem_Temple_Metallic_Roughness"
+        }
+      ],
+      "bounds_gltf_y_up": {
+        "min": [
+          -29.000892639160156,
+          0,
+          -34.41802215576172
+        ],
+        "max": [
+          29.000892639160156,
+          27.999998092651367,
+          34.418025970458984
+        ]
+      },
+      "dimensions_gltf_y_up": [
+        58.00178527832031,
+        27.999998092651367,
+        68.8360481262207
+      ],
+      "pivot": "bottom centre",
+      "extensions_used": [
+        "KHR_materials_specular"
+      ]
+    }
+  ],
+  "total_bytes": 39097808,
+  "total_unique_triangles": 148346
+}
