@@ -33,7 +33,7 @@ describe('optional scene environments', () => {
       .toEqual(divineEconomyScenario.dialogs.filter((row) => !replacedIds.has(row.character_id)));
     expect(jerusalemScenario.facts.filter((row) => !replacedIds.has(row.character_id)))
       .toEqual(divineEconomyScenario.facts.filter((row) => !replacedIds.has(row.character_id)));
-    expect(jerusalemScenario.screens.right_image_url).toBe(divineEconomyScenario.screens.right_image_url);
+    expect(jerusalemScenario.screens.right_image_url).toBe('/media/jerusalem-timeline.png');
     expect(jerusalemScenario.screens.right_label).toBe(divineEconomyScenario.screens.right_label);
     expect(jerusalemScenario.interactive).toEqual(divineEconomyScenario.interactive);
     expect(jerusalemScenario.character_interactives).toEqual(divineEconomyScenario.character_interactives);

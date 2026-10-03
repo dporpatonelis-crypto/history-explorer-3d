@@ -36,3 +36,9 @@ completion target and original quiz continue to use their existing media.
   giving 22 seconds of playback with audio pitch preserved.
 - Explicit `loop: false` makes this reward play once. Legacy scenarios retain
   their playback speed and looping behavior.
+
+The existing right-screen Timeline image is bundled as
+`/media/jerusalem-timeline.png`, preserving the content from
+https://i.ibb.co/5h8N13sp/image.png. The external image host failed during
+preview validation and caused the scene to unmount. Jerusalem now loads the
+image locally; Divine Economy retains its existing configuration.
