@@ -5,9 +5,10 @@ interface ProgressTrackerProps {
   visited: Set<string>;
   requiredIds?: string[];
   onReset: () => void;
+  characterLabel?: string;
 }
 
-export function ProgressTracker({ visited, requiredIds, onReset }: ProgressTrackerProps) {
+export function ProgressTracker({ visited, requiredIds, onReset, characterLabel = 'φιλόσοφοι' }: ProgressTrackerProps) {
   const total = requiredIds?.length || npcData.length;
   const count = requiredIds?.length
     ? requiredIds.filter((id) => visited.has(id)).length
@@ -24,7 +25,7 @@ export function ProgressTracker({ visited, requiredIds, onReset }: ProgressTrack
           <div>
             <p className="font-cinzel text-xs font-semibold text-foreground">Πρόοδος</p>
             <p className="font-cormorant text-sm text-muted-foreground">
-              {count}/{total} φιλόσοφοι
+              {count}/{total} {characterLabel}
             </p>
           </div>
           <div className="w-16 h-2 bg-secondary rounded-full overflow-hidden">
