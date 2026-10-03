@@ -155,14 +155,14 @@ export function JerusalemEnvironment() {
       <JerusalemStreet />
       <DistantLimestoneHills />
 
-      <OptionalGLB url={HOUSE_URL} position={[-15.8, 0, -13]} scale={0.6} rotationY={Math.PI / 2} />
-      <OptionalGLB url={HOUSE_URL} position={[15.8, 0, -13]} scale={0.6} rotationY={-Math.PI / 2} />
+      <OptionalGLB url={HOUSE_URL} position={[-15.8, 0, -5]} scale={0.6} rotationY={Math.PI / 2} />
+      <OptionalGLB url={HOUSE_URL} position={[15.8, 0, -5]} scale={0.6} rotationY={-Math.PI / 2} />
 
       <OptionalGLB url={MARKET_URL} position={[-11.3, 0, -3.2]} scale={0.9} />
       <OptionalGLB url={MARKET_URL} position={[11.3, 0, -3.2]} scale={0.9} rotationY={Math.PI} />
       <OptionalGLB url={MARKET_URL} position={[11.3, 0, -8.5]} scale={0.9} rotationY={Math.PI} />
 
-      <OptionalGLB url={TEMPLE_URL} position={[0, 0, -33]} scale={0.32} rotationY={Math.PI} />
+      <OptionalGLB url={TEMPLE_URL} position={[0, 0, -17]} scale={0.32} />
     </group>
   );
 }
