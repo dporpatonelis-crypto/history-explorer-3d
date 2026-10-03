@@ -91,10 +91,12 @@ function useVideoTexture(url: string, autoplay = true, loop = true, muted = true
 
 function GoogleSlidesCurvedScreen({
   mediaUrl,
+  side,
   thetaStart,
   screenArc,
 }: {
   mediaUrl: string;
+  side: 'left' | 'right';
   thetaStart: number;
   screenArc: number;
 }) {
@@ -483,14 +485,19 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, environment
   const centerGapHalf = isJerusalem ? Math.PI * 0.12 : 0;
   const leftThetaStart = Math.PI + centerGapHalf;
   const rightThetaStart = Math.PI - centerGapHalf - halfArc;
+  // Move the Jerusalem pair behind the buildings while scaling both the curved
+  // meshes and transformed Slides content together. Keep the original arc/gap.
+  const screenScale = isJerusalem ? 2 : 1;
+  const screenCenter: [number, number, number] = [0, 5.5 * screenScale, isJerusalem ? -35 : 0];
 
   return (
-    <group position={[0, 5.5, 0]}>
+    <group position={screenCenter} scale={screenScale}>
       {/* Left screen: covers from PI to PI + halfArc (left side when facing center) */}
       {hasLeft && (
         isGoogleSlidesUrl(leftMediaUrl) ? (
           <GoogleSlidesCurvedScreen
             mediaUrl={leftMediaUrl}
+            side="left"
             thetaStart={leftThetaStart}
             screenArc={halfArc}
           />
@@ -514,6 +521,7 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, environment
         isGoogleSlidesUrl(rightMediaUrl) ? (
           <GoogleSlidesCurvedScreen
             mediaUrl={rightMediaUrl}
+            side="right"
             thetaStart={rightThetaStart}
             screenArc={halfArc}
           />
