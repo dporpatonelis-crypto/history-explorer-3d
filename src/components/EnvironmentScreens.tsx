@@ -1,6 +1,6 @@
 import { forwardRef, useMemo, useEffect, useState, useRef, useImperativeHandle, useCallback } from 'react';
 import * as THREE from 'three';
-import { shouldLoopInteractiveVideo } from '@/lib/interactivePlayback';
+import { resolveInteractivePlaybackRate, shouldLoopInteractiveVideo } from '@/lib/interactivePlayback';
 import { Html, useTexture } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { JERUSALEM_ENVIRONMENT, type SceneEnvironmentId } from '@/lib/sceneEnvironment';
@@ -291,6 +291,8 @@ export interface InteractiveMediaConfig {
   video_url: string;
   target_screen?: 'left' | 'right';
   label?: string;
+  playback_rate?: number;
+  loop?: boolean;
 }
 
 export type InteractivePlaybackPurpose = 'model' | 'completion-reward' | 'quiz-reward';
@@ -398,7 +400,12 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, environment
     const video = document.createElement('video');
     video.crossOrigin = 'anonymous';
     video.preload = 'auto';
-    video.loop = shouldLoopInteractiveVideo(purpose);
+    video.loop = shouldLoopInteractiveVideo(purpose, media.loop);
+    const playbackRate = resolveInteractivePlaybackRate(media.playback_rate);
+    // Loading a new source restores the default rate, so set both rates.
+    video.defaultPlaybackRate = playbackRate;
+    video.playbackRate = playbackRate;
+    video.preservesPitch = true;
     video.muted = false;
     video.defaultMuted = false;
     video.playsInline = true;

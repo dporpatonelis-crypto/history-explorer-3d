@@ -1,0 +1,41 @@
+{
+  "source": "Symbolic_Tree_VR_1K.glb from Blender asset-library/nature/Tree_d6ea88c7",
+  "file": "public/models/jerusalem/sculptures/Symbolic_Tree_VR_1K.glb",
+  "sha256": "4ca1d9be192a989429c9f455b9110f9f2cbf22d16858d9eb076180902ba21a62",
+  "bytes": 8397548,
+  "triangles": 60000,
+  "textures": [
+    {
+      "name": "Symbolic_Tree_Normal",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "Symbolic_Tree_BaseColor",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "Symbolic_Tree_MetallicRoughness",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    }
+  ],
+  "rendered_height_m": 2.7,
+  "instances": 2,
+  "placement": {
+    "x": [
+      -6.2,
+      6.2
+    ],
+    "y": 0.05,
+    "z": -2.8
+  },
+  "source_modified": false
+}

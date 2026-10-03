@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import defaultScenario from '../../public/scenarios/default.json';
 import divineEconomyScenario from '../../public/data/to-schedio-tis-theias-oikonomias.json';
 import activeScenario from '../../public/data/active-scenario.json';
-import { shouldLoopInteractiveVideo } from '../lib/interactivePlayback';
+import { resolveInteractivePlaybackRate, shouldLoopInteractiveVideo } from '../lib/interactivePlayback';
 import { resolvePropInteractionLabel } from '../lib/scenarioPropLabels';
 import { resolveStartupScenarioUrl } from '../lib/startupScenario';
 
@@ -43,6 +43,14 @@ describe('scenario-scoped completion workflow', () => {
   it('starts with the active Divine Economy scenario', () => {
     expect(resolveStartupScenarioUrl(activeScenario))
       .toBe('/data/to-schedio-tis-theias-oikonomias.json');
+  });
+
+  it('preserves legacy playback while allowing an explicit one-shot reward', () => {
+    expect(shouldLoopInteractiveVideo('quiz-reward', false)).toBe(false);
+    expect(resolveInteractivePlaybackRate(0.5)).toBe(0.5);
+    for (const invalid of [undefined, 0, -1, NaN, Infinity, 10]) {
+      expect(resolveInteractivePlaybackRate(invalid)).toBe(1);
+    }
   });
 
   it('loops only the quiz reward video', () => {

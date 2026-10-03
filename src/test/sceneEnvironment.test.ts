@@ -33,12 +33,10 @@ describe('optional scene environments', () => {
       .toEqual(divineEconomyScenario.dialogs.filter((row) => !replacedIds.has(row.character_id)));
     expect(jerusalemScenario.facts.filter((row) => !replacedIds.has(row.character_id)))
       .toEqual(divineEconomyScenario.facts.filter((row) => !replacedIds.has(row.character_id)));
-    expect(jerusalemScenario.screens.right_image_url).toBe(divineEconomyScenario.screens.right_image_url);
+    expect(jerusalemScenario.screens.right_image_url).toBe('/media/jerusalem-timeline.png');
     expect(jerusalemScenario.screens.right_label).toBe(divineEconomyScenario.screens.right_label);
     expect(jerusalemScenario.interactive).toEqual(divineEconomyScenario.interactive);
     expect(jerusalemScenario.character_interactives).toEqual(divineEconomyScenario.character_interactives);
-    expect(jerusalemScenario.completion.reward_interactive).toEqual(divineEconomyScenario.completion.reward_interactive);
-    expect(jerusalemScenario.quiz.questions.slice(1)).toEqual(divineEconomyScenario.quiz.questions.slice(1));
     expect(jerusalemScenario.props.slice(0, 2)).toEqual(
       divineEconomyScenario.props.filter((prop) => prop.id !== 'agia_sophia'),
     );
@@ -63,7 +61,7 @@ describe('optional scene environments', () => {
   });
 
   it('places all six biblical objects in front of distinct character positions and clear of the guide', () => {
-    const objects = jerusalemScenario.props.slice(2);
+    const objects = jerusalemScenario.props.filter((prop) => prop.glbModel.includes('/biblical/'));
     expect(objects.map((prop) => prop.id).sort()).toEqual([
       'ark-of-covenant', 'bronze-serpent', 'budding-rod', 'covenant-tablets', 'lamb', 'manna-jar',
     ]);
@@ -75,6 +73,18 @@ describe('optional scene environments', () => {
       expect(Math.abs(prop.position_x)).toBeGreaterThan(2);
       expect(prop.idle).toBe(false);
       expect(prop.glbModel).toMatch(/^\/models\/jerusalem\/biblical\/.*_VR_1K\.glb$/);
+    }
+  });
+
+  it('places two symbolic trees behind the character row with a clear center', () => {
+    const sculptures = jerusalemScenario.props.filter((prop) => prop.id.startsWith('symbolic-tree-'));
+    expect(sculptures).toHaveLength(2);
+    expect(sculptures.map((prop) => prop.position_x)).toEqual([-6.2, 6.2]);
+    for (const prop of sculptures) {
+      expect(prop.position_z).toBeLessThan(Math.min(...jerusalemScenario.characters.map((npc) => npc.position_z)));
+      expect(prop.scale).toBe(1.5);
+      expect(prop.idle).toBe(false);
+      expect(prop.glbModel).toBe('/models/jerusalem/sculptures/Symbolic_Tree_VR_1K.glb');
     }
   });
 

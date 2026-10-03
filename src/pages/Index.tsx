@@ -27,6 +27,7 @@ import { QuizResult } from '@/data/quizData';
 import { useScenario } from '@/hooks/useScenario';
 import { narrate, stopSpeaking } from '@/lib/lipsync';
 import { getScenePresentation, JERUSALEM_ENVIRONMENT } from '@/lib/sceneEnvironment';
+import { getCompletionProgress } from '@/lib/completionProgress';
 
 function CameraFarPlane({ far }: { far: number }) {
   const camera = useThree((state) => state.camera);
@@ -120,6 +121,7 @@ const Index = () => {
     characterInteractives,
     props: scenarioProps,
     completionIds,
+    completionRequiredCount,
     completionInteractive,
     quiz,
     loading,
@@ -167,10 +169,12 @@ const Index = () => {
     () => new Set(requiredCompletionIds),
     [requiredCompletionIds],
   );
-  const completionCount = requiredCompletionIds.filter((id) => visited.has(id)).length;
+  const { count: completionCount, target: completionTarget } = getCompletionProgress(
+    requiredCompletionIds, visited, completionRequiredCount,
+  );
   const completionWorkflowConfigured = Boolean(completionIds?.length);
   const completionReached = completionWorkflowConfigured
-    && completionCount >= requiredCompletionIds.length;
+    && completionCount >= completionTarget;
   const workflowKey = [
     environment,
     scenarioLoadRevision,
@@ -179,6 +183,7 @@ const Index = () => {
     quiz?.id ?? '',
     quiz?.rewardInteractive?.video_url ?? '',
     requiredCompletionIds.join('|'),
+    completionTarget,
   ].join('|');
 
   const activeNPCInteractive = useMemo(
@@ -247,7 +252,7 @@ const Index = () => {
       && completionArmedRef.current
       && !autoVideoStartedRef.current
       && isNewRequiredVisit
-      && completionCount + 1 >= requiredCompletionIds.length;
+      && completionCount + 1 >= completionTarget;
 
     markVisited(npc.id);
 
@@ -296,7 +301,7 @@ const Index = () => {
     markVisited,
     quiz,
     requiredCompletionIdSet,
-    requiredCompletionIds.length,
+    completionTarget,
     visited,
   ]);
 
@@ -402,8 +407,8 @@ const Index = () => {
           <VRLocomotion />
           <VRSpawn register={registerRespawn} />
           <VRWristPanel
-            visitedCount={completionCount}
-            totalCount={requiredCompletionIds.length}
+            visitedCount={Math.min(completionCount, completionTarget)}
+            totalCount={completionTarget}
             onRespawn={() => respawnRef.current()}
             onCloseDialog={() => setActiveNPC(null)}
           />
@@ -463,6 +468,7 @@ const Index = () => {
           <ProgressTracker
             visited={visited}
             requiredIds={requiredCompletionIds}
+            requiredCount={completionTarget}
             onReset={handleResetProgress}
             characterLabel={environment === JERUSALEM_ENVIRONMENT ? 'πρόσωπα' : 'φιλόσοφοι'}
           />
