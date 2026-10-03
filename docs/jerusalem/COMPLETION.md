@@ -9,7 +9,7 @@ The completion video plays once. Its natural end opens the existing quiz UI.
 The quiz covers the tablets, ark, manna, Aaron's rod, bronze serpent and paschal
 lamb, using the Greek lesson material supplied by the user. Every answer has
 feedback and an explanation. Four of six correct answers pass; unsuccessful
-attempts can retry. A successful quiz plays a separate 22-second reward once, then restores
+attempts can retry. A successful quiz plays a separate approximately 15-second reward once, then restores
 the screen. Reset progress starts a new exploration cycle.
 
 ## Video provenance
@@ -32,8 +32,8 @@ completion target and original quiz continue to use their existing media.
 - User-supplied Google Vids: https://docs.google.com/videos/d/1vv0Dt1_ZLH2DceiIUnZEYTpkMw5zl2EBVSLwT-Hf7mg/play
 - Title: Σκιά και αλήθεια. Downloaded through the connected Google Drive.
 - File: `/media/jerusalem-quiz-success.mp4`, H.264/AAC, 1280×720, fast start.
-- Exported source duration: 10.048 seconds. Playback rate is `10.048 / 22`,
-  giving 22 seconds of playback with audio pitch preserved.
+- Exported source duration: 10.048 seconds. Playback rate is `1 / 1.5`,
+  giving 15.072 seconds of playback (1.5 times the original duration) with audio pitch preserved.
 - Explicit `loop: false` makes this reward play once. Legacy scenarios retain
   their playback speed and looping behavior.
 
