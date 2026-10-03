@@ -485,10 +485,10 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, environment
   const centerGapHalf = isJerusalem ? Math.PI * 0.12 : 0;
   const leftThetaStart = Math.PI + centerGapHalf;
   const rightThetaStart = Math.PI - centerGapHalf - halfArc;
-  // Move the Jerusalem pair behind the buildings while scaling both the curved
-  // meshes and transformed Slides content together. Keep the original arc/gap.
+  // Keep the Jerusalem pair behind the temple and move it forward with the
+  // compact environment. Scale meshes and Slides together, preserving the arc/gap.
   const screenScale = isJerusalem ? 2 : 1;
-  const screenCenter: [number, number, number] = [0, 5.5 * screenScale, isJerusalem ? -35 : 0];
+  const screenCenter: [number, number, number] = [0, 5.5 * screenScale, isJerusalem ? -19 : 0];
 
   return (
     <group position={screenCenter} scale={screenScale}>
