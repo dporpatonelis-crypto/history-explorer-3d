@@ -76,15 +76,15 @@ describe('optional scene environments', () => {
     }
   });
 
-  it('places two modest sculptures behind the character row with a clear center', () => {
-    const sculptures = jerusalemScenario.props.filter((prop) => prop.id.startsWith('christ-relief-'));
+  it('places two symbolic trees behind the character row with a clear center', () => {
+    const sculptures = jerusalemScenario.props.filter((prop) => prop.id.startsWith('symbolic-tree-'));
     expect(sculptures).toHaveLength(2);
     expect(sculptures.map((prop) => prop.position_x)).toEqual([-6.2, 6.2]);
     for (const prop of sculptures) {
       expect(prop.position_z).toBeLessThan(Math.min(...jerusalemScenario.characters.map((npc) => npc.position_z)));
       expect(prop.scale).toBe(1.5);
       expect(prop.idle).toBe(false);
-      expect(prop.glbModel).toBe('/models/jerusalem/sculptures/Christ_Relief_VR_1K.glb');
+      expect(prop.glbModel).toBe('/models/jerusalem/sculptures/Symbolic_Tree_VR_1K.glb');
     }
   });
 

@@ -1,26 +1,26 @@
 {
-  "source": "Christ_relief_optimized_six_regions_final.glb from Blender optimized-assets",
-  "file": "public/models/jerusalem/sculptures/Christ_Relief_VR_1K.glb",
-  "sha256": "4f2811002610e5ecdded4346fef9b7d3b9fc428617ad7eb6728174ccad1f0b64",
-  "bytes": 6734096,
-  "triangles": 49996,
+  "source": "Symbolic_Tree_VR_1K.glb from Blender asset-library/nature/Tree_d6ea88c7",
+  "file": "public/models/jerusalem/sculptures/Symbolic_Tree_VR_1K.glb",
+  "sha256": "4ca1d9be192a989429c9f455b9110f9f2cbf22d16858d9eb076180902ba21a62",
+  "bytes": 8397548,
+  "triangles": 60000,
   "textures": [
     {
-      "name": "texture_pbr_20250901_normal",
+      "name": "Symbolic_Tree_Normal",
       "dimensions": [
         1024,
         1024
       ]
     },
     {
-      "name": "texture_pbr_20250901",
+      "name": "Symbolic_Tree_BaseColor",
       "dimensions": [
         1024,
         1024
       ]
     },
     {
-      "name": "texture_pbr_20250901_metallic-texture_pbr_20250901_roughness",
+      "name": "Symbolic_Tree_MetallicRoughness",
       "dimensions": [
         1024,
         1024

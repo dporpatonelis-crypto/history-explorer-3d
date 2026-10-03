@@ -36,9 +36,9 @@ Browser rendering is checked; headset performance has not been measured.
 
 ## Paired sculptures
 
-Two static copies of the existing Christ relief stand at x = −6.2 and +6.2,
+Two static copies of the existing symbolic tree stand at x = −6.2 and +6.2,
 z = −2.8, behind the characters (z = 0.3). Each is 2.7 m high, 1.5 times
 the 1.8 m character normalization. The center remains open toward the temple,
-and the relief tops stay below the screens. Both reference one GLB so loading,
-geometry and textures are shared. The source model stays unchanged; its
-browser export uses 49,996 triangles and 1K textures (6.73 MB).
+and the tree tops stay below the screens. Both reference one GLB so loading,
+geometry and textures are shared. The source model stays unchanged; the existing
+browser export uses 60,000 triangles and 1K textures (8.40 MB).
