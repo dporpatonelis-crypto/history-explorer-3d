@@ -404,6 +404,28 @@
       "scale": 0.55,
       "idle": false,
       "dialog_label": "Αμνός"
+    },
+    {
+      "id": "christ-relief-left",
+      "glbModel": "/models/jerusalem/sculptures/Christ_Relief_VR_1K.glb",
+      "position_x": -6.2,
+      "position_y": 0.05,
+      "position_z": -2.8,
+      "rotation": 0,
+      "scale": 1.5,
+      "idle": false,
+      "dialog_label": "Ανάγλυφο του Χριστού"
+    },
+    {
+      "id": "christ-relief-right",
+      "glbModel": "/models/jerusalem/sculptures/Christ_Relief_VR_1K.glb",
+      "position_x": 6.2,
+      "position_y": 0.05,
+      "position_z": -2.8,
+      "rotation": 0,
+      "scale": 1.5,
+      "idle": false,
+      "dialog_label": "Ανάγλυφο του Χριστού"
     }
   ],
   "environment": "jerusalem-time-of-christ"

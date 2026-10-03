@@ -61,7 +61,7 @@ describe('Jerusalem biblical typology quiz', () => {
 
   it('covers all six objects with explanations and valid answers', () => {
     expect(quiz.questions.map((question) => question.id).sort()).toEqual(
-      jerusalem.props.slice(2).map((prop) => prop.id).sort(),
+      jerusalem.props.filter((prop) => prop.glbModel.includes('/biblical/')).map((prop) => prop.id).sort(),
     );
     for (const question of quiz.questions) {
       expect(question.options[question.correctIndex]).toBeTruthy();

@@ -61,7 +61,7 @@ describe('optional scene environments', () => {
   });
 
   it('places all six biblical objects in front of distinct character positions and clear of the guide', () => {
-    const objects = jerusalemScenario.props.slice(2);
+    const objects = jerusalemScenario.props.filter((prop) => prop.glbModel.includes('/biblical/'));
     expect(objects.map((prop) => prop.id).sort()).toEqual([
       'ark-of-covenant', 'bronze-serpent', 'budding-rod', 'covenant-tablets', 'lamb', 'manna-jar',
     ]);
@@ -73,6 +73,18 @@ describe('optional scene environments', () => {
       expect(Math.abs(prop.position_x)).toBeGreaterThan(2);
       expect(prop.idle).toBe(false);
       expect(prop.glbModel).toMatch(/^\/models\/jerusalem\/biblical\/.*_VR_1K\.glb$/);
+    }
+  });
+
+  it('places two modest sculptures behind the character row with a clear center', () => {
+    const sculptures = jerusalemScenario.props.filter((prop) => prop.id.startsWith('christ-relief-'));
+    expect(sculptures).toHaveLength(2);
+    expect(sculptures.map((prop) => prop.position_x)).toEqual([-6.2, 6.2]);
+    for (const prop of sculptures) {
+      expect(prop.position_z).toBeLessThan(Math.min(...jerusalemScenario.characters.map((npc) => npc.position_z)));
+      expect(prop.scale).toBe(1.5);
+      expect(prop.idle).toBe(false);
+      expect(prop.glbModel).toBe('/models/jerusalem/sculptures/Christ_Relief_VR_1K.glb');
     }
   });
 

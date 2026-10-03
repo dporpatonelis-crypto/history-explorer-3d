@@ -1,0 +1,41 @@
+{
+  "source": "Christ_relief_optimized_six_regions_final.glb from Blender optimized-assets",
+  "file": "public/models/jerusalem/sculptures/Christ_Relief_VR_1K.glb",
+  "sha256": "4f2811002610e5ecdded4346fef9b7d3b9fc428617ad7eb6728174ccad1f0b64",
+  "bytes": 6734096,
+  "triangles": 49996,
+  "textures": [
+    {
+      "name": "texture_pbr_20250901_normal",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "texture_pbr_20250901",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "texture_pbr_20250901_metallic-texture_pbr_20250901_roughness",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    }
+  ],
+  "rendered_height_m": 2.7,
+  "instances": 2,
+  "placement": {
+    "x": [
+      -6.2,
+      6.2
+    ],
+    "y": 0.05,
+    "z": -2.8
+  },
+  "source_modified": false
+}
