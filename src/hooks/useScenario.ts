@@ -1,20 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { NPCData, npcData as fallbackData } from '@/data/npcData';
 import { InteractiveMediaConfig, ScreenConfig } from '@/components/EnvironmentScreens';
 import { ScenarioProp } from '@/components/ScenarioProps';
 import { LessonQuiz, QuizQuestion } from '@/data/quizData';
-import { resolveStartupScenarioUrl } from '@/lib/startupScenario';
+import { resolveScenarioPreviewUrl, resolveStartupScenarioUrl } from '@/lib/startupScenario';
+import { resolveAssetUrl } from '@/lib/assetUrl';
+import { parseSceneEnvironment, SceneEnvironmentId } from '@/lib/sceneEnvironment';
 
 const BASE_URL = import.meta.env.BASE_URL;
-
-function resolveAssetUrl(value?: string): string | undefined {
-  const clean = value?.trim();
-  if (!clean) return undefined;
-  if (/^(https?:\/\/|blob:|data:)/i.test(clean)) return clean;
-  if (clean.startsWith(BASE_URL)) return clean;
-  if (clean.startsWith('/')) return BASE_URL + clean.slice(1);
-  return clean;
-}
 
 interface ScenarioCharacter {
   id: string;
@@ -70,6 +63,7 @@ interface ScenarioQuiz {
 }
 
 interface ScenarioJSON {
+  environment?: SceneEnvironmentId;
   characters: ScenarioCharacter[];
   dialogs: ScenarioDialog[];
   facts: ScenarioFact[];
@@ -270,6 +264,7 @@ function validateProtectedScenario(candidate: ScenarioJSON, template: ScenarioJS
     'character_interactives',
     'completion',
     'quiz',
+    'environment',
   ]);
   const actualKeys = Object.keys(candidate);
   if (requiredKeys.some((key) => !actualKeys.includes(key)) || actualKeys.some((key) => !allowedKeys.has(key))) {
@@ -280,6 +275,13 @@ function validateProtectedScenario(candidate: ScenarioJSON, template: ScenarioJS
   }
   if (stableJson(candidate.props ?? []) !== stableJson(template.props ?? [])) {
     throw new Error('Protected props differ from the default template');
+  }
+  if (
+    candidate.environment !== undefined &&
+    candidate.environment !== 'agora' &&
+    candidate.environment !== 'jerusalem-time-of-christ'
+  ) {
+    throw new Error('Scenario contains an unsupported environment');
   }
   const allowedIds = new Set(template.characters.map((character) => character.id));
   if (!Array.isArray(candidate.dialogs) || candidate.dialogs.some((dialog) =>
@@ -337,6 +339,7 @@ export function useScenario(scenarioName = 'default') {
   const [source, setSource] = useState<'fallback' | 'json'>('fallback');
   const [loading, setLoading] = useState(true);
   const [rawScenario, setRawScenario] = useState<ScenarioJSON | null>(null);
+  const [environment, setEnvironment] = useState<SceneEnvironmentId>('agora');
   const [props, setProps] = useState<ScenarioProp[] | undefined>();
   const [interactive, setInteractive] = useState<InteractiveMediaConfig | undefined>();
   const [characterInteractives, setCharacterInteractives] = useState<Record<string, InteractiveMediaConfig> | undefined>();
@@ -344,8 +347,13 @@ export function useScenario(scenarioName = 'default') {
   const [completionInteractive, setCompletionInteractive] = useState<InteractiveMediaConfig | undefined>();
   const [quiz, setQuiz] = useState<LessonQuiz | undefined>();
 
-  const applyScenario = (data: ScenarioJSON) => {
-    setRawScenario(data);
+  const applyScenario = useCallback((data: ScenarioJSON) => {
+    const parsedEnvironment = parseSceneEnvironment(data.environment);
+    const normalizedData: ScenarioJSON = data.environment === undefined
+      ? data
+      : { ...data, environment: parsedEnvironment };
+    setRawScenario(normalizedData);
+    setEnvironment(parsedEnvironment);
     const parsed = parseScenario(data);
     if (parsed.npcs.length > 0) {
       setNpcs(parsed.npcs);
@@ -369,11 +377,14 @@ export function useScenario(scenarioName = 'default') {
             }))
         : undefined,
     );
-  };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
     const externalUrl = previewDataUrl();
+    const scenarioPreviewUrl = resolveScenarioPreviewUrl(
+      new URLSearchParams(window.location.search).get('scenario'),
+    );
     const defaultUrl = `${BASE_URL}scenarios/${scenarioName}.json?v=${Date.now()}`;
 
     const load = async () => {
@@ -394,6 +405,10 @@ export function useScenario(scenarioName = 'default') {
             ...candidate,
             interactive: candidate.interactive ?? template.interactive,
           };
+        } else if (scenarioPreviewUrl) {
+          const response = await fetch(`${scenarioPreviewUrl}?v=${Date.now()}`, { cache: 'no-store' });
+          if (!response.ok) throw new Error(`Scenario preview HTTP ${response.status}`);
+          data = await response.json() as ScenarioJSON;
         } else {
           try {
             const pointerResponse = await fetch(`${BASE_URL}data/active-scenario.json?v=${Date.now()}`, {
@@ -431,7 +446,7 @@ export function useScenario(scenarioName = 'default') {
     void load();
 
     return () => { cancelled = true; };
-  }, [scenarioName]);
+  }, [applyScenario, scenarioName]);
 
   return {
     npcs,
@@ -445,6 +460,7 @@ export function useScenario(scenarioName = 'default') {
     source,
     loading,
     rawScenario,
+    environment,
     applyScenario,
   };
 }

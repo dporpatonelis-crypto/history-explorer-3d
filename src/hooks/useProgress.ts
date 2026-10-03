@@ -1,23 +1,47 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-export function useProgress() {
-  const [visited, setVisited] = useState<Set<string>>(() => {
-    const saved = localStorage.getItem('ancientAgora_progress');
-    return saved ? new Set(JSON.parse(saved)) : new Set();
-  });
+function storageKeyFor(scope: string) {
+  return scope === 'agora' ? 'ancientAgora_progress' : `ancientAgora_progress:${scope}`;
+}
+
+function readProgress(key: string): Set<string> {
+  try {
+    const saved: unknown = JSON.parse(localStorage.getItem(key) ?? '[]');
+    return Array.isArray(saved)
+      ? new Set(saved.filter((value): value is string => typeof value === 'string'))
+      : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+export function useProgress(scope = 'agora') {
+  const storageKey = storageKeyFor(scope);
+  const [progress, setProgress] = useState(() => ({
+    scope,
+    visited: readProgress(storageKey),
+  }));
+  const visited = progress.scope === scope ? progress.visited : readProgress(storageKey);
 
   useEffect(() => {
-    localStorage.setItem('ancientAgora_progress', JSON.stringify([...visited]));
-  }, [visited]);
+    if (progress.scope !== scope) {
+      setProgress({ scope, visited: readProgress(storageKey) });
+      return;
+    }
+    localStorage.setItem(storageKey, JSON.stringify([...progress.visited]));
+  }, [progress, scope, storageKey]);
 
-  const markVisited = (npcId: string) => {
-    setVisited(prev => new Set(prev).add(npcId));
-  };
+  const markVisited = useCallback((npcId: string) => {
+    setProgress((previous) => {
+      const current = previous.scope === scope ? previous.visited : readProgress(storageKey);
+      return { scope, visited: new Set(current).add(npcId) };
+    });
+  }, [scope, storageKey]);
 
-  const resetProgress = () => {
-    setVisited(new Set());
-    localStorage.removeItem('ancientAgora_progress');
-  };
+  const resetProgress = useCallback(() => {
+    localStorage.removeItem(storageKey);
+    setProgress({ scope, visited: new Set() });
+  }, [scope, storageKey]);
 
   return { visited, markVisited, resetProgress };
 }
