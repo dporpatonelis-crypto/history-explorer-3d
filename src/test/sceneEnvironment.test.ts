@@ -30,7 +30,8 @@ describe('optional scene environments', () => {
     expect(jerusalemScenario.characters.every((character) => character.name !== 'tree')).toBe(true);
     expect(jerusalemScenario.dialogs).toEqual(divineEconomyScenario.dialogs);
     expect(jerusalemScenario.facts).toEqual(divineEconomyScenario.facts);
-    expect(jerusalemScenario.screens).toEqual(divineEconomyScenario.screens);
+    expect(jerusalemScenario.screens.right_image_url).toBe(divineEconomyScenario.screens.right_image_url);
+    expect(jerusalemScenario.screens.right_label).toBe(divineEconomyScenario.screens.right_label);
     expect(jerusalemScenario.interactive).toEqual(divineEconomyScenario.interactive);
     expect(jerusalemScenario.character_interactives).toEqual(divineEconomyScenario.character_interactives);
     expect(jerusalemScenario.completion).toEqual(divineEconomyScenario.completion);
@@ -38,6 +39,15 @@ describe('optional scene environments', () => {
     expect(jerusalemScenario.props).toEqual(
       divineEconomyScenario.props.filter((prop) => prop.id !== 'agia_sophia'),
     );
+  });
+
+  it('uses the supplied Old Testament deck on the Jerusalem left screen in slide order', () => {
+    const media = new URL(jerusalemScenario.screens.left_image_url, 'https://example.test');
+    const slides = new URLSearchParams(media.hash.slice(1)).get('sb-slides')!.split('|');
+    expect(slides).toEqual(Array.from({ length: 15 }, (_, index) =>
+      `/media/old-testament/slide-${String(index + 1).padStart(2, '0')}.webp`));
+    expect(media.pathname).toBe(slides[0]);
+    expect(jerusalemScenario.screens.left_label).toBe('Από τη Σκιά στην Αλήθεια — Παλαιά και Καινή Διαθήκη');
   });
 
   it('keeps the environment id through the same JSON round-trip used by download', () => {
