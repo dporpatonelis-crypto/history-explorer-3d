@@ -1,4 +1,5 @@
-import { useRef, useState, useMemo, Suspense, memo } from 'react';
+import { useRef, useState, useMemo, Suspense, memo, useContext } from 'react';
+import { SceneDiagnosticsContext } from '@/lib/sceneDiagnosticsContext';
 import { useFrame } from '@react-three/fiber';
 import { Html, Billboard, Text, useGLTF } from '@react-three/drei';
 import { useXR, Interactive } from '@react-three/xr';
@@ -48,6 +49,7 @@ function GLBModel({ url, rotation, scale, npcId }: { url: string; rotation: numb
 
 
 export const GLBModelNPC = memo(function GLBModelNPC({ npc, isVisited, onInteract }: GLBModelNPCProps) {
+  const { hideHoverMarkers } = useContext(SceneDiagnosticsContext);
   const groupRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
   const isDecoration = !npc.description && npc.name === 'tree';
@@ -132,10 +134,10 @@ export const GLBModelNPC = memo(function GLBModelNPC({ npc, isVisited, onInterac
         </Html>
       )}
 
-      {hovered && !isDecoration && (
-        <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      {hovered && !isDecoration && !hideHoverMarkers && (
+        <mesh position={[0, 0.08, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <ringGeometry args={[0.5, 0.7, 24]} />
-          <meshBasicMaterial color="hsl(45, 90%, 55%)" transparent opacity={0.45} side={THREE.DoubleSide} />
+          <meshBasicMaterial color="hsl(45, 90%, 55%)" transparent opacity={0.45} depthWrite={false} side={THREE.DoubleSide} />
         </mesh>
       )}
     </group>

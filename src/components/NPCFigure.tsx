@@ -1,4 +1,5 @@
-import { useRef, useState, memo } from 'react';
+import { useRef, useState, memo, useContext } from 'react';
+import { SceneDiagnosticsContext } from '@/lib/sceneDiagnosticsContext';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
@@ -11,6 +12,7 @@ interface NPCFigureProps {
 }
 
 export const NPCFigure = memo(function NPCFigure({ npc, isVisited, onInteract }: NPCFigureProps) {
+  const { hideHoverMarkers } = useContext(SceneDiagnosticsContext);
   const groupRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
 
@@ -132,10 +134,10 @@ export const NPCFigure = memo(function NPCFigure({ npc, isVisited, onInteract }:
         </div>
       </Html>
 
-      {hovered && (
-        <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      {hovered && !hideHoverMarkers && (
+        <mesh position={[0, 0.08, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <ringGeometry args={[0.4, 0.55, 16]} />
-          <meshBasicMaterial color="hsl(45, 90%, 55%)" transparent opacity={0.5} side={THREE.DoubleSide} />
+          <meshBasicMaterial color="hsl(45, 90%, 55%)" transparent opacity={0.5} depthWrite={false} side={THREE.DoubleSide} />
         </mesh>
       )}
     </group>

@@ -28,6 +28,10 @@ import { useScenario } from '@/hooks/useScenario';
 import { narrate, stopSpeaking } from '@/lib/lipsync';
 import { getScenePresentation, JERUSALEM_ENVIRONMENT } from '@/lib/sceneEnvironment';
 import { getCompletionProgress } from '@/lib/completionProgress';
+import { VRDiagnosticsProbe } from '@/components/VRDiagnosticsProbe';
+import { VRDiagnosticsPanel, SceneErrorBoundary } from '@/components/VRDiagnosticsPanel';
+import { SceneDiagnosticsContext } from '@/lib/sceneDiagnosticsContext';
+import { getVRDiagnostics } from '@/lib/vrDiagnostics';
 
 function CameraFarPlane({ far }: { far: number }) {
   const camera = useThree((state) => state.camera);
@@ -110,6 +114,9 @@ const Index = () => {
   const [activeNPC, setActiveNPC] = useState<NPCData | null>(null);
   const [activePropDialog, setActivePropDialog] = useState<ScenarioProp | null>(null);
   const [inVR, setInVR] = useState(false);
+  const [disableShadows, setDisableShadows] = useState(false);
+  const [hideHoverMarkers, setHideHoverMarkers] = useState(false);
+  const diagnosticVisuals = useMemo(() => ({ hideHoverMarkers }), [hideHoverMarkers]);
   const [extraModels, setExtraModels] = useState<ExtraModel[]>([]);
   const [quizOpen, setQuizOpen] = useState(false);
   const [quizUnlocked, setQuizUnlocked] = useState(false);
@@ -388,10 +395,26 @@ const Index = () => {
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
-      <VRButton className="vr-button" />
+      <div onClickCapture={() => getVRDiagnostics().record('xr-button-click', { inVR })}>
+        <VRButton className="vr-button" />
+      </div>
+      <VRDiagnosticsPanel
+        disableShadows={disableShadows}
+        hideHoverMarkers={hideHoverMarkers}
+        onShadowsChange={value => {
+          setDisableShadows(value);
+          getVRDiagnostics().record('visual-test', { disableShadows: value });
+        }}
+        onHoverMarkersChange={value => {
+          setHideHoverMarkers(value);
+          getVRDiagnostics().record('visual-test', { hideHoverMarkers: value });
+        }}
+      />
 
+      <SceneErrorBoundary>
+      <SceneDiagnosticsContext.Provider value={diagnosticVisuals}>
       <Canvas
-        shadows
+        shadows={!disableShadows}
         camera={{ position: [0, 5, 12], fov: 50, near: 0.1, far: 100 }}
         gl={{ antialias: true, powerPreference: 'low-power' }}
         dpr={[1, 1.5]}
@@ -402,6 +425,7 @@ const Index = () => {
           onSessionStart={() => setInVR(true)}
           onSessionEnd={() => setInVR(false)}
         >
+          <VRDiagnosticsProbe environment={environment} />
           <Controllers rayMaterial={{ color: 'hsl(45, 90%, 60%)' }} />
           <Hands />
           <VRLocomotion />
@@ -414,7 +438,7 @@ const Index = () => {
           />
 
           <CameraFarPlane far={environment === JERUSALEM_ENVIRONMENT ? 140 : 100} />
-          <SceneLighting environment={environment} />
+          <SceneLighting environment={environment} shadowsEnabled={!disableShadows} />
           {environment === JERUSALEM_ENVIRONMENT ? (
             <JerusalemEnvironment />
           ) : (
@@ -462,6 +486,8 @@ const Index = () => {
           <StableOrbitControls />
         </XR>
       </Canvas>
+      </SceneDiagnosticsContext.Provider>
+      </SceneErrorBoundary>
 
       {!inVR && (
         <>

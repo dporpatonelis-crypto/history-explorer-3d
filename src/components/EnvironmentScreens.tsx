@@ -2,7 +2,7 @@ import { forwardRef, useMemo, useEffect, useState, useRef, useImperativeHandle, 
 import * as THREE from 'three';
 import { resolveInteractivePlaybackRate, shouldLoopInteractiveVideo } from '@/lib/interactivePlayback';
 import { Html, useTexture } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
+import { diagnosticMessage, getVRDiagnostics, observeVideoDiagnostics, videoDiagnosticDetails } from '@/lib/vrDiagnostics';
 import { JERUSALEM_ENVIRONMENT, type SceneEnvironmentId } from '@/lib/sceneEnvironment';
 import { resolveAssetUrl } from '@/lib/assetUrl';
 
@@ -60,6 +60,7 @@ function useVideoTexture(url: string, autoplay = true, loop = true, muted = true
     video.autoplay = autoplay;
     video.src = url;
     videoRef.current = video;
+    const stopObserving = observeVideoDiagnostics(video);
 
     if (autoplay) {
       video.play().catch(() => {
@@ -76,17 +77,16 @@ function useVideoTexture(url: string, autoplay = true, loop = true, muted = true
     setTexture(videoTexture);
 
     return () => {
+      stopObserving();
       video.pause();
-      video.src = '';
+      video.removeAttribute('src');
+      video.load();
       videoTexture.dispose();
       if (videoRef.current === video) videoRef.current = null;
     };
   }, [url, autoplay, loop, muted]);
 
-  // Keep texture updated
-  useFrame(() => {
-    if (texture) texture.needsUpdate = true;
-  });
+  // VideoTexture already updates when a decoded video frame is available.
 
   return { texture, videoRef };
 }
@@ -329,6 +329,7 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, environment
   const [interactiveTexture, setInteractiveTexture] = useState<THREE.VideoTexture | null>(null);
   const interactiveVideoRef = useRef<HTMLVideoElement | null>(null);
   const interactiveTextureRef = useRef<THREE.VideoTexture | null>(null);
+  const stopVideoObservationRef = useRef<(() => void) | null>(null);
   const onInteractiveEndedRef = useRef(onInteractiveEnded);
   const leftSlides = useMemo(
     () => slideshowUrlsFromMediaUrl(config.left_image_url),
@@ -370,7 +371,10 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, environment
   const stopInteractive = useCallback(() => {
     const video = interactiveVideoRef.current;
     interactiveVideoRef.current = null;
+    stopVideoObservationRef.current?.();
+    stopVideoObservationRef.current = null;
     if (video) {
+      getVRDiagnostics().record('video-stopped', videoDiagnosticDetails(video));
       video.onended = null;
       video.onerror = null;
       video.pause();
@@ -412,9 +416,11 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, environment
     video.volume = 1;
     video.src = media.video_url;
     video.dataset.lessonVideoPurpose = purpose;
+    stopVideoObservationRef.current = observeVideoDiagnostics(video);
     video.setAttribute('aria-hidden', 'true');
     video.style.display = 'none';
     document.body.appendChild(video);
+    getVRDiagnostics().record('video-requested', videoDiagnosticDetails(video));
 
     const texture = new THREE.VideoTexture(video);
     texture.colorSpace = THREE.SRGBColorSpace;
@@ -444,6 +450,7 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, environment
       console.info(`[EnvironmentScreens] Playback started (${purpose}): ${media.video_url}`);
       return true;
     } catch (error) {
+      getVRDiagnostics().record('video-play-rejected', { purpose, message: diagnosticMessage(error) });
       console.error('[EnvironmentScreens] Interactive video playback failed:', error);
       if (interactiveVideoRef.current === video) stopInteractive();
       return false;
@@ -455,11 +462,14 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, environment
   }, [config.left_image_url, config.right_image_url, interactive?.video_url, stopInteractive]);
 
   useEffect(() => () => {
+    stopVideoObservationRef.current?.();
     const video = interactiveVideoRef.current;
     if (video) {
       video.onended = null;
       video.onerror = null;
       video.pause();
+      video.removeAttribute('src');
+      video.load();
       video.remove();
     }
     interactiveTextureRef.current?.dispose();
