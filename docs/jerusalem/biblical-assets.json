@@ -1,0 +1,281 @@
+{
+  "source": "Biblical_Assets_VR_Gallery.blend and Apostle_Paul_VR_2K.glb",
+  "geometry": "Existing optimized meshes, no further decimation",
+  "textures": "Characters 2K; objects 1K for browser/VR memory",
+  "assets": [
+    {
+      "file": "public/models/jerusalem/biblical/Apostle_Paul_VR_2K.glb",
+      "bytes": 11622976,
+      "sha256": "515f7abfbda26b5b7e9f63d959ad0ca738937048f9152537ea3ade11c03ab289",
+      "triangles": 40000,
+      "textures": [
+        {
+          "name": "Apostle_Paul_Normal",
+          "dimensions": [
+            2048,
+            2048
+          ]
+        },
+        {
+          "name": "Apostle_Paul_BaseColor",
+          "dimensions": [
+            2048,
+            2048
+          ]
+        },
+        {
+          "name": "Apostle_Paul_MetallicRoughness",
+          "dimensions": [
+            2048,
+            2048
+          ]
+        }
+      ],
+      "dimensions_y_up": [
+        0.665373682975769,
+        1.1420912742614746,
+        0.2826623320579529
+      ]
+    },
+    {
+      "file": "public/models/jerusalem/biblical/Ark_of_Covenant_VR_1K.glb",
+      "bytes": 5504868,
+      "sha256": "e89546420b3fcba9efc9a4603a2f37a41d58aabaedc2f93ade95b3aac3541fa0",
+      "triangles": 40000,
+      "textures": [
+        {
+          "name": "Ark_of_Covenant_Normal",
+          "dimensions": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "name": "Ark_of_Covenant_BaseColor",
+          "dimensions": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "name": "Ark_of_Covenant_ORM",
+          "dimensions": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "dimensions_y_up": [
+        1.06571763753891,
+        0.58675360828056,
+        0.5658828318119049
+      ]
+    },
+    {
+      "file": "public/models/jerusalem/biblical/Bronze_Serpent_VR_1K.glb",
+      "bytes": 4417676,
+      "sha256": "272d52c2da38cc3c6b56374eeabc3863264739264306aa29ab69edfd4c7413c2",
+      "triangles": 25000,
+      "textures": [
+        {
+          "name": "Bronze_Serpent_Normal",
+          "dimensions": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "name": "Bronze_Serpent_BaseColor",
+          "dimensions": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "name": "Bronze_Serpent_ORM",
+          "dimensions": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "dimensions_y_up": [
+        1.0692131519317627,
+        0.5554251344583463,
+        0.1794659122824669
+      ]
+    },
+    {
+      "file": "public/models/jerusalem/biblical/Budding_Rod_VR_1K.glb",
+      "bytes": 4709020,
+      "sha256": "ca55ff705051e1bb03c020364009db40f6978dfe6377b7a5b8cd073132a5b27a",
+      "triangles": 25000,
+      "textures": [
+        {
+          "name": "Budding_Rod_Normal",
+          "dimensions": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "name": "Budding_Rod_BaseColor",
+          "dimensions": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "name": "Budding_Rod_ORM",
+          "dimensions": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "dimensions_y_up": [
+        0.29239262640476227,
+        0.2128327769532916,
+        1.186066448688507
+      ]
+    },
+    {
+      "file": "public/models/jerusalem/biblical/Covenant_Tablets_VR_1K.glb",
+      "bytes": 4228180,
+      "sha256": "3c2922578eadc5b09b9c11b0e7aee2ac932e95796cb4a2c1ecbc80e821bd1778",
+      "triangles": 19999,
+      "textures": [
+        {
+          "name": "Covenant_Tablets_Normal",
+          "dimensions": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "name": "Covenant_Tablets_BaseColor",
+          "dimensions": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "name": "Covenant_Tablets_ORM",
+          "dimensions": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "dimensions_y_up": [
+        0.86018505692482,
+        0.8599698679390713,
+        0.3185327798128128
+      ]
+    },
+    {
+      "file": "public/models/jerusalem/biblical/Lamb_VR_1K.glb",
+      "bytes": 4577736,
+      "sha256": "430afb8238cfc1fe3b0f2f590ed51c1f1a928f2ae0cd055cd1dba99b1f6710f3",
+      "triangles": 24999,
+      "textures": [
+        {
+          "name": "Lamb_Normal",
+          "dimensions": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "name": "Lamb_BaseColor",
+          "dimensions": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "name": "Lamb_ORM",
+          "dimensions": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "dimensions_y_up": [
+        1.0408783555030823,
+        0.9572852835553931,
+        0.4261970520019531
+      ]
+    },
+    {
+      "file": "public/models/jerusalem/biblical/Manna_Jar_VR_1K.glb",
+      "bytes": 4010356,
+      "sha256": "13ddf9f45cae7f921248dfb37ac8bb07ee34e23a78084141f26e7f041acf615c",
+      "triangles": 15000,
+      "textures": [
+        {
+          "name": "Manna_Jar_Normal",
+          "dimensions": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "name": "Manna_Jar_BaseColor",
+          "dimensions": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "name": "Manna_Jar_ORM",
+          "dimensions": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "dimensions_y_up": [
+        1.030372440814972,
+        0.8124207747168839,
+        0.8505087792873383
+      ]
+    },
+    {
+      "file": "public/models/jerusalem/biblical/Moses_VR_2K.glb",
+      "bytes": 11084904,
+      "sha256": "66ad1ef810f60038e48f59ed6e35e11d09926800e0d21e180f7d82ac87c1050d",
+      "triangles": 40000,
+      "textures": [
+        {
+          "name": "Moses_Normal",
+          "dimensions": [
+            2048,
+            2048
+          ]
+        },
+        {
+          "name": "Moses_BaseColor",
+          "dimensions": [
+            2048,
+            2048
+          ]
+        },
+        {
+          "name": "Moses_ORM",
+          "dimensions": [
+            2048,
+            2048
+          ]
+        }
+      ],
+      "dimensions_y_up": [
+        0.4498431980609894,
+        1.1301686764199985,
+        0.28582508862018585
+      ]
+    }
+  ],
+  "total_bytes": 50155716,
+  "total_triangles": 229998
+}

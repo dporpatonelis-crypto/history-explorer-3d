@@ -4,6 +4,7 @@ import { shouldLoopInteractiveVideo } from '@/lib/interactivePlayback';
 import { Html, useTexture } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { JERUSALEM_ENVIRONMENT, type SceneEnvironmentId } from '@/lib/sceneEnvironment';
+import { resolveAssetUrl } from '@/lib/assetUrl';
 
 function isVideoUrl(url: string): boolean {
   const lower = url.toLowerCase();
@@ -31,7 +32,8 @@ function slideshowUrlsFromMediaUrl(mediaUrl: string): string[] {
     return encodedSlides
       .split('|')
       .map((url) => url.trim())
-      .filter((url) => /^(https?:\/\/|\/)/.test(url));
+      .filter((url) => /^(https?:\/\/|\/)/.test(url))
+      .map((url) => resolveAssetUrl(url)!);
   } catch {
     return [];
   }

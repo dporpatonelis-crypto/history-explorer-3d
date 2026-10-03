@@ -464,6 +464,7 @@ const Index = () => {
             visited={visited}
             requiredIds={requiredCompletionIds}
             onReset={handleResetProgress}
+            characterLabel={environment === JERUSALEM_ENVIRONMENT ? 'πρόσωπα' : 'φιλόσοφοι'}
           />
           <LibraryPanel currentScenario={rawScenario} onLoadScenario={handleScenarioLoad} />
           <ExtraModelsPanel models={extraModels} onChange={setExtraModels} />
