@@ -401,7 +401,10 @@ function EnvironmentScreens({ config = DEFAULT_SCREENS, interactive, environment
     video.crossOrigin = 'anonymous';
     video.preload = 'auto';
     video.loop = shouldLoopInteractiveVideo(purpose, media.loop);
-    video.playbackRate = resolveInteractivePlaybackRate(media.playback_rate);
+    const playbackRate = resolveInteractivePlaybackRate(media.playback_rate);
+    // Loading a new source restores the default rate, so set both rates.
+    video.defaultPlaybackRate = playbackRate;
+    video.playbackRate = playbackRate;
     video.preservesPitch = true;
     video.muted = false;
     video.defaultMuted = false;
