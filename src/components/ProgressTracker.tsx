@@ -1,19 +1,22 @@
 import { npcData } from '@/data/npcData';
 import { RotateCcw } from 'lucide-react';
+import { getCompletionProgress } from '@/lib/completionProgress';
 
 interface ProgressTrackerProps {
   visited: Set<string>;
   requiredIds?: string[];
+  requiredCount?: number;
   onReset: () => void;
   characterLabel?: string;
 }
 
-export function ProgressTracker({ visited, requiredIds, onReset, characterLabel = 'φιλόσοφοι' }: ProgressTrackerProps) {
-  const total = requiredIds?.length || npcData.length;
-  const count = requiredIds?.length
-    ? requiredIds.filter((id) => visited.has(id)).length
-    : visited.size;
-  const pct = Math.round((count / total) * 100);
+export function ProgressTracker({ visited, requiredIds, requiredCount, onReset, characterLabel = 'φιλόσοφοι' }: ProgressTrackerProps) {
+  const progress = getCompletionProgress(
+    requiredIds?.length ? requiredIds : npcData.map((npc) => npc.id), visited, requiredCount,
+  );
+  const total = progress.target;
+  const count = Math.min(progress.count, total);
+  const pct = total > 0 ? Math.round((count / total) * 100) : 0;
 
   return (
     <div className="fixed top-4 left-4 z-40">

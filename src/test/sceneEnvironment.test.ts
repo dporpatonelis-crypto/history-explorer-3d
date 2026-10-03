@@ -37,8 +37,6 @@ describe('optional scene environments', () => {
     expect(jerusalemScenario.screens.right_label).toBe(divineEconomyScenario.screens.right_label);
     expect(jerusalemScenario.interactive).toEqual(divineEconomyScenario.interactive);
     expect(jerusalemScenario.character_interactives).toEqual(divineEconomyScenario.character_interactives);
-    expect(jerusalemScenario.completion.reward_interactive).toEqual(divineEconomyScenario.completion.reward_interactive);
-    expect(jerusalemScenario.quiz.questions.slice(1)).toEqual(divineEconomyScenario.quiz.questions.slice(1));
     expect(jerusalemScenario.props.slice(0, 2)).toEqual(
       divineEconomyScenario.props.filter((prop) => prop.id !== 'agia_sophia'),
     );

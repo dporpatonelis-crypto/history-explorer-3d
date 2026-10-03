@@ -6,6 +6,7 @@ import { LessonQuiz, QuizQuestion } from '@/data/quizData';
 import { resolveScenarioPreviewUrl, resolveStartupScenarioUrl } from '@/lib/startupScenario';
 import { resolveAssetUrl } from '@/lib/assetUrl';
 import { parseSceneEnvironment, SceneEnvironmentId } from '@/lib/sceneEnvironment';
+import { resolveCompletionTarget } from '@/lib/completionProgress';
 
 const BASE_URL = import.meta.env.BASE_URL;
 
@@ -37,6 +38,7 @@ interface ScenarioFact {
 
 interface ScenarioCompletion {
   required_character_ids: string[];
+  required_count?: number;
   reward_interactive?: InteractiveMediaConfig;
 }
 
@@ -200,6 +202,7 @@ function parseScenario(data: ScenarioJSON): {
   interactive?: InteractiveMediaConfig;
   characterInteractives?: Record<string, InteractiveMediaConfig>;
   completionIds?: string[];
+  completionRequiredCount?: number;
   completionInteractive?: InteractiveMediaConfig;
   quiz?: LessonQuiz;
 } {
@@ -222,15 +225,16 @@ function parseScenario(data: ScenarioJSON): {
       .map((f) => f.fact),
   }));
   const characterIds = new Set(data.characters.map((character) => character.id));
+  const completionIds = sanitizeCompletion(data.completion, characterIds);
   return {
     npcs,
     screens: sanitizeScreens(data.screens),
     interactive: sanitizeInteractive(data.interactive),
     characterInteractives: sanitizeCharacterInteractives(data.character_interactives, characterIds),
-    completionIds: sanitizeCompletion(
-      data.completion,
-      characterIds,
-    ),
+    completionIds,
+    completionRequiredCount: completionIds
+      ? resolveCompletionTarget(completionIds.length, data.completion?.required_count)
+      : undefined,
     completionInteractive: sanitizeInteractive(data.completion?.reward_interactive),
     quiz: sanitizeQuiz(data.quiz),
   };
@@ -316,12 +320,17 @@ function validateProtectedScenario(candidate: ScenarioJSON, template: ScenarioJS
   }
   if (candidate.completion) {
     const completionKeys = Object.keys(candidate.completion);
+    const ids = sanitizeCompletion(candidate.completion, allowedIds);
+    const requestedCount = candidate.completion.required_count;
     if (
-      completionKeys.some((key) => !['required_character_ids', 'reward_interactive'].includes(key)) ||
-      !sanitizeCompletion(candidate.completion, allowedIds) ||
+      completionKeys.some((key) => !['required_character_ids', 'required_count', 'reward_interactive'].includes(key)) ||
+      !ids ||
+      (requestedCount !== undefined && (
+        !Number.isInteger(requestedCount) || requestedCount < 1 || requestedCount > (ids?.length ?? 0)
+      )) ||
       (candidate.completion.reward_interactive && !sanitizeInteractive(candidate.completion.reward_interactive))
     ) {
-      throw new Error('Completion must contain valid required ids and optional reward media');
+      throw new Error('Completion must contain valid character ids, an optional count and valid reward media');
     }
   }
   if (
@@ -344,6 +353,7 @@ export function useScenario(scenarioName = 'default') {
   const [interactive, setInteractive] = useState<InteractiveMediaConfig | undefined>();
   const [characterInteractives, setCharacterInteractives] = useState<Record<string, InteractiveMediaConfig> | undefined>();
   const [completionIds, setCompletionIds] = useState<string[] | undefined>();
+  const [completionRequiredCount, setCompletionRequiredCount] = useState<number | undefined>();
   const [completionInteractive, setCompletionInteractive] = useState<InteractiveMediaConfig | undefined>();
   const [quiz, setQuiz] = useState<LessonQuiz | undefined>();
 
@@ -363,6 +373,7 @@ export function useScenario(scenarioName = 'default') {
     setInteractive(parsed.interactive);
     setCharacterInteractives(parsed.characterInteractives);
     setCompletionIds(parsed.completionIds);
+    setCompletionRequiredCount(parsed.completionRequiredCount);
     setCompletionInteractive(parsed.completionInteractive);
     setQuiz(parsed.quiz);
     setProps(
@@ -455,6 +466,7 @@ export function useScenario(scenarioName = 'default') {
     characterInteractives,
     props,
     completionIds,
+    completionRequiredCount,
     completionInteractive,
     quiz,
     source,
