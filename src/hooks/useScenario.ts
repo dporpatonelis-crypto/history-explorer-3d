@@ -7,6 +7,7 @@ import { resolveScenarioPreviewUrl, resolveStartupScenarioUrl } from '@/lib/star
 import { resolveAssetUrl } from '@/lib/assetUrl';
 import { parseSceneEnvironment, SceneEnvironmentId } from '@/lib/sceneEnvironment';
 import { resolveCompletionTarget } from '@/lib/completionProgress';
+import { resolveInteractivePlaybackRate } from '@/lib/interactivePlayback';
 
 const BASE_URL = import.meta.env.BASE_URL;
 
@@ -104,6 +105,10 @@ function sanitizeInteractive(interactive?: InteractiveMediaConfig): InteractiveM
     video_url: resolveAssetUrl(interactive.video_url) || interactive.video_url.trim(),
     target_screen: interactive.target_screen === 'left' ? 'left' : 'right',
     ...(interactive.label?.trim() ? { label: interactive.label.trim() } : {}),
+    ...(interactive.playback_rate !== undefined
+      ? { playback_rate: resolveInteractivePlaybackRate(interactive.playback_rate) }
+      : {}),
+    ...(typeof interactive.loop === 'boolean' ? { loop: interactive.loop } : {}),
   };
 }
 

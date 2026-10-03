@@ -3,6 +3,7 @@ import jerusalem from '../../public/data/jerusalem-time-of-christ.json';
 import divineEconomy from '../../public/data/to-schedio-tis-theias-oikonomias.json';
 import { getCompletionProgress } from '@/lib/completionProgress';
 import { LessonQuiz, scoreQuiz } from '@/data/quizData';
+import { resolveInteractivePlaybackRate, shouldLoopInteractiveVideo } from '@/lib/interactivePlayback';
 
 describe('scenario completion', () => {
   const ids = jerusalem.completion.required_character_ids;
@@ -78,8 +79,10 @@ describe('Jerusalem biblical typology quiz', () => {
       .toEqual({ score: 3, total: 6, passed: false });
   });
 
-  it('uses the supplied Jerusalem video for exploration and final rewards', () => {
+  it('uses separate exploration and quiz videos and finishes the quiz reward after 22 seconds', () => {
     expect(jerusalem.completion.reward_interactive.video_url).toBe('/media/jerusalem-shadow-to-truth.mp4');
-    expect(jerusalem.quiz.reward_interactive).toEqual(jerusalem.completion.reward_interactive);
+    expect(jerusalem.quiz.reward_interactive.video_url).toBe('/media/jerusalem-quiz-success.mp4');
+    expect(10.048 / resolveInteractivePlaybackRate(jerusalem.quiz.reward_interactive.playback_rate)).toBeCloseTo(22, 5);
+    expect(shouldLoopInteractiveVideo('quiz-reward', jerusalem.quiz.reward_interactive.loop)).toBe(false);
   });
 });

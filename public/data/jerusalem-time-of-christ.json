@@ -228,9 +228,11 @@
     "pass_score": 4,
     "reward_text": "Μπράβο! Συνέδεσες τα αντικείμενα της Παλαιάς Διαθήκης με την πλήρωσή τους στον Χριστό και στη ζωή της Εκκλησίας.",
     "reward_interactive": {
-      "video_url": "/media/jerusalem-shadow-to-truth.mp4",
+      "video_url": "/media/jerusalem-quiz-success.mp4",
       "target_screen": "right",
-      "label": "Από τη Σκιά στην Αλήθεια: 4 Αρχαία Σύμβολα"
+      "label": "Επιτυχία quiz — Σκιά και αλήθεια",
+      "playback_rate": 0.4567272727272727,
+      "loop": false
     },
     "questions": [
       {
