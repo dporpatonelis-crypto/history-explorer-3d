@@ -79,10 +79,10 @@ describe('Jerusalem biblical typology quiz', () => {
       .toEqual({ score: 3, total: 6, passed: false });
   });
 
-  it('uses separate exploration and quiz videos and finishes the quiz reward after 22 seconds', () => {
+  it('uses separate exploration and quiz videos and extends the quiz reward by 1.5 times', () => {
     expect(jerusalem.completion.reward_interactive.video_url).toBe('/media/jerusalem-shadow-to-truth.mp4');
     expect(jerusalem.quiz.reward_interactive.video_url).toBe('/media/jerusalem-quiz-success.mp4');
-    expect(10.048 / resolveInteractivePlaybackRate(jerusalem.quiz.reward_interactive.playback_rate)).toBeCloseTo(22, 5);
+    expect(10.048 / resolveInteractivePlaybackRate(jerusalem.quiz.reward_interactive.playback_rate)).toBeCloseTo(10.048 * 1.5, 5);
     expect(shouldLoopInteractiveVideo('quiz-reward', jerusalem.quiz.reward_interactive.loop)).toBe(false);
   });
 });

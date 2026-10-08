@@ -147,8 +147,10 @@ export const TempleScene = memo(function TempleScene() {
 /* ─── Lighting ─── */
 export const SceneLighting = memo(function SceneLighting({
   environment = AGORA_ENVIRONMENT,
+  shadowsEnabled = true,
 }: {
   environment?: SceneEnvironmentId;
+  shadowsEnabled?: boolean;
 }) {
   const dirLight = useRef<THREE.DirectionalLight>(null);
   const isJerusalem = environment === 'jerusalem-time-of-christ';
@@ -160,7 +162,7 @@ export const SceneLighting = memo(function SceneLighting({
         ref={dirLight}
         position={[8, 12, 5]}
         intensity={1.2}
-        castShadow
+        castShadow={shadowsEnabled}
         shadow-mapSize-width={256}
         shadow-mapSize-height={256}
         shadow-camera-near={0.5}

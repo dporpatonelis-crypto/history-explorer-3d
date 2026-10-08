@@ -1,4 +1,5 @@
-import { Suspense, useCallback, useEffect, useMemo, memo, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, memo, useRef, useState, useContext } from 'react';
+import { SceneDiagnosticsContext } from '@/lib/sceneDiagnosticsContext';
 import { useFBX, useGLTF, useAnimations, Html, Billboard, Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { Interactive, useXR } from '@react-three/xr';
@@ -60,6 +61,7 @@ const LoadedPropModel = memo(function LoadedPropModel({
   animations,
   onInteract,
 }: LoadedPropModelProps) {
+  const { hideHoverMarkers } = useContext(SceneDiagnosticsContext);
   const groupRef = useRef<THREE.Group>(null);
   const welcomeTriggered = useRef(false);
   const modelPosition = useRef(new THREE.Vector3());
@@ -321,13 +323,14 @@ const LoadedPropModel = memo(function LoadedPropModel({
         </Html>
       )}
 
-      {onInteract && hovered && (
-        <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      {onInteract && hovered && !hideHoverMarkers && (
+        <mesh position={[0, 0.08, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <ringGeometry args={[0.5, 0.7, 24]} />
           <meshBasicMaterial
             color="hsl(45, 90%, 55%)"
             transparent
             opacity={0.45}
+            depthWrite={false}
             side={THREE.DoubleSide}
           />
         </mesh>
